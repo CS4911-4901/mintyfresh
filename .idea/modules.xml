@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/MintyFresh.iml" filepath="$PROJECT_DIR$/MintyFresh.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/mintyfresh.iml" filepath="$PROJECT_DIR$/mintyfresh.iml" />
     </modules>
   </component>
 </project>
