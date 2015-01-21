@@ -43,12 +43,11 @@ public class DatabaseConfig {
         this.port = port;
         this.database = database;
     }
-}
 
-/**
- * Static configuration to connect to MySQL Databases.
- */
-class StaticConfig {
+    /**
+     * Static database configuration for connecting to the MySQL database on Steakscorp.
+     * This account is read-only (SELECT only).
+     */
     public static DatabaseConfig STEAKSCORP_READ_ONLY = new DatabaseConfig("cs49114901-read",
             "1c792_e03de141", "steakscorp.org", 3306, "4901mintyfresh");
 }
