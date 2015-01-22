@@ -2,6 +2,7 @@ package edu.gatech.cs4911.mintyfresh.db;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
@@ -29,6 +30,21 @@ public class DBHandler {
     }
 
     /**
+     * Sends a MySQL query string to the server.
+     *
+     * @param query The query string to send to the server.
+     * @return A ResultSet containing the server response, or null if the query failed.
+     */
+    public ResultSet submitQuery(String query) {
+        try {
+            return conn.createStatement().executeQuery(query);
+        } catch (SQLException e) {
+            System.out.println("Error executing query! " + e.toString());
+            return null;
+        }
+    }
+
+    /**
      * Initializes JDBC connection parameters.
      *
      * @throws java.sql.SQLException if the connection to the database was unsuccessful.
@@ -40,6 +56,4 @@ public class DBHandler {
                 config.username,
                 config.password);
     }
-
-    // TODO: Complete query handling through conn
 }
