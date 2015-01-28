@@ -18,6 +18,7 @@ public class DBHandler {
      * A remote JDBC connection stream.
      */
     private Connection conn;
+
     /**
      * Constructs a new DBHandler object with provided server configuration.
      *
