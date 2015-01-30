@@ -1,5 +1,8 @@
 package edu.gatech.cs4911.mintyfresh.queryresponse;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * An Amenity holds information about an amenity's building, type, level, id,
  * latitude, longitude, attributes, and (x, y) floor plan location.
@@ -40,7 +43,7 @@ public class Amenity extends DBResponseObject {
     /**
      * A set of attributes which apply to this Amenity.
      */
-    private String[] attributes;
+    private List<String> attributes;
     /**
      * This Amenity's x-location on a floorplan image.
      */
@@ -66,7 +69,7 @@ public class Amenity extends DBResponseObject {
      * @param y This Amenity's y-location on a floorplan image.
      */
     public Amenity(String buildingId, String buildingName, String type, int level, String id,
-                   float latitude, float longitude, String[] attributes, int x, int y) {
+                   float latitude, float longitude, List<String> attributes, int x, int y) {
         this.buildingId = buildingId;
         this.buildingName = buildingName;
         this.type = type;
@@ -77,6 +80,63 @@ public class Amenity extends DBResponseObject {
         this.attributes = attributes;
         this.x = x;
         this.y = y;
+    }
+
+    /**
+     * Constructs a new Amenity object to hold information about an amenity's building,
+     * type, level, id, latitude, longitude, attributes, and (x, y) floor plan location.
+     *
+     * This constructor constructs a new list of attributes, then adds the one provided
+     * to the new list.
+     *
+     * @param buildingId The three-character ID of the parent building.
+     * @param buildingName The human-readable full name of the parent building.
+     * @param type The type of amenity.
+     * @param level The floor this Amenity is located on.
+     * @param id The unique identifier of this Amenity.
+     * @param latitude The latitude of this Building.
+     * @param longitude The longitude of this Building.
+     * @param attribute An attribute which applies to this Amenity.
+     * @param x This Amenity's x-location on a floorplan image.
+     * @param y This Amenity's y-location on a floorplan image.
+     */
+    public Amenity(String buildingId, String buildingName, String type, int level, String id,
+                   float latitude, float longitude, String attribute, int x, int y) {
+        this(buildingId, buildingName, type, level, id, latitude, longitude,
+                new ArrayList<String>(), x, y);
+
+        addAttribute(attribute);
+    }
+
+    /**
+     * Constructs a new Amenity object to hold information about an amenity's building,
+     * type, level, id, latitude, longitude, attributes, and (x, y) floor plan location.
+     *
+     * This constructor constructs a new list of attributes in lieu of being provided one.
+     *
+     * @param buildingId The three-character ID of the parent building.
+     * @param buildingName The human-readable full name of the parent building.
+     * @param type The type of amenity.
+     * @param level The floor this Amenity is located on.
+     * @param id The unique identifier of this Amenity.
+     * @param latitude The latitude of this Building.
+     * @param longitude The longitude of this Building.
+     * @param x This Amenity's x-location on a floorplan image.
+     * @param y This Amenity's y-location on a floorplan image.
+     */
+    public Amenity(String buildingId, String buildingName, String type, int level, String id,
+                   float latitude, float longitude, int x, int y) {
+        this(buildingId, buildingName, type, level, id, latitude, longitude,
+                new ArrayList<String>(), x, y);
+    }
+
+    /**
+     * Adds a new attribute to this Amenity's attribute list.
+     *
+     * @param attribute A new attribute to associate with this Amenity.
+     */
+    public void addAttribute(String attribute) {
+        attributes.add(attribute);
     }
 
     /**
@@ -147,7 +207,7 @@ public class Amenity extends DBResponseObject {
      *
      * @return This Amenity's attributes.
      */
-    public String[] getAttributes() {
+    public List<String> getAttributes() {
         return attributes;
     }
 
@@ -167,5 +227,16 @@ public class Amenity extends DBResponseObject {
      */
     public int getY() {
         return y;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (object instanceof Amenity) {
+            if (((Amenity) object).getId().equals(getId())) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
