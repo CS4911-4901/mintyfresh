@@ -61,6 +61,7 @@ public class DBQuery {
      * (idenfied by its ID), of the given type and given (single) type attribute.
      *
      * @param handler The database connection to use.
+     * @param buildingId The building to filter results, identified by a String ID.
      * @param type The provided type to filter results.
      * @param attribute The provided attribute to filter results.
      * @return The database response, packaged in an Amenity list.
@@ -74,13 +75,29 @@ public class DBQuery {
      * (idenfied by its ID), of the given type and given type attributes.
      *
      * @param handler The database connection to use.
+     * @param buildingId The building to filter results, identified by a String ID.
      * @param type The provided type to filter results.
-     * @param attribute The provided attributes to filter results.
+     * @param attributes The provided attributes to filter results.
      * @return The database response, packaged in an Amenity list.
      * @throws SQLException if the query was unsuccessful.
      */
     public static List<Amenity> getAmenities(DBHandler handler, String buildingId,
-              String type, String[] attribute) throws SQLException { return null; }
+              String type, String[] attributes) throws SQLException { return null; }
+
+    /**
+     * Queries the database and only returns Amenity objects in the given building level,
+     * (idenfied by its ID), of the given type and given (single) type attribute.
+     *
+     * @param handler The database connection to use.
+     * @param buildingId The building to filter results, identified by a String ID.
+     * @param floor The floor of the building to filter results.
+     * @param type The provided type to filter results.
+     * @param attribute The provided attribute to filter results.
+     * @return The database response, packaged in an Amenity list.
+     * @throws SQLException if the query was unsuccessful.
+     */
+    public static List<Amenity> getAmenities(DBHandler handler, String buildingId,
+             int floor, String type, String attribute) throws SQLException { return null; }
 
     /**
      * Queries the database and only returns Amenity objects in
