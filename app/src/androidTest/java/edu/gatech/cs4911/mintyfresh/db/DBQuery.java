@@ -18,8 +18,8 @@ public class DBQuery {
      * Queries the database and returns all Building objects.
      *
      * @param handler The database connection to use.
-     * @throws SQLException if the query was unsuccessful.
      * @return The database response, packaged in a Building list.
+     * @throws SQLException if the query was unsuccessful.
      */
     public static List<Building> getBuildings(DBHandler handler) throws SQLException {
         ResultSet result = handler.submitQuery("SELECT Building.id, name, latitude, " +
@@ -42,49 +42,165 @@ public class DBQuery {
      * Queries the database and returns all Amenity objects.
      *
      * @param handler The database connection to use.
-     * @throws SQLException if the query was unsuccessful.
      * @return The database response, packaged in an Amenity list.
+     * @throws SQLException if the query was unsuccessful.
      */
     public static List<Amenity> getAmenities(DBHandler handler) throws SQLException {
         ResultSet result = handler.submitQuery("SELECT * FROM Amenity " +
                 "INNER JOIN Building ON Amenity.building = Building.id " +
                 "INNER JOIN Amenity_Attribute_Lookup " +
                 "ON Amenity.id = Amenity_Attribute_Lookup.id;");
-        List<Amenity> output = new ArrayList<Amenity>();
 
+        return amenityPackager(result);
+    }
+
+    // TODO: COMPLETE BELOW TWO
+
+    /**
+     * Queries the database and only returns Amenity objects in the given building,
+     * (idenfied by its ID), of the given type and given (single) type attribute.
+     *
+     * @param handler The database connection to use.
+     * @param type The provided type to filter results.
+     * @param attribute The provided attribute to filter results.
+     * @return The database response, packaged in an Amenity list.
+     * @throws SQLException if the query was unsuccessful.
+     */
+    public static List<Amenity> getAmenities(DBHandler handler, String buildingId,
+              String type, String attribute) throws SQLException { return null; }
+
+    /**
+     * Queries the database and only returns Amenity objects in the given building,
+     * (idenfied by its ID), of the given type and given type attributes.
+     *
+     * @param handler The database connection to use.
+     * @param type The provided type to filter results.
+     * @param attribute The provided attributes to filter results.
+     * @return The database response, packaged in an Amenity list.
+     * @throws SQLException if the query was unsuccessful.
+     */
+    public static List<Amenity> getAmenities(DBHandler handler, String buildingId,
+              String type, String[] attribute) throws SQLException { return null; }
+
+    /**
+     * Queries the database and only returns Amenity objects in
+     * the given building, idenfied by its ID.
+     *
+     * @param handler The database connection to use.
+     * @param buildingId The building to filter results, identified by a String ID.
+     * @return The database response, packaged in an Amenity list.
+     * @throws SQLException if the query was unsuccessful.
+     */
+    public static List<Amenity> getAmenitiesByBuildingId(DBHandler handler, String buildingId)
+            throws SQLException {
+        ResultSet result = handler.submitQuery("SELECT * FROM Amenity " +
+                "INNER JOIN Building ON Amenity.building = Building.id " +
+                "INNER JOIN Amenity_Attribute_Lookup " +
+                "ON Amenity.id = Amenity_Attribute_Lookup.id " +
+                "WHERE Building.id = \"" + buildingId + "\";");
+
+        return amenityPackager(result);
+    }
+
+    /**
+     * Queries the database and returns all Amenity objects of the given type.
+     *
+     * @param handler The database connection to use.
+     * @param type The provided type to filter results.
+     * @return The database response, packaged in an Amenity list.
+     * @throws SQLException if the query was unsuccessful.
+     */
+    public static List<Amenity> getAmenitiesByType(DBHandler handler, String type)
+            throws SQLException {
+        ResultSet result = handler.submitQuery("SELECT * FROM Amenity " +
+                "INNER JOIN Building ON Amenity.building = Building.id " +
+                "INNER JOIN Amenity_Attribute_Lookup " +
+                "ON Amenity.id = Amenity_Attribute_Lookup.id " +
+                "WHERE Amenity.amenity_type = \"" + type + "\";");
+
+        return amenityPackager(result);
+    }
+
+    /**
+     * Queries the database and returns all Amenity objects of the given type
+     * and given (single) type attribute.
+     *
+     * @param handler The database connection to use.
+     * @param type The provided type to filter results.
+     * @param attribute The provided attribute to filter results.
+     * @return The database response, packaged in an Amenity list.
+     * @throws SQLException if the query was unsuccessful.
+     */
+    public static List<Amenity> getAmenitiesByTypeAndAttributes(DBHandler handler,
+             String type, String attribute) throws SQLException {
+        ResultSet result = handler.submitQuery("SELECT * FROM Amenity " +
+                "INNER JOIN Building ON Amenity.building = Building.id " +
+                "INNER JOIN Amenity_Attribute_Lookup " +
+                "ON Amenity.id = Amenity_Attribute_Lookup.id " +
+                "WHERE Amenity.amenity_type = \"" + type + "\" AND " +
+                "Amenity_Attribute_Lookup.attribute =  \"" + attribute + "\";");
+
+        return amenityPackager(result);
+    }
+
+    /**
+     * Queries the database and returns all Amenity objects of the given type
+     * and given type attributes.
+     *
+     * @param handler The database connection to use.
+     * @param type The provided type to filter results.
+     * @param attribute The provided attributes to filter results.
+     * @return The database response, packaged in an Amenity list.
+     * @throws SQLException if the query was unsuccessful.
+     */
+    public static List<Amenity> getAmenitiesByTypeAndAttributes(DBHandler handler,
+              String type, String[] attribute) throws SQLException { return null; }
+
+    /**
+     * A helper method for Amenity queries to package their differing ResultSets into
+     * a common structure.
+     *
+     * @param queryResult The result of a database query.
+     * @return The database response, packaged in an Amenity list.
+     * @throws SQLException if the query was unsuccessful.
+     */
+    private static List<Amenity> amenityPackager(ResultSet queryResult) throws SQLException {
         /**
          * A map to prevent constructing multiple copies of the same Amenity to handle
          * multiple query results of the same Amenity resulting from multiple attributes.
          */
         Map<String, Integer> existanceCheck = new HashMap<String, Integer>();
+        List<Amenity> output = new ArrayList<Amenity>();
 
-        while (result.next()) {
-            if (existanceCheck.containsKey(result.getString("id"))) {
+        while (queryResult.next()) {
+            if (existanceCheck.containsKey(queryResult.getString("id"))) {
                 // We've already set up this Amenity!
                 // We just need to add a new attribute to it
                 output.get(
-                        existanceCheck.get(result.getString("id")))
-                        .addAttribute(result.getString("attribute"));
+                        existanceCheck.get(queryResult.getString("id")))
+                        .addAttribute(queryResult.getString("attribute"));
             } else {
                 output.add(new Amenity(
-                        result.getString("building"),
-                        result.getString("name"),
-                        result.getString("amenity_type"),
-                        result.getInt("building_level"),
-                        result.getString("id"),
-                        result.getFloat("latitude"),
-                        result.getFloat("longitude"),
-                        result.getString("attribute"),
-                        result.getInt("x"),
-                        result.getInt("y")
+                        queryResult.getString("building"),
+                        queryResult.getString("name"),
+                        queryResult.getString("amenity_type"),
+                        queryResult.getInt("building_level"),
+                        queryResult.getString("id"),
+                        queryResult.getFloat("latitude"),
+                        queryResult.getFloat("longitude"),
+                        queryResult.getString("attribute"),
+                        queryResult.getInt("x"),
+                        queryResult.getInt("y")
                 ));
 
                 // Now add this to our map, in case we have to deal with multiple attributes
-                existanceCheck.put(result.getString("id"), output.size() - 1);
+                existanceCheck.put(queryResult.getString("id"), output.size() - 1);
             }
         }
 
         return output;
     }
+    
+    
     public static String[] getFloorplan() { return null; }
 }
