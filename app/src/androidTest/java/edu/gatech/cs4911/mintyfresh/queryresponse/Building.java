@@ -68,4 +68,15 @@ public class Building extends DBResponseObject {
     public float getLongitude() {
         return longitude;
     }
+
+    @Override
+    public boolean equals(Object object) {
+        if (object instanceof Building) {
+            if (((Building) object).getId().equals(getId())) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }
