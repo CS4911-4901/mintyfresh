@@ -212,12 +212,30 @@ public class Amenity extends DBResponseObject {
     }
 
     /**
+     * Updates this Amenity's x-location on a floorplan image.
+     *
+     * @param x This Amenity's new x-location on a floorplan image.
+     */
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    /**
      * Returns this Amenity's x-location on a floorplan image.
      *
      * @return This Amenity's x-location on a floorplan image.
      */
     public int getX() {
         return x;
+    }
+
+    /**
+     * Updates this Amenity's y-location on a floorplan image.
+     *
+     * @param x This Amenity's new y-location on a floorplan image.
+     */
+    public void setY(int y) {
+        this.y = y;
     }
 
     /**
