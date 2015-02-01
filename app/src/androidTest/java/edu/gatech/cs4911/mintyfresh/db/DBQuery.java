@@ -1,6 +1,8 @@
 package edu.gatech.cs4911.mintyfresh.db;
 
 import edu.gatech.cs4911.mintyfresh.queryresponse.*;
+
+import java.io.InputStream;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -281,7 +283,24 @@ public class DBQuery {
 
         return output;
     }
-    
-    
-    public static String[] getFloorplan() { return null; }
+
+
+    /**
+     * Queries the database and returns the floorplan image of the provided
+     * building and floor. Note that this will be relatively slow, and
+     * the image cache should be consulted prior to calling getFloorplan.
+     *
+     * @param handler The database connection to use.
+     * @param buildingId The building to filter results, identified by a String ID.
+     * @param floor The floor of the building to filter results.
+     * @return A floorplan image of the provided building and floor, as an InputStream.
+     * @throws SQLException if the query was unsuccessful.
+     */
+    public static InputStream getFloorplan(DBHandler handler, String buildingId, int floor)
+            throws SQLException {
+        ResultSet result = handler.submitQuery("SELECT image FROM Floorplan " +
+                "WHERE id = \"" + buildingId + "\" AND map_level = " + floor + ";");
+
+        return result.getBinaryStream("image");
+    }
 }
