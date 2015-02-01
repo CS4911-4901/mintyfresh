@@ -14,8 +14,6 @@ import java.util.Map;
  * A static class that groups all the query statements together.
  */
 public class DBQuery {
-    // TODO: Complete common query strings
-
     /**
      * Queries the database and returns all Building objects.
      *
@@ -28,7 +26,7 @@ public class DBQuery {
                 "longitude FROM Building INNER JOIN Building_Location " +
                 "WHERE Building.id = Building_Location.id;");
 
-        List<Building> output = new ArrayList<Building>();
+        List<Building> output = new ArrayList<>();
         while (result.next()) {
             output.add(new Building(
                     result.getString("id"),
@@ -252,8 +250,8 @@ public class DBQuery {
          * A map to prevent constructing multiple copies of the same Amenity to handle
          * multiple query results of the same Amenity resulting from multiple attributes.
          */
-        Map<String, Integer> existanceCheck = new HashMap<String, Integer>();
-        List<Amenity> output = new ArrayList<Amenity>();
+        Map<String, Integer> existanceCheck = new HashMap<>();
+        List<Amenity> output = new ArrayList<>();
 
         while (queryResult.next()) {
             if (existanceCheck.containsKey(queryResult.getString("id"))) {
@@ -303,4 +301,28 @@ public class DBQuery {
 
         return result.getBinaryStream("image");
     }
+
+    /**
+     * Queries the database and returns all floorplan images of the provided
+     * building. Note that this will be relatively slow, and the image cache
+     * should be consulted prior to calling getFloorplan.
+     *
+     * @param handler The database connection to use.
+     * @param buildingId The building to filter results, identified by a String ID.
+     * @return A floorplan image of the provided building and floor, as an InputStream.
+     * @throws SQLException if the query was unsuccessful.
+     */
+    public static List<InputStream> getFloorplans(DBHandler handler, String buildingId)
+            throws SQLException {
+        ResultSet result = handler.submitQuery("SELECT image FROM Floorplan " +
+                "WHERE id = \"" + buildingId + "\";");
+        List<InputStream> output = new ArrayList<>();
+
+        while (result.next()) {
+            output.add(result.getBinaryStream("image"));
+        }
+
+        return output;
+    }
+
 }
