@@ -54,8 +54,6 @@ public class DBQuery {
         return amenityPackager(result);
     }
 
-    // TODO: COMPLETE BELOW TWO
-
     /**
      * Queries the database and only returns Amenity objects in the given building,
      * (idenfied by its ID), of the given type and given (single) type attribute.
@@ -68,7 +66,18 @@ public class DBQuery {
      * @throws SQLException if the query was unsuccessful.
      */
     public static List<Amenity> getAmenities(DBHandler handler, String buildingId,
-              String type, String attribute) throws SQLException { return null; }
+              String type, String attribute) throws SQLException {
+
+        ResultSet result = handler.submitQuery("SELECT * FROM Amenity " +
+                "INNER JOIN Building ON Amenity.building = Building.id " +
+                "INNER JOIN Amenity_Attribute_Lookup " +
+                "ON Amenity.id = Amenity_Attribute_Lookup.id " +
+                "WHERE Building.id = \"" + buildingId + "\"" +
+                "AND Amenity.type = \"" + type + "\"" +
+                "AND Amenity_Attribute.attribute = \"" + attribute + "\";");
+
+        return amenityPackager(result);
+    }
 
     /**
      * Queries the database and only returns Amenity objects in the given building,
@@ -82,7 +91,29 @@ public class DBQuery {
      * @throws SQLException if the query was unsuccessful.
      */
     public static List<Amenity> getAmenities(DBHandler handler, String buildingId,
-              String type, String[] attributes) throws SQLException { return null; }
+              String type, String[] attributes) throws SQLException {
+
+        String queryString = "SELECT * FROM Amenity " +
+                "INNER JOIN Building ON Amenity.building = Building.id " +
+                "INNER JOIN Amenity_Attribute_Lookup " +
+                "ON Amenity.id = Amenity_Attribute_Lookup.id " +
+                "WHERE Building.id = \"" + buildingId + "\"" +
+                "AND Amenity.type = \"" + type + "\"" +
+                "AND (";
+
+        // Append list of attributes to query string
+        for (int i = 0; i < attributes.length; i++) {
+            queryString += "Amenity_Attribute.attribute = \""
+                    + attributes[i] + "\"";
+            if (i != attributes.length - 1) {
+                queryString += " AND ";
+            } else {
+                queryString += ");";
+            }
+        }
+
+        return amenityPackager(handler.submitQuery(queryString));
+    }
 
     /**
      * Queries the database and only returns Amenity objects in the given building level,
@@ -97,7 +128,19 @@ public class DBQuery {
      * @throws SQLException if the query was unsuccessful.
      */
     public static List<Amenity> getAmenities(DBHandler handler, String buildingId,
-             int floor, String type, String attribute) throws SQLException { return null; }
+             int floor, String type, String attribute) throws SQLException {
+
+        ResultSet result = handler.submitQuery("SELECT * FROM Amenity " +
+                "INNER JOIN Building ON Amenity.building = Building.id " +
+                "INNER JOIN Amenity_Attribute_Lookup " +
+                "ON Amenity.id = Amenity_Attribute_Lookup.id " +
+                "WHERE Building.id = \"" + buildingId + "\"" +
+                "AND Amenity.building_level = \"" + floor + "\"" +
+                "AND Amenity.type = \"" + type + "\"" +
+                "AND Amenity_Attribute.attribute = \"" + attribute + "\";");
+
+        return amenityPackager(result);
+    }
 
     /**
      * Queries the database and only returns Amenity objects in
@@ -166,12 +209,33 @@ public class DBQuery {
      *
      * @param handler The database connection to use.
      * @param type The provided type to filter results.
-     * @param attribute The provided attributes to filter results.
+     * @param attributes The provided attributes to filter results.
      * @return The database response, packaged in an Amenity list.
      * @throws SQLException if the query was unsuccessful.
      */
     public static List<Amenity> getAmenitiesByTypeAndAttributes(DBHandler handler,
-              String type, String[] attribute) throws SQLException { return null; }
+              String type, String[] attributes) throws SQLException {
+
+        String queryString = "SELECT * FROM Amenity " +
+                "INNER JOIN Building ON Amenity.building = Building.id " +
+                "INNER JOIN Amenity_Attribute_Lookup " +
+                "ON Amenity.id = Amenity_Attribute_Lookup.id " +
+                "AND Amenity.type = \"" + type + "\"" +
+                "AND (";
+
+        // Append list of attributes to query string
+        for (int i = 0; i < attributes.length; i++) {
+            queryString += "Amenity_Attribute.attribute = \""
+                    + attributes[i] + "\"";
+            if (i != attributes.length - 1) {
+                queryString += " AND ";
+            } else {
+                queryString += ");";
+            }
+        }
+
+        return amenityPackager(handler.submitQuery(queryString));
+    }
 
     /**
      * A helper method for Amenity queries to package their differing ResultSets into
