@@ -38,7 +38,7 @@ public class DBHandler {
      */
     public ResultSet submitQuery(String query) {
         try {
-            return conn.createStatement().executeQuery(query);
+            return conn.prepareStatement(query).executeQuery();
         } catch (SQLException e) {
             System.out.println("Error executing query! " + e.toString());
             return null;
