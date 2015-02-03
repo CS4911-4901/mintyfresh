@@ -1,9 +1,11 @@
 package edu.gatech.cs4911.mintyfresh;
 
+import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -35,5 +37,13 @@ public class MainActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    /**
+     * Simple function to transition to MapsActivity on button press.
+     */
+    public void switchToMapsActivity(View view) {
+        Intent activitySwitch = new Intent(getApplicationContext(), MapsActivity.class);
+        startActivity(activitySwitch);
     }
 }
