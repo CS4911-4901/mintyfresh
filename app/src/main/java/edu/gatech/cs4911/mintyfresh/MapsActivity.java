@@ -1,8 +1,11 @@
 package edu.gatech.cs4911.mintyfresh;
 
+import android.location.Location;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
@@ -46,9 +49,27 @@ public class MapsActivity extends FragmentActivity {
             // Try to obtain the map from the SupportMapFragment.
             mMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map))
                     .getMap();
+            mMap.setMyLocationEnabled(true);
             // Check if we were successful in obtaining the map.
             if (mMap != null) {
-                setUpMap();
+                //setUpMap();
+
+                mMap.setOnMyLocationChangeListener(new GoogleMap.OnMyLocationChangeListener() {
+
+                    @Override
+                    public void onMyLocationChange(Location location) {
+                        // Get current location
+                        LatLng myLocation = new LatLng(location.getLatitude(),
+                                location.getLongitude());
+                        // Create an animation to zoom in on location
+                        CameraUpdate zoomCamera = CameraUpdateFactory.newLatLngZoom(myLocation, 20);
+                        // Set a pin
+                        mMap.addMarker(new MarkerOptions().position(
+                                myLocation).title("You are here!"));
+                        // And do it!
+                        mMap.animateCamera(zoomCamera);
+                    }
+                });
             }
         }
     }
