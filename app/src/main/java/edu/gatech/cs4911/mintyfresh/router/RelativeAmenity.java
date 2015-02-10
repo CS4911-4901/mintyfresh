@@ -30,19 +30,31 @@ public class RelativeAmenity implements Comparable<RelativeAmenity> {
     }
 
     /**
-     * Compares this RelativeAmenity to another RelativeAmenity.
-     * The RelativeAmenity with the least distance is ranked higher.
+     * Compares this RelativeAmenity to another RelativeAmenity.<br />
+     * This will return: <br /><br />
+     * <b>-1</b> if this RelativeAmenity has a lower relative distance than the other.<br />
+     * <b>0</b> if this RelativeAmenity has the same relative distance as the other.<br />
+     * <b>1</b> if this RelativeAmenity has a greater relative distance than the other.
      *
      * @param altAmenity The RelativeAmenity to compare against.
      * @return A ranking based on relative distance (lower distance = higher ranking)
      */
     public int compareTo(RelativeAmenity altAmenity) {
-        // TODO: implement
-        return 0;
+        if (altAmenity.getDistance() < getDistance()) {
+            // This Amenity is closer
+            return -1;
+        } else if (altAmenity.getDistance() > getDistance()) {
+            // This Amenity is further away
+            return 1;
+        } else {
+            // Amenities are in the same place
+            return 0;
+        }
     }
 
     /**
      * Returns the Amenity this RelativeAmenity refers to.
+     *
      * @return The Amenity this RelativeAmenity refers to.
      */
     public Amenity getAmenity() {
