@@ -1,4 +1,4 @@
-package edu.gatech.cs4911.mintyfresh.queryresponse;
+package edu.gatech.cs4911.mintyfresh.db.queryresponse;
 
 import java.io.Serializable;
 

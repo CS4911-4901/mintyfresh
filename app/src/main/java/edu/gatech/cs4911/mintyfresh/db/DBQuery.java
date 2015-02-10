@@ -1,6 +1,6 @@
 package edu.gatech.cs4911.mintyfresh.db;
 
-import edu.gatech.cs4911.mintyfresh.queryresponse.*;
+import edu.gatech.cs4911.mintyfresh.db.queryresponse.*;
 
 import java.io.InputStream;
 import java.sql.ResultSet;

@@ -1,4 +1,4 @@
-package edu.gatech.cs4911.mintyfresh.queryresponse;
+package edu.gatech.cs4911.mintyfresh.db.queryresponse;
 
 /**
  * A Building holds information about a nearby building's name, id, latitude, and longitude.
