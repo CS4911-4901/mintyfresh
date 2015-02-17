@@ -281,8 +281,6 @@ public class DBQuery {
                         queryResult.getString("amenity_type"),
                         queryResult.getInt("building_level"),
                         queryResult.getString("id"),
-                        queryResult.getFloat("latitude"),
-                        queryResult.getFloat("longitude"),
                         queryResult.getString("attribute"),
                         queryResult.getInt("x"),
                         queryResult.getInt("y")

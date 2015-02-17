@@ -29,18 +29,6 @@ public class Amenity extends DBResponseObject {
      */
     private String id;
     /**
-     * The latitude of this Building.<br />
-     * latitude > 0 = N<br />
-     * latitude < 0 = S
-     */
-    private float latitude;
-    /**
-     * The longitude of this Building.<br />
-     * longitude > 0 = E<br />
-     * longitude < 0 = W
-     */
-    private float longitude;
-    /**
      * A set of attributes which apply to this Amenity.
      */
     private List<String> attributes;
@@ -62,21 +50,17 @@ public class Amenity extends DBResponseObject {
      * @param type The type of amenity.
      * @param level The floor this Amenity is located on.
      * @param id The unique identifier of this Amenity.
-     * @param latitude The latitude of this Building.
-     * @param longitude The longitude of this Building.
      * @param attributes A set of attributes which apply to this Amenity.
      * @param x This Amenity's x-location on a floorplan image.
      * @param y This Amenity's y-location on a floorplan image.
      */
     public Amenity(String buildingId, String buildingName, String type, int level, String id,
-                   float latitude, float longitude, List<String> attributes, int x, int y) {
+                   List<String> attributes, int x, int y) {
         this.buildingId = buildingId;
         this.buildingName = buildingName;
         this.type = type;
         this.level = level;
         this.id = id;
-        this.latitude = latitude;
-        this.longitude = longitude;
         this.attributes = attributes;
         this.x = x;
         this.y = y;
@@ -94,16 +78,13 @@ public class Amenity extends DBResponseObject {
      * @param type The type of amenity.
      * @param level The floor this Amenity is located on.
      * @param id The unique identifier of this Amenity.
-     * @param latitude The latitude of this Building.
-     * @param longitude The longitude of this Building.
      * @param attribute An attribute which applies to this Amenity.
      * @param x This Amenity's x-location on a floorplan image.
      * @param y This Amenity's y-location on a floorplan image.
      */
     public Amenity(String buildingId, String buildingName, String type, int level, String id,
-                   float latitude, float longitude, String attribute, int x, int y) {
-        this(buildingId, buildingName, type, level, id, latitude, longitude,
-                new ArrayList<String>(), x, y);
+                   String attribute, int x, int y) {
+        this(buildingId, buildingName, type, level, id, new ArrayList<String>(), x, y);
 
         addAttribute(attribute);
     }
@@ -119,15 +100,12 @@ public class Amenity extends DBResponseObject {
      * @param type The type of amenity.
      * @param level The floor this Amenity is located on.
      * @param id The unique identifier of this Amenity.
-     * @param latitude The latitude of this Building.
-     * @param longitude The longitude of this Building.
      * @param x This Amenity's x-location on a floorplan image.
      * @param y This Amenity's y-location on a floorplan image.
      */
     public Amenity(String buildingId, String buildingName, String type, int level, String id,
-                   float latitude, float longitude, int x, int y) {
-        this(buildingId, buildingName, type, level, id, latitude, longitude,
-                new ArrayList<String>(), x, y);
+                   int x, int y) {
+        this(buildingId, buildingName, type, level, id, new ArrayList<String>(), x, y);
     }
 
     /**
@@ -182,24 +160,6 @@ public class Amenity extends DBResponseObject {
      */
     public String getId() {
         return id;
-    }
-
-    /**
-     * Returns this Amenity's latitude.
-     *
-     * @return This Amenity's latitude.
-     */
-    public float getLatitude() {
-        return latitude;
-    }
-
-    /**
-     * Returns this Amenity's longitude.
-     *
-     * @return This Amenity's longitude.
-     */
-    public float getLongitude() {
-        return longitude;
     }
 
     /**
