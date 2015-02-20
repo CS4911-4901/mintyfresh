@@ -203,7 +203,7 @@ public class DBQuery {
      * @return The database response, packaged in an Amenity list.
      * @throws SQLException if the query was unsuccessful.
      */
-    public static List<Amenity> getAmenitiesByTypeAndAttributes(DBHandler handler,
+    public static List<Amenity> getAmenitiesByTypeAndAttribute(DBHandler handler,
              String type, String attribute) throws SQLException {
         ResultSet result = handler.submitQuery("SELECT * FROM Amenity " +
                 "INNER JOIN Building ON Amenity.building = Building.id " +
