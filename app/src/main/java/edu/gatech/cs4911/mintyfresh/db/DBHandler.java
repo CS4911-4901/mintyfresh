@@ -27,6 +27,11 @@ public class DBHandler {
      */
     public DBHandler(DatabaseConfig config) throws SQLException {
         this.config = config;
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+        } catch (ClassNotFoundException e) {
+            throw new SQLException("MySQL JDBC driver was not found (is a JAR missing?)");
+        }
         initJDBC();
     }
 
