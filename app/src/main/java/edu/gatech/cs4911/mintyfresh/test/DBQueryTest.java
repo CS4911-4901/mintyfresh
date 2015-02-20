@@ -1,6 +1,6 @@
-package edu.gatech.cs4911.mintyfresh.junit;
+package edu.gatech.cs4911.mintyfresh.test;
 
-import junit.framework.TestCase;
+import android.test.InstrumentationTestCase;
 
 import java.io.InputStream;
 import java.util.List;
@@ -11,7 +11,7 @@ import edu.gatech.cs4911.mintyfresh.db.queryresponse.*;
 import static edu.gatech.cs4911.mintyfresh.db.DBQuery.*;
 import static edu.gatech.cs4911.mintyfresh.db.DatabaseConfig.STEAKSCORP_READ_ONLY;
 
-public class DBQueryTest extends TestCase {
+public class DBQueryTest extends InstrumentationTestCase {
     DBHandler handler;
 
     public void setUp() throws Exception {
