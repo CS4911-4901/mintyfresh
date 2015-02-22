@@ -15,6 +15,15 @@ import java.util.Map;
  */
 public class DBQuery {
     /**
+     * The fields to select from the Amenity table to complete an Amenity object.
+     */
+    public static final String AMENITY_FIELDS_PREFIX = "SELECT Amenity.id, building, name, " +
+            "amenity_type, building_level, floor_x, floor_y, attribute FROM Amenity " +
+            "INNER JOIN Building ON Amenity.building = Building.id " +
+            "LEFT OUTER JOIN Amenity_MapLocation ON Amenity.id = Amenity_MapLocation.id " +
+            "LEFT OUTER JOIN Amenity_Attribute_Lookup ON Amenity.id = Amenity_Attribute_Lookup.id ";
+
+    /**
      * Queries the database and returns all Building objects.
      *
      * @param handler The database connection to use.
@@ -46,11 +55,7 @@ public class DBQuery {
      * @throws SQLException if the query was unsuccessful.
      */
     public static List<Amenity> getAmenities(DBHandler handler) throws SQLException {
-        ResultSet result = handler.submitQuery("SELECT * FROM Amenity " +
-                "INNER JOIN Amenity_MapLocation ON Amenity.id = Amenity_MapLocation.id " +
-                "INNER JOIN Building ON Amenity.building = Building.id " +
-                "INNER JOIN Amenity_Attribute_Lookup " +
-                "ON Amenity.id = Amenity_Attribute_Lookup.id;");
+        ResultSet result = handler.submitQuery(AMENITY_FIELDS_PREFIX + ";");
 
         return amenityPackager(result);
     }
@@ -69,13 +74,9 @@ public class DBQuery {
     public static List<Amenity> getAmenities(DBHandler handler, String buildingId,
               String type, String attribute) throws SQLException {
 
-        ResultSet result = handler.submitQuery("SELECT * FROM Amenity " +
-                "INNER JOIN Amenity_MapLocation ON Amenity.id = Amenity_MapLocation.id " +
-                "INNER JOIN Building ON Amenity.building = Building.id " +
-                "INNER JOIN Amenity_Attribute_Lookup " +
-                "ON Amenity.id = Amenity_Attribute_Lookup.id " +
-                "WHERE Building.id = \"" + buildingId + "\"" +
-                "AND Amenity.type = \"" + type + "\"" +
+        ResultSet result = handler.submitQuery(AMENITY_FIELDS_PREFIX +
+                "WHERE Building.id = \"" + buildingId + "\" " +
+                "AND Amenity.type = \"" + type + "\" " +
                 "AND Amenity_Attribute.attribute = \"" + attribute + "\";");
 
         return amenityPackager(result);
@@ -95,13 +96,9 @@ public class DBQuery {
     public static List<Amenity> getAmenities(DBHandler handler, String buildingId,
               String type, String[] attributes) throws SQLException {
 
-        String queryString = "SELECT * FROM Amenity " +
-                "INNER JOIN Amenity_MapLocation ON Amenity.id = Amenity_MapLocation.id " +
-                "INNER JOIN Building ON Amenity.building = Building.id " +
-                "INNER JOIN Amenity_Attribute_Lookup " +
-                "ON Amenity.id = Amenity_Attribute_Lookup.id " +
-                "WHERE Building.id = \"" + buildingId + "\"" +
-                "AND Amenity.type = \"" + type + "\"" +
+        String queryString = AMENITY_FIELDS_PREFIX +
+                "WHERE Building.id = \"" + buildingId + "\" " +
+                "AND Amenity.type = \"" + type + "\" " +
                 "AND (";
 
         // Append list of attributes to query string
@@ -133,14 +130,10 @@ public class DBQuery {
     public static List<Amenity> getAmenities(DBHandler handler, String buildingId,
              int floor, String type, String attribute) throws SQLException {
 
-        ResultSet result = handler.submitQuery("SELECT * FROM Amenity " +
-                "INNER JOIN Amenity_MapLocation ON Amenity.id = Amenity_MapLocation.id " +
-                "INNER JOIN Building ON Amenity.building = Building.id " +
-                "INNER JOIN Amenity_Attribute_Lookup " +
-                "ON Amenity.id = Amenity_Attribute_Lookup.id " +
-                "WHERE Building.id = \"" + buildingId + "\"" +
-                "AND Amenity.building_level = \"" + floor + "\"" +
-                "AND Amenity.type = \"" + type + "\"" +
+        ResultSet result = handler.submitQuery(AMENITY_FIELDS_PREFIX +
+                "WHERE Building.id = \"" + buildingId + "\" " +
+                "AND Amenity.building_level = \"" + floor + "\" " +
+                "AND Amenity.type = \"" + type + "\" " +
                 "AND Amenity_Attribute.attribute = \"" + attribute + "\";");
 
         return amenityPackager(result);
@@ -157,11 +150,7 @@ public class DBQuery {
      */
     public static List<Amenity> getAmenitiesByBuildingId(DBHandler handler, String buildingId)
             throws SQLException {
-        ResultSet result = handler.submitQuery("SELECT * FROM Amenity " +
-                "INNER JOIN Amenity_MapLocation ON Amenity.id = Amenity_MapLocation.id " +
-                "INNER JOIN Building ON Amenity.building = Building.id " +
-                "INNER JOIN Amenity_Attribute_Lookup " +
-                "ON Amenity.id = Amenity_Attribute_Lookup.id " +
+        ResultSet result = handler.submitQuery(AMENITY_FIELDS_PREFIX +
                 "WHERE Building.id = \"" + buildingId + "\";");
 
         return amenityPackager(result);
@@ -177,11 +166,7 @@ public class DBQuery {
      */
     public static List<Amenity> getAmenitiesByType(DBHandler handler, String type)
             throws SQLException {
-        ResultSet result = handler.submitQuery("SELECT * FROM Amenity " +
-                "INNER JOIN Amenity_MapLocation ON Amenity.id = Amenity_MapLocation.id " +
-                "INNER JOIN Building ON Amenity.building = Building.id " +
-                "INNER JOIN Amenity_Attribute_Lookup " +
-                "ON Amenity.id = Amenity_Attribute_Lookup.id " +
+        ResultSet result = handler.submitQuery(AMENITY_FIELDS_PREFIX +
                 "WHERE Amenity.amenity_type = \"" + type + "\";");
 
         return amenityPackager(result);
@@ -199,10 +184,7 @@ public class DBQuery {
      */
     public static List<Amenity> getAmenitiesByTypeAndAttribute(DBHandler handler,
              String type, String attribute) throws SQLException {
-        ResultSet result = handler.submitQuery("SELECT * FROM Amenity " +
-                "INNER JOIN Building ON Amenity.building = Building.id " +
-                "INNER JOIN Amenity_Attribute_Lookup " +
-                "ON Amenity.id = Amenity_Attribute_Lookup.id " +
+        ResultSet result = handler.submitQuery(AMENITY_FIELDS_PREFIX +
                 "WHERE Amenity.amenity_type = \"" + type + "\" AND " +
                 "Amenity_Attribute_Lookup.attribute =  \"" + attribute + "\";");
 
@@ -222,18 +204,14 @@ public class DBQuery {
     public static List<Amenity> getAmenitiesByTypeAndAttributes(DBHandler handler,
               String type, String[] attributes) throws SQLException {
 
-        String queryString = "SELECT * FROM Amenity " +
-                "INNER JOIN Amenity_MapLocation ON Amenity.id = Amenity_MapLocation.id " +
-                "INNER JOIN Building ON Amenity.building = Building.id " +
-                "INNER JOIN Amenity_Attribute_Lookup " +
-                "ON Amenity.id = Amenity_Attribute_Lookup.id " +
-                "AND Amenity.type = \"" + type + "\"" +
+        String queryString = AMENITY_FIELDS_PREFIX +
+                "WHERE Amenity.type = \"" + type + "\" " +
                 "AND (";
 
         // Append list of attributes to query string
         for (int i = 0; i < attributes.length; i++) {
             queryString += "Amenity_Attribute.attribute = \""
-                    + attributes[i] + "\"";
+                    + attributes[i] + "\" ";
             if (i != attributes.length - 1) {
                 queryString += " AND ";
             } else {
