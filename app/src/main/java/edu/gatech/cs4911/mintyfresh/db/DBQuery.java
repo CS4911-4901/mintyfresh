@@ -47,7 +47,6 @@ public class DBQuery {
      */
     public static List<Amenity> getAmenities(DBHandler handler) throws SQLException {
         ResultSet result = handler.submitQuery("SELECT * FROM Amenity " +
-                "INNER JOIN Amenity_GPSLocation ON Amenity.id = Amenity_GPSLocation.id " +
                 "INNER JOIN Amenity_MapLocation ON Amenity.id = Amenity_MapLocation.id" +
                 "INNER JOIN Building ON Amenity.building = Building.id " +
                 "INNER JOIN Amenity_Attribute_Lookup " +
@@ -71,7 +70,6 @@ public class DBQuery {
               String type, String attribute) throws SQLException {
 
         ResultSet result = handler.submitQuery("SELECT * FROM Amenity " +
-                "INNER JOIN Amenity_GPSLocation ON Amenity.id = Amenity_GPSLocation.id " +
                 "INNER JOIN Amenity_MapLocation ON Amenity.id = Amenity_MapLocation.id" +
                 "INNER JOIN Building ON Amenity.building = Building.id " +
                 "INNER JOIN Amenity_Attribute_Lookup " +
@@ -98,7 +96,6 @@ public class DBQuery {
               String type, String[] attributes) throws SQLException {
 
         String queryString = "SELECT * FROM Amenity " +
-                "INNER JOIN Amenity_GPSLocation ON Amenity.id = Amenity_GPSLocation.id " +
                 "INNER JOIN Amenity_MapLocation ON Amenity.id = Amenity_MapLocation.id" +
                 "INNER JOIN Building ON Amenity.building = Building.id " +
                 "INNER JOIN Amenity_Attribute_Lookup " +
@@ -137,7 +134,6 @@ public class DBQuery {
              int floor, String type, String attribute) throws SQLException {
 
         ResultSet result = handler.submitQuery("SELECT * FROM Amenity " +
-                "INNER JOIN Amenity_GPSLocation ON Amenity.id = Amenity_GPSLocation.id " +
                 "INNER JOIN Amenity_MapLocation ON Amenity.id = Amenity_MapLocation.id" +
                 "INNER JOIN Building ON Amenity.building = Building.id " +
                 "INNER JOIN Amenity_Attribute_Lookup " +
@@ -162,7 +158,6 @@ public class DBQuery {
     public static List<Amenity> getAmenitiesByBuildingId(DBHandler handler, String buildingId)
             throws SQLException {
         ResultSet result = handler.submitQuery("SELECT * FROM Amenity " +
-                "INNER JOIN Amenity_GPSLocation ON Amenity.id = Amenity_GPSLocation.id " +
                 "INNER JOIN Amenity_MapLocation ON Amenity.id = Amenity_MapLocation.id" +
                 "INNER JOIN Building ON Amenity.building = Building.id " +
                 "INNER JOIN Amenity_Attribute_Lookup " +
@@ -183,7 +178,6 @@ public class DBQuery {
     public static List<Amenity> getAmenitiesByType(DBHandler handler, String type)
             throws SQLException {
         ResultSet result = handler.submitQuery("SELECT * FROM Amenity " +
-                "INNER JOIN Amenity_GPSLocation ON Amenity.id = Amenity_GPSLocation.id " +
                 "INNER JOIN Amenity_MapLocation ON Amenity.id = Amenity_MapLocation.id" +
                 "INNER JOIN Building ON Amenity.building = Building.id " +
                 "INNER JOIN Amenity_Attribute_Lookup " +
@@ -229,7 +223,6 @@ public class DBQuery {
               String type, String[] attributes) throws SQLException {
 
         String queryString = "SELECT * FROM Amenity " +
-                "INNER JOIN Amenity_GPSLocation ON Amenity.id = Amenity_GPSLocation.id " +
                 "INNER JOIN Amenity_MapLocation ON Amenity.id = Amenity_MapLocation.id" +
                 "INNER JOIN Building ON Amenity.building = Building.id " +
                 "INNER JOIN Amenity_Attribute_Lookup " +
