@@ -18,8 +18,9 @@ public class DBQuery {
      * The fields to select from the Amenity table to complete an Amenity object.
      */
     public static final String AMENITY_FIELDS_PREFIX = "SELECT Amenity.id, building, name, " +
-            "amenity_type, building_level, floor_x, floor_y, attribute FROM Amenity " +
-            "INNER JOIN Building ON Amenity.building = Building.id " +
+            "amenity_type, building_level, floor_x, floor_y, attribute, latitude, longitude " +
+            "FROM Amenity INNER JOIN Building ON Amenity.building = Building.id " +
+            "INNER JOIN Building_Location ON Building.id = Building_Location.id " +
             "LEFT OUTER JOIN Amenity_MapLocation ON Amenity.id = Amenity_MapLocation.id " +
             "LEFT OUTER JOIN Amenity_Attribute_Lookup ON Amenity.id = Amenity_Attribute_Lookup.id ";
 
@@ -247,8 +248,10 @@ public class DBQuery {
                         .addAttribute(queryResult.getString("attribute"));
             } else {
                 output.add(new Amenity(
-                        queryResult.getString("building"),
-                        queryResult.getString("name"),
+                        new Building(queryResult.getString("name"),
+                                queryResult.getString("building"),
+                                queryResult.getFloat("latitude"),
+                                queryResult.getFloat("longitude")),
                         queryResult.getString("amenity_type"),
                         queryResult.getInt("building_level"),
                         queryResult.getString("id"),

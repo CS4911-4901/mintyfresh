@@ -17,7 +17,7 @@ public class RouterTest extends InstrumentationTestCase {
     public void tearDown() throws Exception { }
 
     public void testGetCurrentLocation() throws Exception {
-
+        // TODO: hook up
     }
 
     public void testGetDirectionsTo() throws Exception {
