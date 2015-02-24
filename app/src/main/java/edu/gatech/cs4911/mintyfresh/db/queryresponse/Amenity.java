@@ -199,6 +199,25 @@ public class Amenity extends DBResponseObject {
         return y;
     }
 
+
+    /**
+     * Returns the latitude of the parent Building.
+     *
+     * @return The latitude of the parent Building.
+     */
+    public double getLatitude() {
+        return building.getLatitude();
+    }
+
+    /**
+     * Returns the longitude of the parent Building.
+     *
+     * @return The longitude of the parent Building.
+     */
+    public double getLongitude() {
+        return building.getLongitude();
+    }
+
     @Override
     public boolean equals(Object object) {
         if (object instanceof Amenity) {
