@@ -280,9 +280,10 @@ public class DBQuery {
     public static InputStream getFloorplan(DBHandler handler, String buildingId, int floor)
             throws SQLException {
         ResultSet result = handler.submitQuery("SELECT image FROM Floorplan_Image " +
-                "WHERE (SELECT image_hash FROM Floorplan WHERE id = \"" + buildingId +
+                "WHERE hash = (SELECT image_hash FROM Floorplan WHERE id = \"" + buildingId +
                 "\" AND map_level = " + floor + ");");
 
+        result.next();
         return result.getBinaryStream("image");
     }
 
@@ -299,8 +300,8 @@ public class DBQuery {
     public static List<InputStream> getFloorplans(DBHandler handler, String buildingId)
             throws SQLException {
         ResultSet result = handler.submitQuery("SELECT image FROM Floorplan_Image " +
-                "WHERE (SELECT image_hash FROM Floorplan WHERE id = \"" + buildingId +
-                "\");");
+                "INNER JOIN Floorplan on hash = image_hash WHERE id = \"" + buildingId +
+                "\"");
         List<InputStream> output = new ArrayList<>();
 
         while (result.next()) {
