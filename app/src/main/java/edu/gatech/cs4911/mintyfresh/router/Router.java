@@ -155,10 +155,9 @@ public class Router {
      */
     public static double calcRelativeDistance(double startLatitude, double startLongitude,
                                              double destLatitude, double destLongitude) {
-        double latitudeDelta = (destLatitude - startLatitude);
-        double longitudeDelta = (destLongitude - startLongitude);
 
-        return Math.sqrt(Math.pow(latitudeDelta, 2) + Math.pow(longitudeDelta, 2));
+        return Math.sqrt(Math.pow((destLatitude - startLatitude), 2)
+                + Math.pow((destLongitude - startLongitude), 2));
 
     }
 
