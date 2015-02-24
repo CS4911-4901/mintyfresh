@@ -76,8 +76,8 @@ public class DBQuery {
 
         ResultSet result = handler.submitQuery(AMENITY_FIELDS_PREFIX +
                 "WHERE Building.id = \"" + buildingId + "\" " +
-                "AND Amenity.type = \"" + type + "\" " +
-                "AND Amenity_Attribute.attribute = \"" + attribute + "\";");
+                "AND amenity_type = \"" + type + "\" " +
+                "AND attribute = \"" + attribute + "\";");
 
         return amenityPackager(result);
     }
@@ -98,12 +98,12 @@ public class DBQuery {
 
         String queryString = AMENITY_FIELDS_PREFIX +
                 "WHERE Building.id = \"" + buildingId + "\" " +
-                "AND Amenity.type = \"" + type + "\" " +
+                "AND amenity_type = \"" + type + "\" " +
                 "AND (";
 
         // Append list of attributes to query string
         for (int i = 0; i < attributes.length; i++) {
-            queryString += "Amenity_Attribute.attribute = \""
+            queryString += "attribute = \""
                     + attributes[i] + "\"";
             if (i != attributes.length - 1) {
                 queryString += " AND ";
@@ -132,9 +132,9 @@ public class DBQuery {
 
         ResultSet result = handler.submitQuery(AMENITY_FIELDS_PREFIX +
                 "WHERE Building.id = \"" + buildingId + "\" " +
-                "AND Amenity.building_level = \"" + floor + "\" " +
-                "AND Amenity.type = \"" + type + "\" " +
-                "AND Amenity_Attribute.attribute = \"" + attribute + "\";");
+                "AND building_level = \"" + floor + "\" " +
+                "AND amenity_type = \"" + type + "\" " +
+                "AND attribute = \"" + attribute + "\";");
 
         return amenityPackager(result);
     }
@@ -205,12 +205,12 @@ public class DBQuery {
               String type, String[] attributes) throws SQLException {
 
         String queryString = AMENITY_FIELDS_PREFIX +
-                "WHERE Amenity.type = \"" + type + "\" " +
+                "WHERE amenity_type = \"" + type + "\" " +
                 "AND (";
 
         // Append list of attributes to query string
         for (int i = 0; i < attributes.length; i++) {
-            queryString += "Amenity_Attribute.attribute = \""
+            queryString += "attribute = \""
                     + attributes[i] + "\" ";
             if (i != attributes.length - 1) {
                 queryString += " AND ";
