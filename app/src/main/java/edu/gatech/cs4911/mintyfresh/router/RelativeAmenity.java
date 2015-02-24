@@ -14,7 +14,7 @@ public class RelativeAmenity implements Comparable<RelativeAmenity> {
     /**
      * The relative distance between the user and this Amenity.
      */
-    private float distance;
+    private double distance;
 
     /**
      * Constructs a new RelativeAmenity object, which is a
@@ -24,7 +24,7 @@ public class RelativeAmenity implements Comparable<RelativeAmenity> {
      * @param amenity The Amenity this RelativeAmenity refers to.
      * @param distance The relative distance between the user and this Amenity.
      */
-    public RelativeAmenity(Amenity amenity, float distance) {
+    public RelativeAmenity(Amenity amenity, double distance) {
         this.amenity = amenity;
         this.distance = distance;
     }
@@ -66,7 +66,7 @@ public class RelativeAmenity implements Comparable<RelativeAmenity> {
      *
      * @return The relative distance between the user and this Amenity.
      */
-    public float getDistance() {
+    public double getDistance() {
         return distance;
     }
 }

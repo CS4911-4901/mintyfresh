@@ -44,8 +44,8 @@ public class Router {
      * @return A list of LatLng points to form a path from origin to destination.
      * @throws IOException if the connection could not be established to the Google Maps server.
      */
-    public static List<LatLng> getDirectionsTo(float startLatitude, float startLongitude,
-        float destLatitude, float destLongitude) throws IOException {
+    public static List<LatLng> getDirectionsTo(double startLatitude, double startLongitude,
+        double destLatitude, double destLongitude) throws IOException {
 
         List<LatLng> result;
         String uri = constructMapUri(startLatitude, startLongitude, destLatitude, destLongitude);
@@ -69,8 +69,8 @@ public class Router {
      * @param destLongitude The destination longitude.
      * @return A URI String to query the Google Maps API.
      */
-    private static String constructMapUri(float startLatitude, float startLongitude,
-                                         float destLatitude, float destLongitude) {
+    private static String constructMapUri(double startLatitude, double startLongitude,
+                                         double destLatitude, double destLongitude) {
         return GMAPS_BASE_API_STRING
                 + "&origin=" + startLatitude + "," + startLongitude
                 + "&destination=" + destLatitude + "," + destLongitude;
@@ -141,6 +141,25 @@ public class Router {
                 latlng.getJSONObject("start_location").getLong("lng"));
 
         return result;
+    }
+
+    /**
+     * Calculates the distance between two points, specified as two sets of
+     * provided latitude and longitudes.
+     *
+     * @param startLatitude The origin latitude.
+     * @param startLongitude The origin longitude.
+     * @param destLatitude The destination latitude.
+     * @param destLongitude The destination longitude.
+     * @return
+     */
+    public static double calcRelativeDistance(double startLatitude, double startLongitude,
+                                             double destLatitude, double destLongitude) {
+        double latitudeDelta = (destLatitude - startLatitude);
+        double longitudeDelta = (destLongitude - startLongitude);
+
+        return Math.sqrt(Math.pow(latitudeDelta, 2) + Math.pow(longitudeDelta, 2));
+
     }
 
 }

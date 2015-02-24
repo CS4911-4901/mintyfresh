@@ -41,8 +41,8 @@ public class DBQuery {
             output.add(new Building(
                     result.getString("id"),
                     result.getString("name"),
-                    result.getFloat("latitude"),
-                    result.getFloat("longitude")));
+                    result.getDouble("latitude"),
+                    result.getDouble("longitude")));
         }
 
         return output;
@@ -250,8 +250,8 @@ public class DBQuery {
                 output.add(new Amenity(
                         new Building(queryResult.getString("name"),
                                 queryResult.getString("building"),
-                                queryResult.getFloat("latitude"),
-                                queryResult.getFloat("longitude")),
+                                queryResult.getDouble("latitude"),
+                                queryResult.getDouble("longitude")),
                         queryResult.getString("amenity_type"),
                         queryResult.getInt("building_level"),
                         queryResult.getString("id"),
