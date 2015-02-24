@@ -43,7 +43,7 @@ public class MainActivity extends ActionBarActivity {
      * Simple function to transition to MapsActivity on button press.
      */
     public void switchToMapsActivity(View view) {
-        Intent activitySwitch = new Intent(getApplicationContext(), MapsActivity.class);
+        Intent activitySwitch = new Intent(getApplicationContext(), HomeScreenActivity.class);
         startActivity(activitySwitch);
     }
 }
