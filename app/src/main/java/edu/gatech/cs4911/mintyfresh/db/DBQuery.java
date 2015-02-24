@@ -63,6 +63,26 @@ public class DBQuery {
 
     /**
      * Queries the database and only returns Amenity objects in the given building,
+     * (idenfied by its ID), of the given type.
+     *
+     * @param handler The database connection to use.
+     * @param buildingId The building to filter results, identified by a String ID.
+     * @param type The provided type to filter results.
+     * @return The database response, packaged in an Amenity list.
+     * @throws SQLException if the query was unsuccessful.
+     */
+    public static List<Amenity> getAmenities(DBHandler handler, String buildingId,
+              String type) throws SQLException {
+
+        ResultSet result = handler.submitQuery(AMENITY_FIELDS_PREFIX +
+                "WHERE Building.id = \"" + buildingId + "\" " +
+                "AND amenity_type = \"" + type + "\"");
+
+        return amenityPackager(result);
+    }
+
+    /**
+     * Queries the database and only returns Amenity objects in the given building,
      * (idenfied by its ID), of the given type and given (single) type attribute.
      *
      * @param handler The database connection to use.
