@@ -9,13 +9,9 @@ import java.util.List;
  */
 public class Amenity extends DBResponseObject {
     /**
-     * The three-character ID of the parent building.
+     * The Building parent that contains this Amenity.
      */
-    private String buildingId;
-    /**
-     * The human-readable full name of the parent building.
-     */
-    private String buildingName;
+    private Building building;
     /**
      * The type of amenity.
      */
@@ -45,8 +41,7 @@ public class Amenity extends DBResponseObject {
      * Constructs a new Amenity object to hold information about an amenity's building,
      * type, level, id, latitude, longitude, attributes, and (x, y) floor plan location.
      *
-     * @param buildingId The three-character ID of the parent building.
-     * @param buildingName The human-readable full name of the parent building.
+     * @param building The Building parent that contains this Amenity.
      * @param type The type of amenity.
      * @param level The floor this Amenity is located on.
      * @param id The unique identifier of this Amenity.
@@ -54,10 +49,9 @@ public class Amenity extends DBResponseObject {
      * @param x This Amenity's x-location on a floorplan image.
      * @param y This Amenity's y-location on a floorplan image.
      */
-    public Amenity(String buildingId, String buildingName, String type, int level, String id,
+    public Amenity(Building building, String type, int level, String id,
                    List<String> attributes, int x, int y) {
-        this.buildingId = buildingId;
-        this.buildingName = buildingName;
+        this.building = building;
         this.type = type;
         this.level = level;
         this.id = id;
@@ -73,8 +67,7 @@ public class Amenity extends DBResponseObject {
      * This constructor constructs a new list of attributes, then adds the one provided
      * to the new list.
      *
-     * @param buildingId The three-character ID of the parent building.
-     * @param buildingName The human-readable full name of the parent building.
+     * @param building The Building parent that contains this Amenity.
      * @param type The type of amenity.
      * @param level The floor this Amenity is located on.
      * @param id The unique identifier of this Amenity.
@@ -82,9 +75,9 @@ public class Amenity extends DBResponseObject {
      * @param x This Amenity's x-location on a floorplan image.
      * @param y This Amenity's y-location on a floorplan image.
      */
-    public Amenity(String buildingId, String buildingName, String type, int level, String id,
+    public Amenity(Building building, String type, int level, String id,
                    String attribute, int x, int y) {
-        this(buildingId, buildingName, type, level, id, new ArrayList<String>(), x, y);
+        this(building, type, level, id, new ArrayList<String>(), x, y);
 
         addAttribute(attribute);
     }
@@ -95,17 +88,16 @@ public class Amenity extends DBResponseObject {
      *
      * This constructor constructs a new list of attributes in lieu of being provided one.
      *
-     * @param buildingId The three-character ID of the parent building.
-     * @param buildingName The human-readable full name of the parent building.
+     * @param building The Building parent that contains this Amenity.
      * @param type The type of amenity.
      * @param level The floor this Amenity is located on.
      * @param id The unique identifier of this Amenity.
      * @param x This Amenity's x-location on a floorplan image.
      * @param y This Amenity's y-location on a floorplan image.
      */
-    public Amenity(String buildingId, String buildingName, String type, int level, String id,
+    public Amenity(Building building, String type, int level, String id,
                    int x, int y) {
-        this(buildingId, buildingName, type, level, id, new ArrayList<String>(), x, y);
+        this(building, type, level, id, new ArrayList<String>(), x, y);
     }
 
     /**
@@ -123,7 +115,7 @@ public class Amenity extends DBResponseObject {
      * @return The three-character ID of the parent building.
      */
     public String getBuildingId() {
-        return buildingId;
+        return building.getId();
     }
 
     /**
@@ -132,7 +124,7 @@ public class Amenity extends DBResponseObject {
      * @return The human-readable full name of the parent building.
      */
     public String getBuildingName() {
-        return buildingName;
+        return building.getName();
     }
 
     /**
