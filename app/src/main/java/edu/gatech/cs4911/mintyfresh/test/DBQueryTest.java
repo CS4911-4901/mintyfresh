@@ -54,6 +54,11 @@ public class DBQueryTest extends InstrumentationTestCase {
         assertNotNull(result);
     }
 
+    public void testGetAmenities5() throws Exception {
+        List<Amenity> result = getAmenities(handler, "CUL", "Bathroom", 1);
+        assertNotNull(result);
+    }
+
     public void testGetAmenitiesByBuildingId() throws Exception {
         List<Amenity> result = getAmenitiesByBuildingId(handler, "CUL");
         assertNotNull(result);
