@@ -2,7 +2,9 @@ package edu.gatech.cs4911.mintyfresh.router;
 
 import org.w3c.dom.Document;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
@@ -15,23 +17,31 @@ import javax.xml.parsers.DocumentBuilderFactory;
 public class WebQuerier {
 
     /**
-     * Returns a Document object obtained from performing a GET on a remote URI.
+     * Returns a String obtained from performing a GET on a remote URI.
      *
      * @param uri The URI to GET.
-     * @return A Document object obtained from performing a GET on a remote URI.
+     * @return A String of the response obtained from performing a GET on a remote URI.
      * @throws IOException if the connection could not be established.
      */
-    public static Document getHttpDoc(String uri) throws IOException {
+    public static String getHttpDoc(String uri) throws IOException {
         try {
-            Document output;
+            String output, buffer;
+            BufferedReader reader;
+            StringBuilder streamParser = new StringBuilder();
             HttpURLConnection request = setUpGet(uri);
-            DocumentBuilder docParser = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 
             // Connect to server
             request.connect();
 
-            // Parses output as Document
-            output = docParser.parse(request.getInputStream());
+            // Build String from result stream
+            reader = new BufferedReader(new InputStreamReader(request.getInputStream()));
+            buffer = reader.readLine();
+            while (buffer != null) {
+                streamParser.append(buffer);
+                buffer = reader.readLine();
+            }
+
+            output = streamParser.toString();
 
             // Closes the connection
             request.disconnect();
@@ -54,7 +64,7 @@ public class WebQuerier {
         HttpURLConnection webRequest = (HttpURLConnection) new URL(uri).openConnection();
         webRequest.setRequestMethod("GET");
         webRequest.setDoInput(true);
-        webRequest.setDoOutput(true);
+        webRequest.setDoOutput(false); // true = POST
 
         return webRequest;
     }

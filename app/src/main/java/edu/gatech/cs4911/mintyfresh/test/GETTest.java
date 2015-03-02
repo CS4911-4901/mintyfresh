@@ -44,7 +44,7 @@ public class GETTest extends InstrumentationTestCase {
         request.connect();
         output = request.getInputStream();
         status = request.getResponseCode();
-        request.getContent();
+
         if (status != 200) {
             request.disconnect();
             output.close();
