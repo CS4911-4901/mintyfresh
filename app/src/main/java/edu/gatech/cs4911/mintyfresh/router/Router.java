@@ -77,16 +77,16 @@ public class Router {
     }
 
     /**
-     * Parses a Document as a Google Maps JSON-encoded response and
+     * Parses a String as a Google Maps JSON-encoded response and
      * constructs a List of LatLng objects from the response.
      *
-     * @param doc The Document object returned from the server.
+     * @param doc The String returned from the server.
      * @return A List of LatLng objects constructed from the response.
      * @throws JSONException if there was an issue parsing the response.
      */
-    private static List<LatLng> parseJsonToLatLng(Document doc) throws JSONException {
+    private static List<LatLng> parseJsonToLatLng(String doc) throws JSONException {
         List<LatLng> output = new ArrayList<>();
-        JSONObject responseBody = new JSONObject(doc.toString());
+        JSONObject responseBody = new JSONObject(doc);
 
         // First route of response
         JSONObject route = responseBody.getJSONArray("routes").getJSONObject(0);
