@@ -12,5 +12,6 @@
     <string name="vending">Vending</string>
     <string name="needToFind">Find me a</string>
     <string name="floorSelect">Select a floor</string>
+    <string name="showing">Showing</string>
 
 </resources>

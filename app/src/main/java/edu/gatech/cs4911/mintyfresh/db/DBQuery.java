@@ -18,8 +18,9 @@ public class DBQuery {
      * The fields to select from the Amenity table to complete an Amenity object.
      */
     public static final String AMENITY_FIELDS_PREFIX = "SELECT Amenity.id, building, name, " +
-            "amenity_type, building_level, floor_x, floor_y, attribute FROM Amenity " +
-            "INNER JOIN Building ON Amenity.building = Building.id " +
+            "amenity_type, building_level, floor_x, floor_y, attribute, latitude, longitude " +
+            "FROM Amenity INNER JOIN Building ON Amenity.building = Building.id " +
+            "INNER JOIN Building_Location ON Building.id = Building_Location.id " +
             "LEFT OUTER JOIN Amenity_MapLocation ON Amenity.id = Amenity_MapLocation.id " +
             "LEFT OUTER JOIN Amenity_Attribute_Lookup ON Amenity.id = Amenity_Attribute_Lookup.id ";
 
@@ -40,8 +41,8 @@ public class DBQuery {
             output.add(new Building(
                     result.getString("id"),
                     result.getString("name"),
-                    result.getFloat("latitude"),
-                    result.getFloat("longitude")));
+                    result.getDouble("latitude"),
+                    result.getDouble("longitude")));
         }
 
         return output;
@@ -56,6 +57,47 @@ public class DBQuery {
      */
     public static List<Amenity> getAmenities(DBHandler handler) throws SQLException {
         ResultSet result = handler.submitQuery(AMENITY_FIELDS_PREFIX + ";");
+
+        return amenityPackager(result);
+    }
+
+    /**
+     * Queries the database and only returns Amenity objects in the given building,
+     * (idenfied by its ID), of the given type.
+     *
+     * @param handler The database connection to use.
+     * @param buildingId The building to filter results, identified by a String ID.
+     * @param type The provided type to filter results.
+     * @return The database response, packaged in an Amenity list.
+     * @throws SQLException if the query was unsuccessful.
+     */
+    public static List<Amenity> getAmenities(DBHandler handler, String buildingId,
+              String type) throws SQLException {
+
+        ResultSet result = handler.submitQuery(AMENITY_FIELDS_PREFIX +
+                "WHERE Building.id = \"" + buildingId + "\" " +
+                "AND amenity_type = \"" + type + "\"");
+
+        return amenityPackager(result);
+    }
+
+    /**
+     * Queries the database and only returns Amenity objects in the given building,
+     * (idenfied by its ID), of the given type.
+     *
+     * @param handler The database connection to use.
+     * @param buildingId The building to filter results, identified by a String ID.
+     * @param type The provided type to filter results.
+     * @return The database response, packaged in an Amenity list.
+     * @throws SQLException if the query was unsuccessful.
+     */
+    public static List<Amenity> getAmenities(DBHandler handler, String buildingId,
+             String type, int floor) throws SQLException {
+
+        ResultSet result = handler.submitQuery(AMENITY_FIELDS_PREFIX +
+                "WHERE Building.id = \"" + buildingId + "\" " +
+                "AND amenity_type = \"" + type + "\" " +
+                "AND building_level = \"" + floor + "\"");
 
         return amenityPackager(result);
     }
@@ -106,9 +148,9 @@ public class DBQuery {
             queryString += "attribute = \""
                     + attributes[i] + "\"";
             if (i != attributes.length - 1) {
-                queryString += " AND ";
+                queryString += " OR ";
             } else {
-                queryString += ");";
+                queryString += ") GROUP BY id HAVING COUNT(*) = " + attributes.length + ";";
             }
         }
 
@@ -213,9 +255,9 @@ public class DBQuery {
             queryString += "attribute = \""
                     + attributes[i] + "\" ";
             if (i != attributes.length - 1) {
-                queryString += " AND ";
+                queryString += " OR ";
             } else {
-                queryString += ");";
+                queryString += ") GROUP BY id HAVING COUNT(*) = " + attributes.length + ";";
             }
         }
 
@@ -247,8 +289,10 @@ public class DBQuery {
                         .addAttribute(queryResult.getString("attribute"));
             } else {
                 output.add(new Amenity(
-                        queryResult.getString("building"),
-                        queryResult.getString("name"),
+                        new Building(queryResult.getString("name"),
+                                queryResult.getString("building"),
+                                queryResult.getDouble("latitude"),
+                                queryResult.getDouble("longitude")),
                         queryResult.getString("amenity_type"),
                         queryResult.getInt("building_level"),
                         queryResult.getString("id"),

@@ -44,8 +44,8 @@ public class Router {
      * @return A list of LatLng points to form a path from origin to destination.
      * @throws IOException if the connection could not be established to the Google Maps server.
      */
-    public static List<LatLng> getDirectionsTo(float startLatitude, float startLongitude,
-        float destLatitude, float destLongitude) throws IOException {
+    public static List<LatLng> getDirectionsTo(double startLatitude, double startLongitude,
+        double destLatitude, double destLongitude) throws IOException {
 
         List<LatLng> result;
         String uri = constructMapUri(startLatitude, startLongitude, destLatitude, destLongitude);
@@ -69,24 +69,24 @@ public class Router {
      * @param destLongitude The destination longitude.
      * @return A URI String to query the Google Maps API.
      */
-    private static String constructMapUri(float startLatitude, float startLongitude,
-                                         float destLatitude, float destLongitude) {
+    private static String constructMapUri(double startLatitude, double startLongitude,
+                                         double destLatitude, double destLongitude) {
         return GMAPS_BASE_API_STRING
                 + "&origin=" + startLatitude + "," + startLongitude
                 + "&destination=" + destLatitude + "," + destLongitude;
     }
 
     /**
-     * Parses a Document as a Google Maps JSON-encoded response and
+     * Parses a String as a Google Maps JSON-encoded response and
      * constructs a List of LatLng objects from the response.
      *
-     * @param doc The Document object returned from the server.
+     * @param doc The String returned from the server.
      * @return A List of LatLng objects constructed from the response.
      * @throws JSONException if there was an issue parsing the response.
      */
-    private static List<LatLng> parseJsonToLatLng(Document doc) throws JSONException {
+    private static List<LatLng> parseJsonToLatLng(String doc) throws JSONException {
         List<LatLng> output = new ArrayList<>();
-        JSONObject responseBody = new JSONObject(doc.toString());
+        JSONObject responseBody = new JSONObject(doc);
 
         // First route of response
         JSONObject route = responseBody.getJSONArray("routes").getJSONObject(0);
@@ -141,6 +141,24 @@ public class Router {
                 latlng.getJSONObject("start_location").getLong("lng"));
 
         return result;
+    }
+
+    /**
+     * Calculates the distance between two points, specified as two sets of
+     * provided latitude and longitudes.
+     *
+     * @param startLatitude The origin latitude.
+     * @param startLongitude The origin longitude.
+     * @param destLatitude The destination latitude.
+     * @param destLongitude The destination longitude.
+     * @return
+     */
+    public static double calcRelativeDistance(double startLatitude, double startLongitude,
+                                             double destLatitude, double destLongitude) {
+
+        return Math.sqrt(Math.pow((destLatitude - startLatitude), 2)
+                + Math.pow((destLongitude - startLongitude), 2));
+
     }
 
 }

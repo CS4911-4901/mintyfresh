@@ -17,13 +17,13 @@ public class Building extends DBResponseObject {
      * latitude > 0 = N<br />
      * latitude < 0 = S
      */
-    private float latitude;
+    private double latitude;
     /**
      * The longitude of this Building.<br />
      * longitude > 0 = E<br />
      * longitude < 0 = W
      */
-    private float longitude;
+    private double longitude;
 
     /**
      * Constructs a new Building object to hold information about a Building's
@@ -34,7 +34,7 @@ public class Building extends DBResponseObject {
      * @param latitude The latitude of this Building.
      * @param longitude The longitude of this Building.
      */
-    public Building(String name, String id, float latitude, float longitude) {
+    public Building(String name, String id, double latitude, double longitude) {
         this.name = name;
         this.id = id;
         this.latitude = latitude;
@@ -58,14 +58,14 @@ public class Building extends DBResponseObject {
     /**
      * @return The latitude of this Building.
      */
-    public float getLatitude() {
+    public double getLatitude() {
         return latitude;
     }
 
     /**
      * @return The longitude of this Building.
      */
-    public float getLongitude() {
+    public double getLongitude() {
         return longitude;
     }
 
