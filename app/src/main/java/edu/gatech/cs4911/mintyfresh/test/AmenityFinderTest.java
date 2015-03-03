@@ -38,6 +38,9 @@ public class AmenityFinderTest extends InstrumentationTestCase {
 
         assertNotNull(result);
         assertNotNull(result.peek());
+
+        // Make sure result actually holds something
+        assertTrue(result.size() > 0);
     }
 
     public void testGetNearbyAmenitiesByType() throws Exception {
@@ -46,6 +49,9 @@ public class AmenityFinderTest extends InstrumentationTestCase {
 
         assertNotNull(result);
         assertNotNull(result.peek());
+
+        // Make sure result actually holds something
+        assertTrue(result.size() > 0);
     }
 
     public void testGetAmenitiesInBuilding() throws Exception {
@@ -54,6 +60,9 @@ public class AmenityFinderTest extends InstrumentationTestCase {
 
         assertNotNull(result);
         assertNotNull(result.peek());
+
+        // Make sure result actually holds something
+        assertTrue(result.size() > 0);
 
     }
 
@@ -64,6 +73,9 @@ public class AmenityFinderTest extends InstrumentationTestCase {
         assertNotNull(result);
         assertNotNull(result.peek());
 
+        // Make sure result actually holds something
+        assertTrue(result.size() > 0);
+
     }
 
     public void testGetAmenitiesInBuilding2() throws Exception {
@@ -73,5 +85,7 @@ public class AmenityFinderTest extends InstrumentationTestCase {
         assertNotNull(result);
         assertNotNull(result.peek());
 
+        // Make sure result actually holds something
+        assertTrue(result.size() > 0);
     }
 }

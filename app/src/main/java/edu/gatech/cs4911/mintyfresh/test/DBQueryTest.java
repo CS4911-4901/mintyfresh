@@ -23,16 +23,40 @@ public class DBQueryTest extends InstrumentationTestCase {
     public void testGetBuildings() throws Exception {
         List<Building> result = getBuildings(handler);
         assertNotNull(result);
+
+        // And check each item in result
+        for (Building item : result) {
+            assertNotNull(item);
+        }
+
+        // Make sure result actually holds something
+        assertTrue(result.size() > 0);
     }
 
     public void testGetAmenities() throws Exception {
         List<Amenity> result = getAmenities(handler);
         assertNotNull(result);
+
+        // And check each item in result
+        for (Amenity item : result) {
+            assertNotNull(item);
+        }
+
+        // Make sure result actually holds something
+        assertTrue(result.size() > 0);
     }
 
     public void testGetAmenities1() throws Exception {
         List<Amenity> result = getAmenities(handler, "CUL", "Bathroom", "male");
         assertNotNull(result);
+
+        // And check each item in result
+        for (Amenity item : result) {
+            assertNotNull(item);
+        }
+
+        // Make sure result actually holds something
+        assertTrue(result.size() > 0);
     }
 
     public void testGetAmenities2() throws Exception {
@@ -41,37 +65,92 @@ public class DBQueryTest extends InstrumentationTestCase {
         attributeList[1] = "handicapped";
         List<Amenity> result = getAmenities(handler, "CUL", "Bathroom", attributeList);
         assertNotNull(result);
+
+        // And check each item in result
+        for (Amenity item : result) {
+            assertNotNull(item);
+        }
+
+        // Make sure result actually holds something
+        assertTrue(result.size() > 0);
     }
 
     public void testGetAmenities3() throws Exception {
-        // TODO: Run AFTER adding map information to database
         List<Amenity> result = getAmenities(handler, "CUL", 1, "Bathroom", "male");
         assertNotNull(result);
+
+        // And check each item in result
+        for (Amenity item : result) {
+            assertNotNull(item);
+        }
+
+        // Make sure result actually holds something
+        assertTrue(result.size() > 0);
     }
 
     public void testGetAmenities4() throws Exception {
         List<Amenity> result = getAmenities(handler, "CUL", "Bathroom");
         assertNotNull(result);
+
+        // And check each item in result
+        for (Amenity item : result) {
+            assertNotNull(item);
+        }
+
+        // Make sure result actually holds something
+        assertTrue(result.size() > 0);
     }
 
     public void testGetAmenities5() throws Exception {
         List<Amenity> result = getAmenities(handler, "CUL", "Bathroom", 1);
         assertNotNull(result);
+
+        // And check each item in result
+        for (Amenity item : result) {
+            assertNotNull(item);
+        }
+
+        // Make sure result actually holds something
+        assertTrue(result.size() > 0);
     }
 
     public void testGetAmenitiesByBuildingId() throws Exception {
         List<Amenity> result = getAmenitiesByBuildingId(handler, "CUL");
         assertNotNull(result);
+
+        // And check each item in result
+        for (Amenity item : result) {
+            assertNotNull(item);
+        }
+
+        // Make sure result actually holds something
+        assertTrue(result.size() > 0);
     }
 
     public void testGetAmenitiesByType() throws Exception {
         List<Amenity> result = getAmenitiesByType(handler, "Bathroom");
         assertNotNull(result);
+
+        // And check each item in result
+        for (Amenity item : result) {
+            assertNotNull(item);
+        }
+
+        // Make sure result actually holds something
+        assertTrue(result.size() > 0);
     }
 
     public void testGetAmenitiesByTypeAndAttribute() throws Exception {
         List<Amenity> result = getAmenitiesByTypeAndAttribute(handler, "Bathroom", "male");
         assertNotNull(result);
+
+        // And check each item in result
+        for (Amenity item : result) {
+            assertNotNull(item);
+        }
+
+        // Make sure result actually holds something
+        assertTrue(result.size() > 0);
     }
 
     public void testGetAmenitiesByTypeAndAttributes() throws Exception {
@@ -80,6 +159,14 @@ public class DBQueryTest extends InstrumentationTestCase {
         attributeList[1] = "handicapped";
         List<Amenity> result = getAmenitiesByTypeAndAttributes(handler, "Bathroom", attributeList);
         assertNotNull(result);
+
+        // And check each item in result
+        for (Amenity item : result) {
+            assertNotNull(item);
+        }
+
+        // Make sure result actually holds something
+        assertTrue(result.size() > 0);
     }
 
     public void testGetFloorplan() throws Exception {
@@ -90,5 +177,13 @@ public class DBQueryTest extends InstrumentationTestCase {
     public void testGetFloorplans() throws Exception {
         List<InputStream> result = getFloorplans(handler, "CUL");
         assertNotNull(result);
+
+        // And check each item in result
+        for (InputStream item : result) {
+            assertNotNull(item);
+        }
+
+        // Make sure result actually holds something
+        assertTrue(result.size() > 0);
     }
 }
