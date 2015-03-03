@@ -4,6 +4,7 @@ import android.location.Location;
 import android.test.InstrumentationTestCase;
 
 
+import java.util.List;
 import java.util.PriorityQueue;
 
 import edu.gatech.cs4911.mintyfresh.AmenityFinder;
@@ -31,8 +32,8 @@ public class AmenityFinderTest extends InstrumentationTestCase {
         building = new Building("Clough Undergraduate Learning Commons",
                 "CUL", 33.774792, -84.396386);
     }
-    public void tearDown() throws Exception { }
 
+    public void tearDown() throws Exception { }
 
     public void testGetNearbyBuildings() throws Exception {
         PriorityQueue<RelativeBuilding> result = finder.getNearbyBuildings(curLocation);
@@ -43,6 +44,27 @@ public class AmenityFinderTest extends InstrumentationTestCase {
         // Make sure result actually holds something
         assertTrue(result.size() > 0);
     }
+
+    public void testGetFloorsInBuilding1() throws Exception {
+        List<Integer> result = finder.getFloorsInBuilding(building);
+
+        assertNotNull(result);
+        assertNotNull(result.get(0));
+
+        // Make sure result actually holds something
+        assertTrue(result.size() > 0);
+    }
+
+    public void testGetFloorsInBuilding2() throws Exception {
+        List<Integer> result = finder.getFloorsInBuilding(building.getId());
+
+        assertNotNull(result);
+        assertNotNull(result.get(0));
+
+        // Make sure result actually holds something
+        assertTrue(result.size() > 0);
+    }
+
     public void testGetNearbyAmenities() throws Exception {
         PriorityQueue<RelativeAmenity> result = finder.getNearbyAmenities(curLocation);
 

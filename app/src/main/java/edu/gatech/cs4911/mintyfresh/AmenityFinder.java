@@ -48,6 +48,37 @@ public class AmenityFinder {
             throw new NoDbResultException();
         }
     }
+
+    /**
+     * Returns an Integer list of floors in a given building.
+     *
+     * @param building A given building.
+     * @return A list of floors in the given building.
+     * @throws NoDbResultException if the database did not return any floors.
+     */
+    public List<Integer> getFloorsInBuilding(Building building) throws NoDbResultException {
+        try {
+            return DBQuery.getLevelsInBuilding(handler, building);
+        } catch (Exception e) {
+            throw new NoDbResultException();
+        }
+    }
+
+    /**
+     * Returns an Integer list of floors in a given building.
+     *
+     * @param buildingId The ID of a building.
+     * @return A list of floors in the given building.
+     * @throws NoDbResultException if the database did not return any floors.
+     */
+    public List<Integer> getFloorsInBuilding(String buildingId) throws NoDbResultException {
+        try {
+            return DBQuery.getLevelsInBuilding(handler, buildingId);
+        } catch (Exception e) {
+            throw new NoDbResultException();
+        }
+    }
+
     /**
      * Returns a heap of all RelativeAmenity objects, ordered by relative distance.
      *
