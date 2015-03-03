@@ -2,15 +2,21 @@ package edu.gatech.cs4911.mintyfresh;
 
 import android.app.Activity;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
+import android.widget.Button;
 import android.widget.LinearLayout;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.TextView;
 
 import java.util.List;
 import java.util.Map;
+
+import edu.gatech.cs4911.mintyfresh.db.queryresponse.Building;
+
 
 /**
  * Created by kateharlan on 2/23/15.
@@ -38,7 +44,8 @@ public class ExpandableFloorListAdapter extends BaseExpandableListAdapter {
     }
 
     @Override
-    public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
+    public View getChildView(int groupPosition, int childPosition, boolean isLastChild,
+                             View convertView, ViewGroup parent) {
         String building = (String) getChild(groupPosition, childPosition);
         LayoutInflater inflater = context.getLayoutInflater();
 
@@ -47,18 +54,17 @@ public class ExpandableFloorListAdapter extends BaseExpandableListAdapter {
         }
 
         LinearLayout floorsLayout = (LinearLayout) convertView.findViewById(R.id.floorsLayout);
-        //TODO i need to add the floor bits to this
 
         return convertView;
     }
 
     @Override
     public int getChildrenCount(int groupPosition) {
-        return floors.get(buildings.get(groupPosition)).size();
+        return 1;
     }
 
     @Override
-    public Object getGroup(int groupPosition) {
+    public String getGroup(int groupPosition) {
         return buildings.get(groupPosition);
     }
 
