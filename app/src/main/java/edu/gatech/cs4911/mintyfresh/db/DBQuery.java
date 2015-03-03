@@ -148,9 +148,9 @@ public class DBQuery {
             queryString += "attribute = \""
                     + attributes[i] + "\"";
             if (i != attributes.length - 1) {
-                queryString += " AND ";
+                queryString += " OR ";
             } else {
-                queryString += ");";
+                queryString += ") GROUP BY id HAVING COUNT(*) = " + attributes.length + ";";
             }
         }
 
@@ -255,9 +255,9 @@ public class DBQuery {
             queryString += "attribute = \""
                     + attributes[i] + "\" ";
             if (i != attributes.length - 1) {
-                queryString += " AND ";
+                queryString += " OR ";
             } else {
-                queryString += ");";
+                queryString += ") GROUP BY id HAVING COUNT(*) = " + attributes.length + ";";
             }
         }
 
