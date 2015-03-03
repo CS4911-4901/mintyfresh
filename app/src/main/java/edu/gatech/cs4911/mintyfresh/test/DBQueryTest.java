@@ -33,6 +33,19 @@ public class DBQueryTest extends InstrumentationTestCase {
         assertTrue(result.size() > 0);
     }
 
+    public void testGetLevelsInBuilding() throws Exception {
+        List<Integer> result = getLevelsInBuilding(handler, "CUL");
+        assertNotNull(result);
+
+        // And check each item in result
+        for (Integer num : result) {
+            assertNotNull(num);
+        }
+
+        // Make sure result actually holds something
+        assertTrue(result.size() > 0);
+    }
+
     public void testGetAmenities() throws Exception {
         List<Amenity> result = getAmenities(handler);
         assertNotNull(result);

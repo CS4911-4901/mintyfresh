@@ -49,6 +49,41 @@ public class DBQuery {
     }
 
     /**
+     * Queries the database and returns the number of floors in a given building.
+     *
+     * @param handler The database connection to use.
+     * @param buildingId The ID of the Building to check.
+     * @return The number of floors in a given building.
+     * @throws SQLException if the query was unsuccessful.
+     */
+    public static List<Integer> getLevelsInBuilding(DBHandler handler, String buildingId)
+            throws SQLException {
+        ResultSet result = handler.submitQuery("SELECT level FROM Building_Floors " +
+                "WHERE id = \"" + buildingId + "\";");
+        List<Integer> output = new ArrayList<>();
+
+        while (result.next()) {
+            output.add(result.getInt("level"));
+        }
+
+        return output;
+    }
+
+    /**
+     * Queries the database and returns the number of floors in a given building.
+     *
+     * @param handler The database connection to use.
+     * @param building The Building to check.
+     * @return The number of floors in a given building.
+     * @throws SQLException if the query was unsuccessful.
+     */
+    public static List<Integer> getLevelsInBuilding(DBHandler handler, Building building)
+            throws SQLException {
+        return getLevelsInBuilding(handler, building.getId());
+    }
+
+
+    /**
      * Queries the database and returns all Amenity objects.
      *
      * @param handler The database connection to use.
