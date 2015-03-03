@@ -3,7 +3,6 @@ package edu.gatech.cs4911.mintyfresh.test;
 import android.location.Location;
 import android.test.InstrumentationTestCase;
 
-import com.google.android.gms.maps.model.LatLng;
 
 import java.util.PriorityQueue;
 
@@ -11,6 +10,7 @@ import edu.gatech.cs4911.mintyfresh.AmenityFinder;
 import edu.gatech.cs4911.mintyfresh.db.DBHandler;
 import edu.gatech.cs4911.mintyfresh.db.queryresponse.Building;
 import edu.gatech.cs4911.mintyfresh.router.RelativeAmenity;
+import edu.gatech.cs4911.mintyfresh.router.RelativeBuilding;
 
 import static edu.gatech.cs4911.mintyfresh.db.DatabaseConfig.STEAKSCORP_READ_ONLY;
 
@@ -33,6 +33,16 @@ public class AmenityFinderTest extends InstrumentationTestCase {
     }
     public void tearDown() throws Exception { }
 
+
+    public void testGetNearbyBuildings() throws Exception {
+        PriorityQueue<RelativeBuilding> result = finder.getNearbyBuildings(curLocation);
+
+        assertNotNull(result);
+        assertNotNull(result.peek());
+
+        // Make sure result actually holds something
+        assertTrue(result.size() > 0);
+    }
     public void testGetNearbyAmenities() throws Exception {
         PriorityQueue<RelativeAmenity> result = finder.getNearbyAmenities(curLocation);
 
