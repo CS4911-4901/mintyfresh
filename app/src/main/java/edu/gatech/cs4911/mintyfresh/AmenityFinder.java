@@ -11,6 +11,7 @@ import edu.gatech.cs4911.mintyfresh.db.queryresponse.Amenity;
 import edu.gatech.cs4911.mintyfresh.db.queryresponse.Building;
 import edu.gatech.cs4911.mintyfresh.exception.NoDbResultException;
 import edu.gatech.cs4911.mintyfresh.router.RelativeAmenity;
+import edu.gatech.cs4911.mintyfresh.router.RelativeBuilding;
 import edu.gatech.cs4911.mintyfresh.router.Router;
 
 /**
@@ -33,6 +34,21 @@ public class AmenityFinder {
     }
 
     /**
+     * Returns a heap of all RelativeBuilding objects, ordered by relative distance.
+     *
+     * @param location The current location.
+     * @return A heap of nearby buildings.
+     * @throws NoDbResultException if the database did not return any Building objects.
+     */
+    public PriorityQueue<RelativeBuilding> getNearbyBuildings(Location location)
+            throws NoDbResultException {
+        try {
+            return buildingHeapPackager(location, DBQuery.getBuildings(handler));
+        } catch (Exception e) {
+            throw new NoDbResultException();
+        }
+    }
+    /**
      * Returns a heap of all RelativeAmenity objects, ordered by relative distance.
      *
      * @param location The current location.
@@ -42,7 +58,7 @@ public class AmenityFinder {
     public PriorityQueue<RelativeAmenity> getNearbyAmenities(Location location)
             throws NoDbResultException {
         try {
-            return heapPackager(location, DBQuery.getAmenities(handler));
+            return amenityHeapPackager(location, DBQuery.getAmenities(handler));
         } catch (Exception e) {
             throw new NoDbResultException();
         }
@@ -59,7 +75,7 @@ public class AmenityFinder {
     public PriorityQueue<RelativeAmenity> getNearbyAmenitiesByType(Location location, String type)
             throws NoDbResultException {
         try {
-            return heapPackager(location, DBQuery.getAmenitiesByType(handler, type));
+            return amenityHeapPackager(location, DBQuery.getAmenitiesByType(handler, type));
         } catch (Exception e) {
             throw new NoDbResultException();
         }
@@ -77,7 +93,7 @@ public class AmenityFinder {
     public PriorityQueue<RelativeAmenity> getAmenitiesInBuilding(Location location,
             Building building) throws NoDbResultException {
         try {
-            return heapPackager(location, DBQuery.getAmenitiesByBuildingId(handler,
+            return amenityHeapPackager(location, DBQuery.getAmenitiesByBuildingId(handler,
                     building.getId()));
         } catch (Exception e) {
             throw new NoDbResultException();
@@ -97,7 +113,7 @@ public class AmenityFinder {
     public PriorityQueue<RelativeAmenity> getAmenitiesInBuilding(Location location,
             Building building, String type) throws NoDbResultException {
         try {
-            return heapPackager(location, DBQuery.getAmenities(handler,
+            return amenityHeapPackager(location, DBQuery.getAmenities(handler,
                     building.getId(), type));
         } catch (Exception e) {
             throw new NoDbResultException();
@@ -118,7 +134,7 @@ public class AmenityFinder {
     public PriorityQueue<RelativeAmenity> getAmenitiesInBuilding(Location location,
             Building building, String type, int level) throws NoDbResultException {
         try {
-            return heapPackager(location, DBQuery.getAmenities(handler,
+            return amenityHeapPackager(location, DBQuery.getAmenities(handler,
                     building.getId(), type, level));
         } catch (Exception e) {
             throw new NoDbResultException();
@@ -133,9 +149,10 @@ public class AmenityFinder {
      * @param dbResult A result list of Amenity objects returned from the database.
      * @return A ranked PriorityQueue of RelativeAmenity objects, sorted by closest distance.
      */
-    private PriorityQueue<RelativeAmenity> heapPackager(Location location, List<Amenity> dbResult) {
+    private PriorityQueue<RelativeAmenity> amenityHeapPackager(Location location, 
+                                                               List<Amenity> dbResult) {
         PriorityQueue<RelativeAmenity> output = new PriorityQueue<>();
-
+        
         // Calculate relative distances and rank
         for (Amenity amenity : dbResult) {
             output.add(new RelativeAmenity(amenity, Router.calcRelativeDistance(
@@ -143,6 +160,30 @@ public class AmenityFinder {
                     location.getLongitude(),
                     amenity.getLatitude(),
                     amenity.getLongitude())));
+        }
+
+        return output;
+    }
+
+    /**
+     * Calculates relative distances between a given location and a set of Building objects,
+     * and packages them into a PriorityQueue to rank by closest distance.
+     *
+     * @param location The current location.
+     * @param dbResult A result list of Building objects returned from the database.
+     * @return A ranked PriorityQueue of RelativeBuilding objects, sorted by closest distance.
+     */
+    private PriorityQueue<RelativeBuilding> buildingHeapPackager(Location location, 
+                                                                 List<Building> dbResult) {
+        PriorityQueue<RelativeBuilding> output = new PriorityQueue<>();
+
+        // Calculate relative distances and rank
+        for (Building building : dbResult) {
+            output.add(new RelativeBuilding(building, Router.calcRelativeDistance(
+                    location.getLatitude(),
+                    location.getLongitude(),
+                    building.getLatitude(),
+                    building.getLongitude())));
         }
 
         return output;
