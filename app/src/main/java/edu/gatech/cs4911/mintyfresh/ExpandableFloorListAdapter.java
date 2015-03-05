@@ -12,10 +12,12 @@ import android.widget.LinearLayout;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.TextView;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.PriorityQueue;
 
-import edu.gatech.cs4911.mintyfresh.db.queryresponse.Building;
+import edu.gatech.cs4911.mintyfresh.router.RelativeBuilding;
 
 
 /**
@@ -24,18 +26,19 @@ import edu.gatech.cs4911.mintyfresh.db.queryresponse.Building;
 public class ExpandableFloorListAdapter extends BaseExpandableListAdapter {
 
     private Activity context;
-    private Map<String, List<String>> floors;
-    private List<String> buildings;
+    private Map<RelativeBuilding, List<Integer>> floors;
+    private List<RelativeBuilding> buildings;
 
-    public ExpandableFloorListAdapter(Activity context, List<String> buildings,
-                                 Map<String, List<String>> floors) {
+    public ExpandableFloorListAdapter(Activity context, List<RelativeBuilding> buildings,
+                                      Map<RelativeBuilding, List<Integer>> floors) {
         this.context = context;
         this.floors = floors;
         this.buildings = buildings;
     }
     @Override
+    //this needs to get a specific floor, i think
     public Object getChild(int groupPosition, int childPosition) {
-        return floors.get(buildings.get(groupPosition)).get(childPosition);
+        return floors.get(buildings.get(groupPosition)); //.get(childPosition);
     }
 
     @Override
@@ -60,12 +63,12 @@ public class ExpandableFloorListAdapter extends BaseExpandableListAdapter {
 
     @Override
     public int getChildrenCount(int groupPosition) {
-        return 1;
+        return floors.get(buildings.get(groupPosition)).size();
     }
 
     @Override
     public String getGroup(int groupPosition) {
-        return buildings.get(groupPosition);
+        return buildings.get(groupPosition).getBuilding().getName();
     }
 
     @Override
@@ -85,6 +88,9 @@ public class ExpandableFloorListAdapter extends BaseExpandableListAdapter {
 
     @Override
     public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
+
+
+
         String buildingName = (String) getGroup(groupPosition);
         if (convertView == null) {
             LayoutInflater infalInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);

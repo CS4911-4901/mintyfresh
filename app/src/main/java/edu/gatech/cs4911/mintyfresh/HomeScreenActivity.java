@@ -23,6 +23,12 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.PriorityQueue;
+
+import edu.gatech.cs4911.mintyfresh.db.DBHandler;
+import edu.gatech.cs4911.mintyfresh.router.RelativeBuilding;
+
+import static edu.gatech.cs4911.mintyfresh.db.DatabaseConfig.STEAKSCORP_READ_ONLY;
 
 
 public class HomeScreenActivity extends ActionBarActivity {
@@ -31,13 +37,25 @@ public class HomeScreenActivity extends ActionBarActivity {
 //    http://theopentutorials.com/tutorials/android/listview/android-expandable-list-view-example/
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     private ExpandableListView expListView;
+    private AmenityFinder amenityFinder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_screen);
         setUpMapIfNeeded();
+        DBHandler dbh;
 
+        try {
+            dbh = new DBHandler(STEAKSCORP_READ_ONLY);
+            amenityFinder = new AmenityFinder(dbh);
+
+        }
+        catch (Exception e) {
+            //todo oh sad day
+            Log.e("boom", "54");
+            amenityFinder = null;
+        }
         expListView = (ExpandableListView) findViewById(R.id.buildingList);
         expListView.setVisibility(View.GONE);
 
@@ -106,34 +124,46 @@ public class HomeScreenActivity extends ActionBarActivity {
             name = "Printers";
         }
 
-        LinearLayout showing = (LinearLayout) findViewById(R.id.showingLayout);
-        Button showingButton = (Button) findViewById(R.id.selectedButton);
-        showingButton.setText("All " + name); //it'll need a little arrow buddy
-        showing.setVisibility(View.VISIBLE);
+        Log.v("sigh", "yeah");
 
-        Log.v("button", type + "clicked");
+        Location curLocation = new Location("TEST_PROVIDER");
+        curLocation.setLatitude(33.7751878);
+        curLocation.setLongitude(-84.39687341);
+        Log.v("hsa", "yes");
+        Log.v("hsa", amenityFinder.toString());
+        Log.v("hsa", "no");
 
-        List<String> buildings = new ArrayList<String>();
-        buildings.add("CULC");
-        buildings.add("Library");
-        buildings.add("Student Center");
+        try {
 
-        List<String> floors = new ArrayList<String>();
-        floors.add("1");
-        floors.add("2");
-        floors.add("3");
-        floors.add("4");
+            PriorityQueue<RelativeBuilding> buildingsPQ = amenityFinder.getNearbyBuildings(curLocation);
+            ArrayList<RelativeBuilding> buildings = new ArrayList<RelativeBuilding>();
+            Map<RelativeBuilding, List<Integer>> map = new ArrayMap<RelativeBuilding, List<Integer>>();
 
-        Map<String, List<String>> map = new ArrayMap<String, List<String>>();
-        map.put("CULC", floors);
-        map.put("Library", floors);
-        map.put("Student Center", floors);
+            List<Integer> floors;
+            while (!buildingsPQ.isEmpty()) {
+                RelativeBuilding rb = buildingsPQ.poll();
+                buildings.add(rb);
+                floors = amenityFinder.getFloorsInBuilding(rb.getBuilding());
+                map.put(rb, floors);
+            }
 
-        final ExpandableFloorListAdapter expListAdapter = new ExpandableFloorListAdapter(
-                this, buildings, map);
-        expListView.setAdapter(expListAdapter);
+            LinearLayout showing = (LinearLayout) findViewById(R.id.showingLayout);
+            Button showingButton = (Button) findViewById(R.id.selectedButton);
+            showingButton.setText("All " + name); //it'll need a little arrow buddy
+            showing.setVisibility(View.VISIBLE);
 
-        expListView.setVisibility(View.VISIBLE);
+            Log.v("button", type + "clicked");
+
+            final ExpandableFloorListAdapter expListAdapter = new ExpandableFloorListAdapter(
+                    this, buildings, map);
+            expListView.setAdapter(expListAdapter);
+
+            expListView.setVisibility(View.VISIBLE);
+        }
+        catch (Exception e) {
+            Log.v("hsa", e.getMessage());
+            //todo sigh
+        }
     }
 
     /**
