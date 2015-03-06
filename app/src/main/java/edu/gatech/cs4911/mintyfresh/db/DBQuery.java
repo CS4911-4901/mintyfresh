@@ -17,13 +17,9 @@ import java.util.Map;
  */
 public class DBQuery {
     /**
-     * The maximum number of entries to store in the cache.
+     * A least-recently used (LRU) cache for database queriess.
      */
-    private static final int MAX_CACHE_ENTRIES = 5;
-    /**
-     * A least-recently used (LRU) cache for database queries.
-     */
-    private static LruCache<String, ResultSet> DBCache = new LruCache<>(MAX_CACHE_ENTRIES);
+    private static DBCache cache = new DBCache();
     /**
      * The fields to select from the Amenity table to complete an Amenity object.
      */
@@ -45,20 +41,25 @@ public class DBQuery {
         String query = "SELECT Building.id, name, latitude, " +
                 "longitude FROM Building INNER JOIN Building_Location " +
                 "WHERE Building.id = Building_Location.id;";
-        ResultSet result = DBCache.get(query);
-        
-        if (result == null) {
-            result = handler.submitQuery(query);
-            DBCache.put(query, result);
-        }
 
-        List<Building> output = new ArrayList<>();
-        while (result.next()) {
-            output.add(new Building(
-                    result.getString("id"),
-                    result.getString("name"),
-                    result.getDouble("latitude"),
-                    result.getDouble("longitude")));
+        // Query cache
+        List<Building> output = cache.getBuildingList(query);
+
+        if (output == null) {
+            // Cache miss! Query database
+            ResultSet result = handler.submitQuery(query);
+            output = new ArrayList<>();
+
+            while (result.next()) {
+                output.add(new Building(
+                        result.getString("id"),
+                        result.getString("name"),
+                        result.getDouble("latitude"),
+                        result.getDouble("longitude")));
+            }
+
+            // And add to cache
+            cache.putBuildingList(query, output);
         }
 
         return output;
@@ -75,16 +76,21 @@ public class DBQuery {
     public static List<Integer> getLevelsInBuilding(DBHandler handler, String buildingId)
             throws SQLException {
         String query = "SELECT level FROM Building_Floors " + "WHERE id = \"" + buildingId + "\";";
-        List<Integer> output = new ArrayList<>();
-        ResultSet result = DBCache.get(query);
-        
-        if (result == null) {
-            result = handler.submitQuery(query);
-            DBCache.put(query, result);
-        }
 
-        while (result.next()) {
-            output.add(result.getInt("level"));
+        // Query cache
+        List<Integer> output = cache.getIntegerList(query);
+
+        if (output == null) {
+            // Cache miss! Query database
+            ResultSet result = handler.submitQuery(query);
+            output = new ArrayList<>();
+
+            while (result.next()) {
+                output.add(result.getInt("level"));
+            }
+
+            // And add to cache
+            cache.putIntegerList(query, output);
         }
 
         return output;
@@ -113,14 +119,20 @@ public class DBQuery {
      */
     public static List<Amenity> getAmenities(DBHandler handler) throws SQLException {
         String query = AMENITY_FIELDS_PREFIX + ";";
-        ResultSet result = DBCache.get(query);
 
-        if (result == null) {
-            result = handler.submitQuery(query);
-            DBCache.put(query, result);
+        // Query cache
+        List<Amenity> output = cache.getAmenityList(query);
+
+        if (output == null) {
+            // Cache miss! Query database
+            ResultSet result = handler.submitQuery(query);
+            output = amenityPackager(result);
+
+            // And add to cache
+            cache.putAmenityList(query, output);
         }
         
-        return amenityPackager(result);
+        return output;
     }
 
     /**
@@ -138,14 +150,20 @@ public class DBQuery {
         String query = AMENITY_FIELDS_PREFIX +
                 "WHERE Building.id = \"" + buildingId + "\" " +
                 "AND amenity_type = \"" + type + "\"";
-        ResultSet result = DBCache.get(query);
 
-        if (result == null) {
-            result = handler.submitQuery(query);
-            DBCache.put(query, result);
+        // Query cache
+        List<Amenity> output = cache.getAmenityList(query);
+
+        if (output == null) {
+            // Cache miss! Query database
+            ResultSet result = handler.submitQuery(query);
+            output = amenityPackager(result);
+
+            // And add to cache
+            cache.putAmenityList(query, output);
         }
-        
-        return amenityPackager(result);
+
+        return output;
     }
 
     /**
@@ -164,14 +182,20 @@ public class DBQuery {
                 "WHERE Building.id = \"" + buildingId + "\" " +
                 "AND amenity_type = \"" + type + "\" " +
                 "AND building_level = \"" + floor + "\"";
-        ResultSet result = DBCache.get(query);
 
-        if (result == null) {
-            result = handler.submitQuery(query);
-            DBCache.put(query, result);
+        // Query cache
+        List<Amenity> output = cache.getAmenityList(query);
+
+        if (output == null) {
+            // Cache miss! Query database
+            ResultSet result = handler.submitQuery(query);
+            output = amenityPackager(result);
+
+            // And add to cache
+            cache.putAmenityList(query, output);
         }
-        
-        return amenityPackager(result);
+
+        return output;
     }
 
     /**
@@ -191,14 +215,20 @@ public class DBQuery {
                 "WHERE Building.id = \"" + buildingId + "\" " +
                 "AND amenity_type = \"" + type + "\" " +
                 "AND attribute = \"" + attribute + "\";";
-        ResultSet result = DBCache.get(query);
 
-        if (result == null) {
-            result = handler.submitQuery(query);
-            DBCache.put(query, result);
+        // Query cache
+        List<Amenity> output = cache.getAmenityList(query);
+
+        if (output == null) {
+            // Cache miss! Query database
+            ResultSet result = handler.submitQuery(query);
+            output = amenityPackager(result);
+
+            // And add to cache
+            cache.putAmenityList(query, output);
         }
-        
-        return amenityPackager(result);
+
+        return output;
     }
 
     /**
@@ -231,14 +261,19 @@ public class DBQuery {
             }
         }
 
-        ResultSet result = DBCache.get(query);
+        // Query cache
+        List<Amenity> output = cache.getAmenityList(query);
 
-        if (result == null) {
-            result = handler.submitQuery(query);
-            DBCache.put(query, result);
+        if (output == null) {
+            // Cache miss! Query database
+            ResultSet result = handler.submitQuery(query);
+            output = amenityPackager(result);
+
+            // And add to cache
+            cache.putAmenityList(query, output);
         }
 
-        return amenityPackager(result);
+        return output;
     }
 
     /**
@@ -255,20 +290,25 @@ public class DBQuery {
      */
     public static List<Amenity> getAmenities(DBHandler handler, String buildingId,
              int floor, String type, String attribute) throws SQLException {
-
         String query = AMENITY_FIELDS_PREFIX +
                 "WHERE Building.id = \"" + buildingId + "\" " +
                 "AND building_level = \"" + floor + "\" " +
                 "AND amenity_type = \"" + type + "\" " +
                 "AND attribute = \"" + attribute + "\";";
-        ResultSet result = DBCache.get(query);
 
-        if (result == null) {
-            result = handler.submitQuery(query);
-            DBCache.put(query, result);
+        // Query cache
+        List<Amenity> output = cache.getAmenityList(query);
+
+        if (output == null) {
+            // Cache miss! Query database
+            ResultSet result = handler.submitQuery(query);
+            output = amenityPackager(result);
+
+            // And add to cache
+            cache.putAmenityList(query, output);
         }
-        
-        return amenityPackager(result);
+
+        return output;
     }
 
     /**
@@ -284,14 +324,20 @@ public class DBQuery {
             throws SQLException {
         String query = AMENITY_FIELDS_PREFIX +
                 "WHERE Building.id = \"" + buildingId + "\";";
-        ResultSet result = DBCache.get(query);
 
-        if (result == null) {
-            result = handler.submitQuery(query);
-            DBCache.put(query, result);
+        // Query cache
+        List<Amenity> output = cache.getAmenityList(query);
+
+        if (output == null) {
+            // Cache miss! Query database
+            ResultSet result = handler.submitQuery(query);
+            output = amenityPackager(result);
+
+            // And add to cache
+            cache.putAmenityList(query, output);
         }
-        
-        return amenityPackager(result);
+
+        return output;
     }
 
     /**
@@ -306,14 +352,20 @@ public class DBQuery {
             throws SQLException {
         String query = AMENITY_FIELDS_PREFIX +
                 "WHERE Amenity.amenity_type = \"" + type + "\";";
-        ResultSet result = DBCache.get(query);
 
-        if (result == null) {
-            result = handler.submitQuery(query);
-            DBCache.put(query, result);
+        // Query cache
+        List<Amenity> output = cache.getAmenityList(query);
+
+        if (output == null) {
+            // Cache miss! Query database
+            ResultSet result = handler.submitQuery(query);
+            output = amenityPackager(result);
+
+            // And add to cache
+            cache.putAmenityList(query, output);
         }
-        
-        return amenityPackager(result);
+
+        return output;
     }
 
     /**
@@ -331,14 +383,20 @@ public class DBQuery {
         String query = AMENITY_FIELDS_PREFIX +
                 "WHERE Amenity.amenity_type = \"" + type + "\" AND " +
                 "Amenity_Attribute_Lookup.attribute =  \"" + attribute + "\";";
-        ResultSet result = DBCache.get(query);
 
-        if (result == null) {
-            result = handler.submitQuery(query);
-            DBCache.put(query, result);
+        // Query cache
+        List<Amenity> output = cache.getAmenityList(query);
+
+        if (output == null) {
+            // Cache miss! Query database
+            ResultSet result = handler.submitQuery(query);
+            output = amenityPackager(result);
+
+            // And add to cache
+            cache.putAmenityList(query, output);
         }
-        
-        return amenityPackager(result);
+
+        return output;
     }
 
     /**
@@ -368,14 +426,19 @@ public class DBQuery {
             }
         }
 
-        ResultSet result = DBCache.get(query);
+        // Query cache
+        List<Amenity> output = cache.getAmenityList(query);
 
-        if (result == null) {
-            result = handler.submitQuery(query);
-            DBCache.put(query, result);
+        if (output == null) {
+            // Cache miss! Query database
+            ResultSet result = handler.submitQuery(query);
+            output = amenityPackager(result);
+
+            // And add to cache
+            cache.putAmenityList(query, output);
         }
 
-        return amenityPackager(result);
+        return output;
     }
 
     /**
@@ -420,9 +483,9 @@ public class DBQuery {
             }
         }
 
+        queryResult.close();
         return output;
     }
-
 
     /**
      * Queries the database and returns the floorplan image of the provided
