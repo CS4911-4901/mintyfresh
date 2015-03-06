@@ -1,5 +1,7 @@
 package edu.gatech.cs4911.mintyfresh.db;
 
+import android.util.LruCache;
+
 import edu.gatech.cs4911.mintyfresh.db.queryresponse.*;
 
 import java.io.InputStream;
@@ -14,6 +16,14 @@ import java.util.Map;
  * A static class that groups all the query statements together.
  */
 public class DBQuery {
+    /**
+     * The maximum number of entries to store in the cache.
+     */
+    private static final int MAX_CACHE_ENTRIES = 5;
+    /**
+     * A least-recently used (LRU) cache for database queries.
+     */
+    private static LruCache<String, ResultSet> DBCache = new LruCache<>(MAX_CACHE_ENTRIES);
     /**
      * The fields to select from the Amenity table to complete an Amenity object.
      */
@@ -32,9 +42,15 @@ public class DBQuery {
      * @throws SQLException if the query was unsuccessful.
      */
     public static List<Building> getBuildings(DBHandler handler) throws SQLException {
-        ResultSet result = handler.submitQuery("SELECT Building.id, name, latitude, " +
+        String query = "SELECT Building.id, name, latitude, " +
                 "longitude FROM Building INNER JOIN Building_Location " +
-                "WHERE Building.id = Building_Location.id;");
+                "WHERE Building.id = Building_Location.id;";
+        ResultSet result = DBCache.get(query);
+        
+        if (result == null) {
+            result = handler.submitQuery(query);
+            DBCache.put(query, result);
+        }
 
         List<Building> output = new ArrayList<>();
         while (result.next()) {
@@ -58,9 +74,14 @@ public class DBQuery {
      */
     public static List<Integer> getLevelsInBuilding(DBHandler handler, String buildingId)
             throws SQLException {
-        ResultSet result = handler.submitQuery("SELECT level FROM Building_Floors " +
-                "WHERE id = \"" + buildingId + "\";");
+        String query = "SELECT level FROM Building_Floors " + "WHERE id = \"" + buildingId + "\";";
         List<Integer> output = new ArrayList<>();
+        ResultSet result = DBCache.get(query);
+        
+        if (result == null) {
+            result = handler.submitQuery(query);
+            DBCache.put(query, result);
+        }
 
         while (result.next()) {
             output.add(result.getInt("level"));
@@ -91,8 +112,14 @@ public class DBQuery {
      * @throws SQLException if the query was unsuccessful.
      */
     public static List<Amenity> getAmenities(DBHandler handler) throws SQLException {
-        ResultSet result = handler.submitQuery(AMENITY_FIELDS_PREFIX + ";");
+        String query = AMENITY_FIELDS_PREFIX + ";";
+        ResultSet result = DBCache.get(query);
 
+        if (result == null) {
+            result = handler.submitQuery(query);
+            DBCache.put(query, result);
+        }
+        
         return amenityPackager(result);
     }
 
@@ -108,11 +135,16 @@ public class DBQuery {
      */
     public static List<Amenity> getAmenities(DBHandler handler, String buildingId,
               String type) throws SQLException {
-
-        ResultSet result = handler.submitQuery(AMENITY_FIELDS_PREFIX +
+        String query = AMENITY_FIELDS_PREFIX +
                 "WHERE Building.id = \"" + buildingId + "\" " +
-                "AND amenity_type = \"" + type + "\"");
+                "AND amenity_type = \"" + type + "\"";
+        ResultSet result = DBCache.get(query);
 
+        if (result == null) {
+            result = handler.submitQuery(query);
+            DBCache.put(query, result);
+        }
+        
         return amenityPackager(result);
     }
 
@@ -128,12 +160,17 @@ public class DBQuery {
      */
     public static List<Amenity> getAmenities(DBHandler handler, String buildingId,
              String type, int floor) throws SQLException {
-
-        ResultSet result = handler.submitQuery(AMENITY_FIELDS_PREFIX +
+        String query = AMENITY_FIELDS_PREFIX +
                 "WHERE Building.id = \"" + buildingId + "\" " +
                 "AND amenity_type = \"" + type + "\" " +
-                "AND building_level = \"" + floor + "\"");
+                "AND building_level = \"" + floor + "\"";
+        ResultSet result = DBCache.get(query);
 
+        if (result == null) {
+            result = handler.submitQuery(query);
+            DBCache.put(query, result);
+        }
+        
         return amenityPackager(result);
     }
 
@@ -150,12 +187,17 @@ public class DBQuery {
      */
     public static List<Amenity> getAmenities(DBHandler handler, String buildingId,
               String type, String attribute) throws SQLException {
-
-        ResultSet result = handler.submitQuery(AMENITY_FIELDS_PREFIX +
+        String query = AMENITY_FIELDS_PREFIX +
                 "WHERE Building.id = \"" + buildingId + "\" " +
                 "AND amenity_type = \"" + type + "\" " +
-                "AND attribute = \"" + attribute + "\";");
+                "AND attribute = \"" + attribute + "\";";
+        ResultSet result = DBCache.get(query);
 
+        if (result == null) {
+            result = handler.submitQuery(query);
+            DBCache.put(query, result);
+        }
+        
         return amenityPackager(result);
     }
 
@@ -173,23 +215,30 @@ public class DBQuery {
     public static List<Amenity> getAmenities(DBHandler handler, String buildingId,
               String type, String[] attributes) throws SQLException {
 
-        String queryString = AMENITY_FIELDS_PREFIX +
+        String query = AMENITY_FIELDS_PREFIX +
                 "WHERE Building.id = \"" + buildingId + "\" " +
                 "AND amenity_type = \"" + type + "\" " +
                 "AND (";
 
         // Append list of attributes to query string
         for (int i = 0; i < attributes.length; i++) {
-            queryString += "attribute = \""
+            query += "attribute = \""
                     + attributes[i] + "\"";
             if (i != attributes.length - 1) {
-                queryString += " OR ";
+                query += " OR ";
             } else {
-                queryString += ") GROUP BY id HAVING COUNT(*) = " + attributes.length + ";";
+                query += ") GROUP BY id HAVING COUNT(*) = " + attributes.length + ";";
             }
         }
 
-        return amenityPackager(handler.submitQuery(queryString));
+        ResultSet result = DBCache.get(query);
+
+        if (result == null) {
+            result = handler.submitQuery(query);
+            DBCache.put(query, result);
+        }
+
+        return amenityPackager(result);
     }
 
     /**
@@ -207,12 +256,18 @@ public class DBQuery {
     public static List<Amenity> getAmenities(DBHandler handler, String buildingId,
              int floor, String type, String attribute) throws SQLException {
 
-        ResultSet result = handler.submitQuery(AMENITY_FIELDS_PREFIX +
+        String query = AMENITY_FIELDS_PREFIX +
                 "WHERE Building.id = \"" + buildingId + "\" " +
                 "AND building_level = \"" + floor + "\" " +
                 "AND amenity_type = \"" + type + "\" " +
-                "AND attribute = \"" + attribute + "\";");
+                "AND attribute = \"" + attribute + "\";";
+        ResultSet result = DBCache.get(query);
 
+        if (result == null) {
+            result = handler.submitQuery(query);
+            DBCache.put(query, result);
+        }
+        
         return amenityPackager(result);
     }
 
@@ -227,9 +282,15 @@ public class DBQuery {
      */
     public static List<Amenity> getAmenitiesByBuildingId(DBHandler handler, String buildingId)
             throws SQLException {
-        ResultSet result = handler.submitQuery(AMENITY_FIELDS_PREFIX +
-                "WHERE Building.id = \"" + buildingId + "\";");
+        String query = AMENITY_FIELDS_PREFIX +
+                "WHERE Building.id = \"" + buildingId + "\";";
+        ResultSet result = DBCache.get(query);
 
+        if (result == null) {
+            result = handler.submitQuery(query);
+            DBCache.put(query, result);
+        }
+        
         return amenityPackager(result);
     }
 
@@ -243,9 +304,15 @@ public class DBQuery {
      */
     public static List<Amenity> getAmenitiesByType(DBHandler handler, String type)
             throws SQLException {
-        ResultSet result = handler.submitQuery(AMENITY_FIELDS_PREFIX +
-                "WHERE Amenity.amenity_type = \"" + type + "\";");
+        String query = AMENITY_FIELDS_PREFIX +
+                "WHERE Amenity.amenity_type = \"" + type + "\";";
+        ResultSet result = DBCache.get(query);
 
+        if (result == null) {
+            result = handler.submitQuery(query);
+            DBCache.put(query, result);
+        }
+        
         return amenityPackager(result);
     }
 
@@ -261,10 +328,16 @@ public class DBQuery {
      */
     public static List<Amenity> getAmenitiesByTypeAndAttribute(DBHandler handler,
              String type, String attribute) throws SQLException {
-        ResultSet result = handler.submitQuery(AMENITY_FIELDS_PREFIX +
+        String query = AMENITY_FIELDS_PREFIX +
                 "WHERE Amenity.amenity_type = \"" + type + "\" AND " +
-                "Amenity_Attribute_Lookup.attribute =  \"" + attribute + "\";");
+                "Amenity_Attribute_Lookup.attribute =  \"" + attribute + "\";";
+        ResultSet result = DBCache.get(query);
 
+        if (result == null) {
+            result = handler.submitQuery(query);
+            DBCache.put(query, result);
+        }
+        
         return amenityPackager(result);
     }
 
@@ -280,23 +353,29 @@ public class DBQuery {
      */
     public static List<Amenity> getAmenitiesByTypeAndAttributes(DBHandler handler,
               String type, String[] attributes) throws SQLException {
-
-        String queryString = AMENITY_FIELDS_PREFIX +
+        String query = AMENITY_FIELDS_PREFIX +
                 "WHERE amenity_type = \"" + type + "\" " +
                 "AND (";
 
         // Append list of attributes to query string
         for (int i = 0; i < attributes.length; i++) {
-            queryString += "attribute = \""
+            query += "attribute = \""
                     + attributes[i] + "\" ";
             if (i != attributes.length - 1) {
-                queryString += " OR ";
+                query += " OR ";
             } else {
-                queryString += ") GROUP BY id HAVING COUNT(*) = " + attributes.length + ";";
+                query += ") GROUP BY id HAVING COUNT(*) = " + attributes.length + ";";
             }
         }
 
-        return amenityPackager(handler.submitQuery(queryString));
+        ResultSet result = DBCache.get(query);
+
+        if (result == null) {
+            result = handler.submitQuery(query);
+            DBCache.put(query, result);
+        }
+
+        return amenityPackager(result);
     }
 
     /**
