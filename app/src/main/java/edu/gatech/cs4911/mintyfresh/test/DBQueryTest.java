@@ -182,6 +182,19 @@ public class DBQueryTest extends InstrumentationTestCase {
         assertTrue(result.size() > 0);
     }
 
+    public void testGetFloorplanHashes() throws Exception {
+        List<String> result = getFloorplanHashes(handler);
+        assertNotNull(result);
+
+        // And check each item in result
+        for (String item : result) {
+            assertNotNull(item);
+        }
+
+        // Make sure result actually holds something
+        assertTrue(result.size() > 0);
+    }
+
     public void testGetFloorplan() throws Exception {
         InputStream result = getFloorplan(handler, "CUL", 1);
         assertNotNull(result);

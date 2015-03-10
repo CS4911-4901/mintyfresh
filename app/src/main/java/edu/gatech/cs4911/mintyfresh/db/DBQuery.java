@@ -488,6 +488,25 @@ public class DBQuery {
     }
 
     /**
+     * Queries the database and returns a list of all floorplan image hashes.
+     *
+     * @param handler The database connection to use.
+     * @return A list of all floorplan image hashes.
+     * @throws SQLException if the query was unsuccessful.
+     */
+    public static List<String> getFloorplanHashes(DBHandler handler) throws SQLException {
+        ResultSet result = handler.submitQuery("SELECT hash FROM Floorplan_Image;");
+        List<String> output = new ArrayList<>();
+
+        while (result.next()) {
+            output.add(result.getString("hash"));
+        }
+
+        result.close();
+        return output;
+    }
+
+    /**
      * Queries the database and returns the floorplan image of the provided
      * building and floor. Note that this will be relatively slow, and
      * the image cache should be consulted prior to calling getFloorplan.
@@ -503,9 +522,13 @@ public class DBQuery {
         ResultSet result = handler.submitQuery("SELECT image FROM Floorplan_Image " +
                 "WHERE hash = (SELECT image_hash FROM Floorplan WHERE id = \"" + buildingId +
                 "\" AND map_level = " + floor + ");");
+        InputStream output;
 
         result.next();
-        return result.getBinaryStream("image");
+        output = result.getBinaryStream("image");
+        result.close();
+
+        return output;
     }
 
     /**
@@ -529,6 +552,7 @@ public class DBQuery {
             output.add(result.getBinaryStream("image"));
         }
 
+        result.close();
         return output;
     }
 
