@@ -26,6 +26,7 @@ public class CacheLoader {
 
     /**
      * Returns a list of image file names in the given path.
+     * Returns null if there are no files at the path provided.
      *
      * @param path A given path to look for images.
      * @return A list of image file names in the given path.
@@ -39,11 +40,13 @@ public class CacheLoader {
             }
         }
 
-        return output;
+        // Return null if there's nothing there!
+        return (output.size() > 0) ? output : null;
     }
 
     /**
      * Returns a list of image file names in the default path.
+     * Returns null if there are no files at the path provided.
      *
      * @return A list of image file names in CacheLoader.LOCAL_IMAGE_PATH.
      */
