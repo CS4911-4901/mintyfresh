@@ -109,7 +109,6 @@ public class DBQuery {
         return getLevelsInBuilding(handler, building.getId());
     }
 
-
     /**
      * Queries the database and returns all Amenity objects.
      *

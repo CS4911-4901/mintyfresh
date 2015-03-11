@@ -55,29 +55,50 @@ public class CacheLoader {
     }
 
     /**
-     * Returns a map of image file names to hashes, loaded
+     * Returns a list of FloorplanCacheNodes constructed from the files
+     * found at the default path. Returns null if there are no files
+     * at the path provided.
+     *
+     * @return A list of FloorplanCacheNodes in CacheLoader.LOCAL_IMAGE_PATH.
+     */
+    public static List<FloorplanCacheNode> getLocalNodes() {
+        List<FloorplanCacheNode> localNodes = new ArrayList<>();
+        for (String filename : loadImages()) {
+            // File name format: <building>_<floor>.<ext>
+            // Below splits into FloorplanCacheNode(<building>, int(<floor>))
+            localNodes.add(new FloorplanCacheNode(filename.split(".")[0].split("_")[0],
+                    Integer.parseInt(filename.split(".")[0].split("_")[1])));
+        }
+
+        return (localNodes.size() > 0) ? localNodes : null;
+    }
+
+    /**
+     * Returns a map of cache nodes to image hashes, loaded
      * from a local hash file. Returns null if the hash file
      * does not exist or is empty.
      *
      * @param hashFile The path to a local hash file.
-     * @return A map of image file names to hashes.
+     * @return A map of image hashes to file names.
      */
-    public static Map<String, String> loadHashes(String hashFile) {
+    public static Map<FloorplanCacheNode, String> loadHashes(String hashFile) {
         /**
-         * Format of file: filename:hash
+         * Format of file: buildingID:floor:hash
          */
-        Map<String, String> fileHashes = new HashMap<>();
+        Map<FloorplanCacheNode, String> fileHashes = new HashMap<>();
         try {
             // Read file line-by-line and populate map
             BufferedReader reader = new BufferedReader(new FileReader(hashFile));
             for (String line; (line = reader.readLine()) != null;) {
-                // "image.svg:hash123" -> <K="image.svg": V="hash123">
-                fileHashes.put(line.split(":")[0], line.split(":")[1]);
+                // "stu:1:hash123" -> <K="(STU, 1)": V="hash123">
+                fileHashes.put(new FloorplanCacheNode(line.split(":")[0],
+                        Integer.parseInt(line.split(":")[1])), line.split(":")[2]);
             }
 
             // We're done with the file!
             reader.close();
         } catch (IOException e) {
+            // If the file doesn't exist, abort!
             return null;
         }
 
@@ -86,13 +107,13 @@ public class CacheLoader {
     }
 
     /**
-     * Returns a map of image file names to hashes, loaded
-     * from the default hash file path.Returns null if the
+     * Returns a map of cache nodes to image hashes, loaded
+     * from the default hash file path. Returns null if the
      * hash file does not exist or is empty.
      *
      * @return The map contained in CacheLoader.LOCAL_HASHFILE_PATH.
      */
-    public static Map<String, String> loadHashes() {
+    public static Map<FloorplanCacheNode, String> loadHashes() {
         return loadHashes(LOCAL_HASHFILE_PATH);
     }
 }
