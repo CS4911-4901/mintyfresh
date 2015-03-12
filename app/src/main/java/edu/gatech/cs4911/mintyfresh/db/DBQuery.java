@@ -495,7 +495,7 @@ public class DBQuery {
      * @throws SQLException if the query was unsuccessful.
      */
     public static List<FloorplanMeta> getFloorplanMetadata(DBHandler handler) throws SQLException {
-        ResultSet result = handler.submitQuery("SELECT * FROM Floorplan;";
+        ResultSet result = handler.submitQuery("SELECT * FROM Floorplan;");
         List<FloorplanMeta> output = new ArrayList<>();
 
         while (result.next()) {
@@ -520,7 +520,7 @@ public class DBQuery {
     public static FloorplanMeta getFloorplanMetadata(DBHandler handler, String buildingId, 
             int level) {
         ResultSet result = handler.submitQuery("SELECT * FROM Floorplan "
-                + "WHERE id = \"" + buildingId + "\" AND map_level = " + level + ";";
+                + "WHERE id = \"" + buildingId + "\" AND map_level = " + level + ";");
         FloorplanMeta output;
 
         result.next();
