@@ -182,6 +182,24 @@ public class DBQueryTest extends InstrumentationTestCase {
         assertTrue(result.size() > 0);
     }
 
+    public void testGetFloorplanMetadata1() throws Exception {
+        List<FloorplanMeta> result = getFloorplanMetadata(handler);
+        assertNotNull(result);
+
+        // And check each item in result
+        for (FloorplanMeta item : result) {
+            assertNotNull(item);
+        }
+
+        // Make sure result actually holds something
+        assertTrue(result.size() > 0);
+    }
+
+    public void testGetFloorplanMetadata2() throws Exception {
+        FloorplanMeta result = getFloorplanMetadata(handler, "CUL", 1);
+        assertNotNull(result);
+    }
+
     public void testGetFloorplanHashes() throws Exception {
         List<String> result = getFloorplanHashes(handler);
         assertNotNull(result);
