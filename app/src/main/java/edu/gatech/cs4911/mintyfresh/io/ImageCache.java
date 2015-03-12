@@ -1,14 +1,12 @@
 package edu.gatech.cs4911.mintyfresh.io;
 
 import java.sql.SQLException;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import edu.gatech.cs4911.mintyfresh.db.DBHandler;
 import edu.gatech.cs4911.mintyfresh.db.DBQuery;
-import edu.gatech.cs4911.mintyfresh.exception.NoDbResultException;
+import edu.gatech.cs4911.mintyfresh.db.queryresponse.FloorplanMeta;
 
 /**
  * An ImageCache maintains the mappings of image files to hashes.
@@ -56,19 +54,9 @@ public class ImageCache {
         }
 
         for (String hash : upstreamHashes) {
-            if ()
+            // TODO: do something
         }
 
-    }
-
-    /**
-     * Adds or replaces a new item in the image cache.
-     *
-     * @param filename The file name of the image.
-     * @param hash The file hash of the image.
-     */
-    public void add(String filename, String hash) {
-        cache.put(filename, hash);
     }
 
     // TODO: implement stuff
@@ -90,7 +78,7 @@ public class ImageCache {
             // Ignore hashes for files that don't exist locally
             // e.g. If image was deleted somehow but hash wasn't removed
             if (localNodes.contains(node)) {
-                cache.put(node);
+                cache.add(node);
             }
         }
     }
