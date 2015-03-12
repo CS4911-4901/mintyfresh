@@ -6,6 +6,7 @@ import java.util.List;
 
 import edu.gatech.cs4911.mintyfresh.db.queryresponse.Amenity;
 import edu.gatech.cs4911.mintyfresh.db.queryresponse.Building;
+import edu.gatech.cs4911.mintyfresh.db.queryresponse.FloorplanMeta;
 
 /**
  * A DBCache is a cache for DBQuery results. As such, it caches

@@ -1,11 +1,10 @@
 package edu.gatech.cs4911.mintyfresh.io;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Queue;
 
 import edu.gatech.cs4911.mintyfresh.db.DBHandler;
@@ -20,16 +19,6 @@ public class ImageCache {
      * A list of floorplan image metadata.
      */
     private List<FloorplanMeta> cache;
-
-    /**
-     * A two-level map. The traversal is as follows: <br>
-     * <b> Building ID -> Floor -> Cache node </b>
-     * <br><br>
-     * For example, to retrieve a cache node corresponding
-     * to <b>building TST, floor 1</b>: <br>
-     * <b>K1 = "TST", K2 = 1, V = ("TST", 1) with hash [hash]</b>
-     */
-    private Map<String, Map<Integer, FloorplanMeta>> cache;
     /**
      * The upstream database server connection to compare hashes against
      * and download images from if necessary.
@@ -53,8 +42,11 @@ public class ImageCache {
     /**
      * Updates the ImageCache by contacting the server for file hashes,
      * downloading files to replace old or missing images if necessary.
+     *
+     * @throws SQLException if there was a problem connecting to the database.
+     * @throws IOException if there was a problem writing to a file.
      */
-    public void update() {
+    public void update() throws SQLException, IOException {
         // Generates a list of invalid or missing images...
         Queue<FloorplanMeta> downloadQueue;
         try {
@@ -66,8 +58,10 @@ public class ImageCache {
 
         // And download them!
         for (FloorplanMeta image : downloadQueue) {
+            ImageDownloader.downloadToImageFile(handler, image);
+
             // And update the cache
-            if (cache.containsKey(image))
+            insert(image);
         }
     }
 
@@ -91,14 +85,14 @@ public class ImageCache {
         Queue<FloorplanMeta> refreshQueue = new LinkedList<>();
 
         for (FloorplanMeta meta : upstreamMetadata) {
-            if (!cache.contains(meta)) {
-                // If doesn't exist, or hash but nonexistant file,
-                if ()
-                // or exists but hash mismatch...
+            if (!cache.contains(meta) || (cache.contains(meta)
+                    && !cache.get(cache.indexOf(meta)).hashEquals(meta))) {
+                // If cache node doesn't exist locally...
+                // Or exists but hash mismatch...
 
                 // We need to download from the server!
                 refreshQueue.add(meta);
-            }
+            } // Else, this node is up-to-date!
         }
 
         return refreshQueue;
@@ -114,12 +108,15 @@ public class ImageCache {
      * @param node The node to insert into this ImageCache.
      */
     private void insert(FloorplanMeta node) {
-        if (cache.get(node.getId()) == null) {
-            // Building doesn't exist in cache, add it!
-            cache.put(node.getId(), new HashMap<Integer, FloorplanMeta>());
-        }
+        if (cache.contains(node)) {
+            // No no, this makes sense, promise!
 
-        cache.get(node.getId()).put(node.getLevel(), node);
+            // The equals() method of FloorplanMeta does NOT compare hashes -
+            // so this will replace a node that matches with a shallow equality
+            // check and insert a node with an updated hash!
+            cache.remove(node);
+            cache.add(node);
+        }
     }
 
     /**
@@ -127,15 +124,12 @@ public class ImageCache {
      * for a provided building ID and floor.
      *
      * @param buildingId A String ID correponding to a building.
-     * @param level The
+     * @param level The floor of the given building.
      * @return
      */
     public boolean contains(String buildingId, int level) {
-
+        return cache.contains(new FloorplanMeta(buildingId, level));
     }
-
-
-    // TODO: implement stuff
 
     public int size() {
         return cache.size();
