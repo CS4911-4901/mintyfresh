@@ -47,26 +47,28 @@ public class FloorplanMeta {
 
     /**
      * Returns true if a given FloorplanMeta object corresponds to the same
-     * building and floor as this one (does NOT check hash equality!).
+     * image as this one, identified by their image hashes.
      *
      * @param meta A given FloorplanMeta object.
-     * @return true if the object corresponds to the same building and floor; else false.
+     * @return true if the object contains the same image hash; else false.
      */
-    public boolean shallowEquals(FloorplanMeta meta) {
-        return meta.getId().equals(id) && meta.getLevel() == level;
+    public boolean hashEquals(FloorplanMeta meta) {
+        return meta.getHash().equals(hash);
     }
 
-    @Override
+    /**
+     * Performs a <i>shallow equality check</i> on two FloorplanMeta nodes.
+     * They will be equal if they have the same ID and level. The hash will
+     * NOT be checked. To do a <i>full equality check</i>, combine with
+     * FloorplanMeta.hashEquals().
+     *
+     * @param obj A given FloorplanMeta object.
+     * @return true if the object corresponds to the same building and floor; else false.
+     */
     public boolean equals(Object obj) {
-        if (obj instanceof FloorplanMeta) {
-            if (((FloorplanMeta) obj).getId().equals(id)
-                    && ((FloorplanMeta) obj).getLevel() == level
-                    && ((FloorplanMeta) obj).getHash().equals(hash)) {
-                return true;
-            }
-        }
-
-        return false;
+        return (obj instanceof FloorplanMeta)
+                && ((FloorplanMeta) obj).getId().equals(id)
+                && ((FloorplanMeta) obj).getLevel() == level;
     }
 
     /**
@@ -99,11 +101,11 @@ public class FloorplanMeta {
     /**
      * Returns a String representation of this FloorplanMeta. <br>
      * For example, a node for building TST, floor 2 will be represented
-     * as "(TST, 2)".
+     * as "(TST, 2) with hash [hash]".
      *
      * @return A String representation of this FloorplanMeta.
      */
     public String toString() {
-        return "(" + id + ", " + level + ")";
+        return "(" + id + ", " + level + ") with hash " + hash;
     }
 }
