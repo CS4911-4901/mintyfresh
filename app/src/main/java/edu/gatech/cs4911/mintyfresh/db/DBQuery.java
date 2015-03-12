@@ -518,7 +518,7 @@ public class DBQuery {
      * @throws SQLException if the query was unsuccessful.
      */
     public static FloorplanMeta getFloorplanMetadata(DBHandler handler, String buildingId, 
-            int level) {
+            int level) throws SQLException {
         ResultSet result = handler.submitQuery("SELECT * FROM Floorplan "
                 + "WHERE id = \"" + buildingId + "\" AND map_level = " + level + ";");
         FloorplanMeta output;
