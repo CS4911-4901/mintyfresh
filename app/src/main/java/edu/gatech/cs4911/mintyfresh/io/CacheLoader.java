@@ -75,12 +75,12 @@ public class CacheLoader {
     }
 
     /**
-     * Returns a map of cache nodes to image hashes, loaded
-     * from a local hash file. Returns null if the hash file
-     * does not exist or is empty.
+     * Returns a list of image metadata, loaded from a local
+     * hash file. Returns null if the hash file does not exist
+     * or is empty.
      *
      * @param hashFile The path to a local hash file.
-     * @return A map of image hashes to file names.
+     * @return A list of image metadata.
      */
     public static List<FloorplanMeta> loadHashes(String hashFile) {
         /**
@@ -108,13 +108,13 @@ public class CacheLoader {
     }
 
     /**
-     * Returns a map of cache nodes to image hashes, loaded
-     * from the default hash file path. Returns null if the
-     * hash file does not exist or is empty.
+     * Returns a list of image metadata, loaded from the default
+     * hash file path. Returns null if the hash file does not exist
+     * or is empty.
      *
-     * @return The map contained in CacheLoader.LOCAL_HASHFILE_PATH.
+     * @return The list contained in CacheLoader.LOCAL_HASHFILE_PATH.
      */
-    public static Map<FloorplanMeta, String> loadHashes() {
+    public static List<FloorplanMeta> loadHashes() {
         return loadHashes(LOCAL_HASHFILE_PATH);
     }
 }
