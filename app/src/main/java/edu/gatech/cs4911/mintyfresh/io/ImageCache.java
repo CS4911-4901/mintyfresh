@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import edu.gatech.cs4911.mintyfresh.db.DBHandler;
 import edu.gatech.cs4911.mintyfresh.db.DBQuery;
@@ -14,9 +15,9 @@ import edu.gatech.cs4911.mintyfresh.exception.NoDbResultException;
  */
 public class ImageCache {
     /**
-     * A map of image file names to file hashes.
+     * A map of cache nodes to hashes.
      */
-    private Map<String, String> cache;
+    private Map<FloorplanCacheNode, String> cache;
     /**
      * The upstream database server connection to compare hashes against
      * and download images from if necessary.
@@ -25,7 +26,7 @@ public class ImageCache {
 
     /**
      * Creates a new ImageCache. The ImageCache will be populated
-     * with images and image hashes corresponding to the values of
+     * with image hashes and images corresponding to the values of
      * CacheLoader.LOCAL_IMAGE_PATH and CacheLoader.LOCAL_HASHFILE_PATH.
      *
      * @param handler The upstream database server connection.
@@ -43,7 +44,6 @@ public class ImageCache {
      */
     public void update() {
         List<String> upstreamHashes;
-        List<String> localHashes = null;
 
         // TODO: finish implementing - if all we care about is hash
         // and hash identifies blob in database, do we even need to
@@ -56,7 +56,7 @@ public class ImageCache {
         }
 
         for (String hash : upstreamHashes) {
-
+            if ()
         }
 
     }
@@ -78,16 +78,21 @@ public class ImageCache {
     }
 
     /**
-     * Populates the image cache with images and image hashes
+     * Populates the image cache with image hashes and file names
      * corresponding to the values of CacheLoader.LOCAL_IMAGE_PATH
      * and CacheLoader.LOCAL_HASHFILE_PATH.
      */
     private void populate() {
-        List<String> filenames = CacheLoader.loadImages();
-        Map<String, String> hashes = CacheLoader.loadHashes();
-        for (String filename : filenames) {
-            // Below might result in null values - handled next!
-            cache.put(filename, hashes.get(filename));
+        // Get a list of local files that we already have
+        List<FloorplanCacheNode> localNodes = CacheLoader.getLocalNodes();
+        // Get a map of local hashes we already have
+        Map<FloorplanCacheNode, String> hashes = CacheLoader.loadHashes();
+        for (FloorplanCacheNode node : localNodes) {
+            // Ignore hashes for files that don't exist locally
+            // e.g. If image was deleted somehow but hash wasn't removed
+            if (hashes.containsKey(node)) {
+                cache.put(node, hashes.get(node));
+            }
         }
     }
 }

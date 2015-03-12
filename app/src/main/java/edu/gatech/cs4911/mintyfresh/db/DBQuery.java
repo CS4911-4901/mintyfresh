@@ -1,7 +1,5 @@
 package edu.gatech.cs4911.mintyfresh.db;
 
-import android.util.LruCache;
-
 import edu.gatech.cs4911.mintyfresh.db.queryresponse.*;
 
 import java.io.InputStream;
@@ -484,6 +482,34 @@ public class DBQuery {
 
         queryResult.close();
         return output;
+    }
+
+
+    /**
+     * Queries the database and returns a list of all metadata associated with
+     * floorplan images stored in the database, packaged as a List of
+     * FloorplanMeta objects.
+     *
+     * @param handler The database connection to use.
+     * @return A list of all metadata associated with Floorplan images in the database.
+     * @throws SQLException if the query was unsuccessful.
+     */
+    public static List<FloorplanMeta> getFloorplanMetadata(DBHandler handler) throws SQLException {
+
+    }
+
+    /**
+     * Queries the database and returns the metadata associated with the floorplan
+     * image of the p
+     * Floorplan images stored in the database, packaged as a List of
+     * FloorplanMeta objects.
+     *
+     * @param handler The database connection to use.
+     * @return A list of all metadata associated with Floorplan images in the database.
+     * @throws SQLException if the query was unsuccessful.
+     */
+    public static List<FloorplanMeta> getFloorplanMetadata(DBHandler handler) throws SQLException {
+
     }
 
     /**

@@ -7,7 +7,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+
+import edu.gatech.cs4911.mintyfresh.db.queryresponse.FloorplanMeta;
 
 /**
  * A CacheLoader handles the loading of images and hashes
@@ -55,18 +56,18 @@ public class CacheLoader {
     }
 
     /**
-     * Returns a list of FloorplanCacheNodes constructed from the files
+     * Returns a list of FloorplanMetas constructed from the files
      * found at the default path. Returns null if there are no files
      * at the path provided.
      *
-     * @return A list of FloorplanCacheNodes in CacheLoader.LOCAL_IMAGE_PATH.
+     * @return A list of FloorplanMetas in CacheLoader.LOCAL_IMAGE_PATH.
      */
-    public static List<FloorplanCacheNode> getLocalNodes() {
-        List<FloorplanCacheNode> localNodes = new ArrayList<>();
+    public static List<FloorplanMeta> getLocalNodes() {
+        List<FloorplanMeta> localNodes = new ArrayList<>();
         for (String filename : loadImages()) {
             // File name format: <building>_<floor>.<ext>
-            // Below splits into FloorplanCacheNode(<building>, int(<floor>))
-            localNodes.add(new FloorplanCacheNode(filename.split(".")[0].split("_")[0],
+            // Below splits into FloorplanMeta(<building>, int(<floor>))
+            localNodes.add(new FloorplanMeta(filename.split(".")[0].split("_")[0],
                     Integer.parseInt(filename.split(".")[0].split("_")[1])));
         }
 
@@ -81,17 +82,17 @@ public class CacheLoader {
      * @param hashFile The path to a local hash file.
      * @return A map of image hashes to file names.
      */
-    public static Map<FloorplanCacheNode, String> loadHashes(String hashFile) {
+    public static Map<FloorplanMeta, String> loadHashes(String hashFile) {
         /**
          * Format of file: buildingID:floor:hash
          */
-        Map<FloorplanCacheNode, String> fileHashes = new HashMap<>();
+        Map<FloorplanMeta, String> fileHashes = new HashMap<>();
         try {
             // Read file line-by-line and populate map
             BufferedReader reader = new BufferedReader(new FileReader(hashFile));
             for (String line; (line = reader.readLine()) != null;) {
                 // "stu:1:hash123" -> <K="(STU, 1)": V="hash123">
-                fileHashes.put(new FloorplanCacheNode(line.split(":")[0],
+                fileHashes.put(new FloorplanMeta(line.split(":")[0],
                         Integer.parseInt(line.split(":")[1])), line.split(":")[2]);
             }
 
@@ -113,7 +114,7 @@ public class CacheLoader {
      *
      * @return The map contained in CacheLoader.LOCAL_HASHFILE_PATH.
      */
-    public static Map<FloorplanCacheNode, String> loadHashes() {
+    public static Map<FloorplanMeta, String> loadHashes() {
         return loadHashes(LOCAL_HASHFILE_PATH);
     }
 }
