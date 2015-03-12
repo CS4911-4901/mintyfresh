@@ -82,18 +82,18 @@ public class CacheLoader {
      * @param hashFile The path to a local hash file.
      * @return A map of image hashes to file names.
      */
-    public static Map<FloorplanMeta, String> loadHashes(String hashFile) {
+    public static List<FloorplanMeta> loadHashes(String hashFile) {
         /**
          * Format of file: buildingID:floor:hash
          */
-        Map<FloorplanMeta, String> fileHashes = new HashMap<>();
+        List<FloorplanMeta> hashNodes = new ArrayList<>();
         try {
             // Read file line-by-line and populate map
             BufferedReader reader = new BufferedReader(new FileReader(hashFile));
             for (String line; (line = reader.readLine()) != null;) {
-                // "stu:1:hash123" -> <K="(STU, 1)": V="hash123">
-                fileHashes.put(new FloorplanMeta(line.split(":")[0],
-                        Integer.parseInt(line.split(":")[1])), line.split(":")[2]);
+                // "stu:1:hash123" -> "(STU, 1)" with hash: hash123
+                hashNodes.add(new FloorplanMeta(line.split(":")[0],
+                        Integer.parseInt(line.split(":")[1]), line.split(":")[2]));
             }
 
             // We're done with the file!
@@ -104,7 +104,7 @@ public class CacheLoader {
         }
 
         // Return null if there was nothing useful in the file!
-        return (fileHashes.size() > 0) ? fileHashes : null;
+        return (hashNodes.size() > 0) ? hashNodes : null;
     }
 
     /**
