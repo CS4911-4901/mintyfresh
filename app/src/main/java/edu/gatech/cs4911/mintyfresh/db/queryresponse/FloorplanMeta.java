@@ -20,8 +20,8 @@ public class FloorplanMeta {
     private String hash;
 
     /**
-     * Constructs a new FloorplanMeta with a provided Building ID
-     * and Building level.
+     * Constructs a new FloorplanMeta with a provided Building ID,
+     * Building level, and file hash.
      *
      * @param id An ID corresponding to a Building object.
      * @param level The floor of the building this node points to.
@@ -31,6 +31,29 @@ public class FloorplanMeta {
         this.id = id;
         this.level = level;
         this.hash = hash;
+    }
+
+    /**
+     * Constructs a new FloorplanMeta with a provided Building ID
+     * and Building level, with a default null hash. This constructor
+     * is useful for loading metadata directly from a filename.
+     *
+     * @param id An ID corresponding to a Building object.
+     * @param level The floor of the building this node points to.
+     */
+    public FloorplanMeta(String id, int level) {
+        this(id, level, null);
+    }
+
+    /**
+     * Returns true if a given FloorplanMeta object corresponds to the same
+     * building and floor as this one (does NOT check hash equality!).
+     *
+     * @param meta A given FloorplanMeta object.
+     * @return true if the object corresponds to the same building and floor; else false.
+     */
+    public boolean shallowEquals(FloorplanMeta meta) {
+        return meta.getId().equals(id) && meta.getLevel() == level;
     }
 
     @Override
