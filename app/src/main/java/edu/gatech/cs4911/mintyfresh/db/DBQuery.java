@@ -491,25 +491,59 @@ public class DBQuery {
      * FloorplanMeta objects.
      *
      * @param handler The database connection to use.
-     * @return A list of all metadata associated with Floorplan images in the database.
+     * @return A list of all metadata associated with floorplan images in the database.
      * @throws SQLException if the query was unsuccessful.
      */
     public static List<FloorplanMeta> getFloorplanMetadata(DBHandler handler) throws SQLException {
+        ResultSet result = handler.submitQuery("SELECT * FROM Floorplan;";
+        List<FloorplanMeta> output = new ArrayList<>();
 
+        while (result.next()) {
+            output.add(new FloorplanMeta(result.getString("id"), result.getInt("map_level"), 
+                    result.getString("image_hash")));
+        }
+
+        result.close();
+        return output;
     }
-
+    
     /**
      * Queries the database and returns the metadata associated with the floorplan
-     * image of the p
-     * Floorplan images stored in the database, packaged as a List of
-     * FloorplanMeta objects.
+     * image of the provided building and floor.
      *
      * @param handler The database connection to use.
-     * @return A list of all metadata associated with Floorplan images in the database.
+     * @param buildingId The building to filter results.
+     * @param level The floor of the building to filter results.
+     * @return The metadata associated with the floorplan image of the building and floor.
      * @throws SQLException if the query was unsuccessful.
      */
-    public static List<FloorplanMeta> getFloorplanMetadata(DBHandler handler) throws SQLException {
+    public static FloorplanMeta getFloorplanMetadata(DBHandler handler, String buildingId, 
+            int level) {
+        ResultSet result = handler.submitQuery("SELECT * FROM Floorplan "
+                + "WHERE id = \"" + buildingId + "\" AND map_level = " + level + ";";
+        FloorplanMeta output;
 
+        result.next();
+        output = new FloorplanMeta(result.getString("id"), result.getInt("map_level"), 
+                result.getString("image_hash"));
+        result.close();
+
+        return output;
+    }
+    
+    /**
+     * Queries the database and returns the metadata associated with the floorplan
+     * image of the provided building and floor.
+     *
+     * @param handler The database connection to use.
+     * @param building The building to filter results, identified by a String ID.
+     * @param level The floor of the building to filter results.
+     * @return The metadata associated with the floorplan image of the building and floor.
+     * @throws SQLException if the query was unsuccessful.
+     */
+    public static FloorplanMeta getFloorplanMetadata(DBHandler handler, Building building, 
+            int level) throws SQLException {
+        return getFloorplanMetadata(handler, building.getId(), level);
     }
 
     /**

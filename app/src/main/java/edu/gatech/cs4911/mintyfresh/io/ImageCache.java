@@ -15,9 +15,9 @@ import edu.gatech.cs4911.mintyfresh.exception.NoDbResultException;
  */
 public class ImageCache {
     /**
-     * A map of cache nodes to hashes.
+     * A list of floorplan image metadata.
      */
-    private Map<FloorplanCacheNode, String> cache;
+    private List<FloorplanMeta> cache;
     /**
      * The upstream database server connection to compare hashes against
      * and download images from if necessary.
@@ -32,7 +32,7 @@ public class ImageCache {
      * @param handler The upstream database server connection.
      */
     public ImageCache(DBHandler handler) {
-        cache = new HashMap<>();
+        cache = new ArrayList<>();
 
         this.handler = handler;
         populate();
@@ -84,14 +84,13 @@ public class ImageCache {
      */
     private void populate() {
         // Get a list of local files that we already have
-        List<FloorplanCacheNode> localNodes = CacheLoader.getLocalNodes();
+        List<FloorplanMeta> localNodes = CacheLoader.getLocalNodes();
         // Get a map of local hashes we already have
-        Map<FloorplanCacheNode, String> hashes = CacheLoader.loadHashes();
-        for (FloorplanCacheNode node : localNodes) {
+        for (FloorplanMeta node : CacheLoader.loadHashes()) {
             // Ignore hashes for files that don't exist locally
             // e.g. If image was deleted somehow but hash wasn't removed
-            if (hashes.containsKey(node)) {
-                cache.put(node, hashes.get(node));
+            if (localNodes.contains(node)) {
+                cache.put(node);
             }
         }
     }
