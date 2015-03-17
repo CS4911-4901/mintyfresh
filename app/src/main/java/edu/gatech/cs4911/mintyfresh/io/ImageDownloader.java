@@ -19,10 +19,6 @@ import edu.gatech.cs4911.mintyfresh.db.queryresponse.FloorplanMeta;
  */
 public class ImageDownloader {
     /**
-     * The extension to save images in.
-     */
-    public static final String IMAGE_EXTENSION = ".svg";
-    /**
      * The size of the output file buffer, in bytes.
      */
     public static final int BUFFER_SIZE = 1024;
@@ -45,7 +41,7 @@ public class ImageDownloader {
             throws SQLException, IOException {
         int bytesOutput;
         byte[] buffer = new byte[BUFFER_SIZE];
-        String filename =  meta.getId() + "_" + meta.getLevel() + IMAGE_EXTENSION;
+        String filename =  meta.getId() + "_" + meta.getLevel() + ImageCache.IMAGE_EXTENSION;
         InputStream blob = DBQuery.getFloorplan(handler, meta.getId(), meta.getLevel());
 
         // The Android way of writing to a File!

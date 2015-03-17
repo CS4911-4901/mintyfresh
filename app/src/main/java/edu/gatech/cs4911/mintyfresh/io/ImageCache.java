@@ -30,6 +30,10 @@ public class ImageCache {
      * The current application Context.
      */
     private Context context;
+    /**
+     * The extension images are stored as.
+     */
+    public static final String IMAGE_EXTENSION = ".svg";
 
     /**
      * Creates a new ImageCache. The ImageCache will be populated
