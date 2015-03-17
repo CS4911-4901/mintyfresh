@@ -33,7 +33,7 @@ public class CacheLoader {
         List<String> output = new ArrayList<>();
         File[] folder = context.getFilesDir().listFiles();
         for (File image : folder) {
-            if (image.isFile()) {
+            if (image.isFile() && image.getName().contains(ImageCache.IMAGE_EXTENSION)) {
                 output.add(image.getName());
             }
         }
