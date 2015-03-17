@@ -1,5 +1,7 @@
 package edu.gatech.cs4911.mintyfresh.io;
 
+import android.content.Context;
+
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -24,6 +26,10 @@ public class ImageCache {
      * and download images from if necessary.
      */
     private DBHandler handler;
+    /**
+     * The current application Context.
+     */
+    private Context context;
 
     /**
      * Creates a new ImageCache. The ImageCache will be populated
@@ -31,11 +37,13 @@ public class ImageCache {
      * CacheLoader.LOCAL_IMAGE_PATH and CacheLoader.LOCAL_HASHFILE_PATH.
      *
      * @param handler The upstream database server connection.
+     * @param context The current application Context.
      */
-    public ImageCache(DBHandler handler) {
+    public ImageCache(DBHandler handler, Context context) {
         cache = new ArrayList<>();
-
         this.handler = handler;
+        this.context = context;
+
         populate();
     }
 
@@ -58,7 +66,7 @@ public class ImageCache {
 
         // And download them!
         for (FloorplanMeta image : downloadQueue) {
-            ImageDownloader.downloadToImageFile(handler, image);
+            ImageDownloader.downloadToImageFile(handler, image, context);
 
             // And update the cache
             insert(image);
@@ -125,7 +133,7 @@ public class ImageCache {
      *
      * @param buildingId A String ID correponding to a building.
      * @param level The floor of the given building.
-     * @return
+     * @return true if this ImageCache contains the cache node; false otherwise.
      */
     public boolean contains(String buildingId, int level) {
         return cache.contains(new FloorplanMeta(buildingId, level));
@@ -142,9 +150,9 @@ public class ImageCache {
      */
     private void populate() {
         // Get a list of local files that we already have
-        List<FloorplanMeta> localNodes = CacheLoader.getLocalNodes();
+        List<FloorplanMeta> localNodes = CacheLoader.getLocalNodes(context);
         // Get a map of local hashes we already have
-        for (FloorplanMeta node : CacheLoader.loadHashes()) {
+        for (FloorplanMeta node : CacheLoader.loadHashes(context)) {
             // Ignore hashes for files that don't exist locally
             // e.g. If image was deleted somehow but hash wasn't removed
             if (localNodes.contains(node)) {
