@@ -64,8 +64,8 @@ public class CacheLoader {
     /**
      * Returns a list of image metadata, loaded from a local
      * hash file found in the data directory of the provided
-     * application context. Returns null if the hash file does
-     * not exist. Returns an empty list if the hash file is empty.
+     * application context. Returns an empty list if the hash
+     * file is empty or the hash file does not exist.
      *
      * @param context A given application context.
      * @return A list of image metadata.
@@ -90,7 +90,7 @@ public class CacheLoader {
             reader.close();
         } catch (IOException e) {
             // If the file doesn't exist, abort!
-            return null;
+            return hashNodes;
         }
 
         return hashNodes;
