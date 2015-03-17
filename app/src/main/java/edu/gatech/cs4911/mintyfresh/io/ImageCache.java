@@ -34,6 +34,10 @@ public class ImageCache {
      * The extension images are stored as.
      */
     public static final String IMAGE_EXTENSION = ".svg";
+    /**
+     * The filename of the local hash file.
+     */
+    public static final String HASH_FILENAME = "hashfile.txt";
 
     /**
      * Creates a new ImageCache. The ImageCache will be populated

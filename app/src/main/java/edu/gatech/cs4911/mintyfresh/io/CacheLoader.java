@@ -17,11 +17,6 @@ import edu.gatech.cs4911.mintyfresh.db.queryresponse.FloorplanMeta;
  */
 public class CacheLoader {
     /**
-     * The filename of the local hash file.
-     */
-    public static final String HASH_FILENAME = "hashfile.txt";
-
-    /**
      * Returns a list of image file names in the data directory of the
      * provided application context. Returns an empty list if there
      * are no files in the context provided.
@@ -54,8 +49,8 @@ public class CacheLoader {
         for (String filename : loadImages(context)) {
             // File name format: <building>_<floor>.<ext>
             // Below splits into FloorplanMeta(<building>, int(<floor>))
-            localNodes.add(new FloorplanMeta(filename.split(".")[0].split("_")[0],
-                    Integer.parseInt(filename.split(".")[0].split("_")[1])));
+            localNodes.add(new FloorplanMeta(filename.split("\\.")[0].split("_")[0],
+                    Integer.parseInt(filename.split("\\.")[0].split("_")[1])));
         }
 
         return localNodes;
@@ -76,7 +71,7 @@ public class CacheLoader {
          */
         List<FloorplanMeta> hashNodes = new ArrayList<>();
         try {
-            File path = new File(context.getFilesDir(), HASH_FILENAME);
+            File path = new File(context.getFilesDir(), ImageCache.HASH_FILENAME);
 
             // Read file line-by-line and populate map
             BufferedReader reader = new BufferedReader(new FileReader(path));
