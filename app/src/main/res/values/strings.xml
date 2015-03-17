@@ -13,5 +13,6 @@
     <string name="needToFind">Find me a </string>
     <string name="floorSelect">Select a floor: </string>
     <string name="showing">Showing</string>
+    <string name="title_activity_image_cache_view_test">ImageCacheViewTestActivity</string>
 
 </resources>

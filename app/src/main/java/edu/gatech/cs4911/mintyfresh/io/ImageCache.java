@@ -2,6 +2,7 @@ package edu.gatech.cs4911.mintyfresh.io;
 
 import android.content.Context;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -79,6 +80,9 @@ public class ImageCache {
             // And update the cache
             insert(image);
         }
+
+        // Update hashfile at end!
+        updateHashFile();
     }
 
     /**
@@ -131,10 +135,39 @@ public class ImageCache {
             // so this will replace a node that matches with a shallow equality
             // check and insert a node with an updated hash!
             cache.remove(node);
-            cache.add(node);
         }
+
+        cache.add(node);
     }
 
+    /**
+     * Writes a new hash file at the data directory of this ImageCache's context,
+     * overwriting any previous hash file version. The hash file will be written based
+     * on the FloorplanMeta items currently in this ImageCache. <br><br>
+     *
+     * The format of each hash file line is as follows: <br>
+     * <b>buildingID:floor:hash</b> <br><br>
+     *
+     * For example, this FloorplanMeta: <br>
+     * <b>("TST", 1) with hash 1234f</b> <br>
+     *
+     * ...will be written as this hash file line: <br>
+     * <b>"TST:1:1234f"</b>
+     *
+     * @throws IOException if we were prevented from writing to the context's data directory.
+     */
+    private void updateHashFile() throws IOException {
+        FileOutputStream outputHash = context
+                .openFileOutput(ImageCache.HASH_FILENAME, Context.MODE_PRIVATE);
+
+        for (FloorplanMeta meta : cache) {
+            outputHash.write(
+                    (meta.getId() + ":" + meta.getLevel() + ":" + meta.getHash() + "\n").getBytes()
+            );
+        }
+
+        outputHash.close();
+    }
 
     /**
      * Returns true if this ImageCache contains the given cache node.
@@ -157,8 +190,6 @@ public class ImageCache {
     public boolean contains(String buildingId, int level) {
         return contains(new FloorplanMeta(buildingId, level));
     }
-
-
 
     public int size() {
         return cache.size();

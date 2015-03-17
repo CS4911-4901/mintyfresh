@@ -43,6 +43,10 @@
             android:name=".HomeScreenActivity"
             android:label="HomeScreen" >
         </activity>
+        <activity
+            android:name=".test.ImageCacheViewTestActivity"
+            android:label="@string/title_activity_image_cache_view_test" >
+        </activity>
     </application>
 
 </manifest>
