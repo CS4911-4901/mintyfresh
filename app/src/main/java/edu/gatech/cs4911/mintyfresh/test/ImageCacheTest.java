@@ -2,9 +2,6 @@ package edu.gatech.cs4911.mintyfresh.test;
 
 import android.content.Context;
 import android.test.AndroidTestCase;
-import android.util.Log;
-
-import java.util.List;
 
 import edu.gatech.cs4911.mintyfresh.db.DBHandler;
 import edu.gatech.cs4911.mintyfresh.db.queryresponse.FloorplanMeta;
