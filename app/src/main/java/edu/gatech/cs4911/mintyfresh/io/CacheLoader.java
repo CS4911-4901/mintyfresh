@@ -1,11 +1,12 @@
 package edu.gatech.cs4911.mintyfresh.io;
 
+import android.content.Context;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import edu.gatech.cs4911.mintyfresh.db.queryresponse.FloorplanMeta;
@@ -16,25 +17,21 @@ import edu.gatech.cs4911.mintyfresh.db.queryresponse.FloorplanMeta;
  */
 public class CacheLoader {
     /**
-     * The default path to look for local images to load into the cache.
+     * The filename of the local hash file.
      */
-    public static final String LOCAL_IMAGE_PATH = "";
-    /**
-     * The default path to look for a file with image hashes corresponding
-     * to images located at LOCAL_IMAGE_PATH.
-     */
-    public static final String LOCAL_HASHFILE_PATH = "";
+    public static final String HASH_FILENAME = "hashfile.txt";
 
     /**
-     * Returns a list of image file names in the given path.
-     * Returns null if there are no files at the path provided.
+     * Returns a list of image file names in the data directory of the
+     * provided application context. Returns null if there are no files
+     * in the context provided.
      *
-     * @param path A given path to look for images.
+     * @param context A given application context.
      * @return A list of image file names in the given path.
      */
-    public static List<String> loadImages(String path) {
+    public static List<String> loadImages(Context context) {
         List<String> output = new ArrayList<>();
-        File[] folder = new File(path).listFiles();
+        File[] folder = context.getFilesDir().listFiles();
         for (File image : folder) {
             if (image.isFile()) {
                 output.add(image.getName());
@@ -46,25 +43,16 @@ public class CacheLoader {
     }
 
     /**
-     * Returns a list of image file names in the default path.
-     * Returns null if there are no files at the path provided.
-     *
-     * @return A list of image file names in CacheLoader.LOCAL_IMAGE_PATH.
-     */
-    public static List<String> loadImages() {
-        return loadImages(LOCAL_IMAGE_PATH);
-    }
-
-    /**
      * Returns a list of FloorplanMetas constructed from the files
-     * found at the default path. Returns null if there are no files
-     * at the path provided.
+     * found at the data directory of the provided application context.
+     * Returns null if there are no files in the context provided
      *
+     * @param context A given application context.
      * @return A list of FloorplanMetas in CacheLoader.LOCAL_IMAGE_PATH.
      */
-    public static List<FloorplanMeta> getLocalNodes() {
+    public static List<FloorplanMeta> getLocalNodes(Context context) {
         List<FloorplanMeta> localNodes = new ArrayList<>();
-        for (String filename : loadImages()) {
+        for (String filename : loadImages(context)) {
             // File name format: <building>_<floor>.<ext>
             // Below splits into FloorplanMeta(<building>, int(<floor>))
             localNodes.add(new FloorplanMeta(filename.split(".")[0].split("_")[0],
@@ -76,20 +64,23 @@ public class CacheLoader {
 
     /**
      * Returns a list of image metadata, loaded from a local
-     * hash file. Returns null if the hash file does not exist
-     * or is empty.
+     * hash file found in the data directory of the provided
+     * application context. Returns null if the hash file does
+     * not exist or is empty.
      *
-     * @param hashFile The path to a local hash file.
+     * @param context A given application context.
      * @return A list of image metadata.
      */
-    public static List<FloorplanMeta> loadHashes(String hashFile) {
+    public static List<FloorplanMeta> loadHashes(Context context) {
         /**
          * Format of file: buildingID:floor:hash
          */
         List<FloorplanMeta> hashNodes = new ArrayList<>();
         try {
+            String path = context.getFilesDir() + "/" + HASH_FILENAME;
+
             // Read file line-by-line and populate map
-            BufferedReader reader = new BufferedReader(new FileReader(hashFile));
+            BufferedReader reader = new BufferedReader(new FileReader(path));
             for (String line; (line = reader.readLine()) != null;) {
                 // "stu:1:hash123" -> "(STU, 1)" with hash: hash123
                 hashNodes.add(new FloorplanMeta(line.split(":")[0],
@@ -105,16 +96,5 @@ public class CacheLoader {
 
         // Return null if there was nothing useful in the file!
         return (hashNodes.size() > 0) ? hashNodes : null;
-    }
-
-    /**
-     * Returns a list of image metadata, loaded from the default
-     * hash file path. Returns null if the hash file does not exist
-     * or is empty.
-     *
-     * @return The list contained in CacheLoader.LOCAL_HASHFILE_PATH.
-     */
-    public static List<FloorplanMeta> loadHashes() {
-        return loadHashes(LOCAL_HASHFILE_PATH);
     }
 }
