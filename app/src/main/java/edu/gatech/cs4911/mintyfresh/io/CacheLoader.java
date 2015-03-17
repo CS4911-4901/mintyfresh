@@ -23,8 +23,8 @@ public class CacheLoader {
 
     /**
      * Returns a list of image file names in the data directory of the
-     * provided application context. Returns null if there are no files
-     * in the context provided.
+     * provided application context. Returns an empty list if there
+     * are no files in the context provided.
      *
      * @param context A given application context.
      * @return A list of image file names in the given path.
@@ -38,14 +38,13 @@ public class CacheLoader {
             }
         }
 
-        // Return null if there's nothing there!
-        return (output.size() > 0) ? output : null;
+        return output;
     }
 
     /**
      * Returns a list of FloorplanMetas constructed from the files
      * found at the data directory of the provided application context.
-     * Returns null if there are no files in the context provided
+     * Returns an empty list if there are no files in the context provided.
      *
      * @param context A given application context.
      * @return A list of FloorplanMetas in CacheLoader.LOCAL_IMAGE_PATH.
@@ -59,14 +58,14 @@ public class CacheLoader {
                     Integer.parseInt(filename.split(".")[0].split("_")[1])));
         }
 
-        return (localNodes.size() > 0) ? localNodes : null;
+        return localNodes;
     }
 
     /**
      * Returns a list of image metadata, loaded from a local
      * hash file found in the data directory of the provided
      * application context. Returns null if the hash file does
-     * not exist or is empty.
+     * not exist. Returns an empty list if the hash file is empty.
      *
      * @param context A given application context.
      * @return A list of image metadata.
@@ -94,7 +93,6 @@ public class CacheLoader {
             return null;
         }
 
-        // Return null if there was nothing useful in the file!
-        return (hashNodes.size() > 0) ? hashNodes : null;
+        return hashNodes;
     }
 }
