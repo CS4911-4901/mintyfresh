@@ -77,7 +77,7 @@ public class CacheLoader {
          */
         List<FloorplanMeta> hashNodes = new ArrayList<>();
         try {
-            String path = context.getFilesDir() + "/" + HASH_FILENAME;
+            File path = new File(context.getFilesDir(), HASH_FILENAME);
 
             // Read file line-by-line and populate map
             BufferedReader reader = new BufferedReader(new FileReader(path));
