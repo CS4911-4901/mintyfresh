@@ -127,6 +127,17 @@ public class ImageCache {
         }
     }
 
+
+    /**
+     * Returns true if this ImageCache contains the given cache node.
+     *
+     * @param meta The given cache node.
+     * @return true if this ImageCache contains the cache node; false otherwise.
+     */
+    public boolean contains(FloorplanMeta meta) {
+        return cache.contains(meta);
+    }
+
     /**
      * Returns true if this ImageCache contains a cache node
      * for a provided building ID and floor.
@@ -136,8 +147,10 @@ public class ImageCache {
      * @return true if this ImageCache contains the cache node; false otherwise.
      */
     public boolean contains(String buildingId, int level) {
-        return cache.contains(new FloorplanMeta(buildingId, level));
+        return contains(new FloorplanMeta(buildingId, level));
     }
+
+
 
     public int size() {
         return cache.size();
