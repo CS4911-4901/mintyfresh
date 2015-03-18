@@ -14,5 +14,6 @@
     <string name="floorSelect">Select a floor: </string>
     <string name="showing">Showing</string>
     <string name="title_activity_image_cache_view_test">ImageCacheViewTestActivity</string>
+    <string name="imageCacheViewTestImage">Test image CUL_1.svg</string>
 
 </resources>

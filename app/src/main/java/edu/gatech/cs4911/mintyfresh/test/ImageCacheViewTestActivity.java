@@ -5,8 +5,12 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 
-import java.sql.SQLException;
+import com.caverock.androidsvg.SVGImageView;
+import com.caverock.androidsvg.SVG;
 
 import edu.gatech.cs4911.mintyfresh.R;
 import edu.gatech.cs4911.mintyfresh.db.DBHandler;
@@ -19,20 +23,32 @@ public class ImageCacheViewTestActivity extends ActionBarActivity {
     DBHandler handler;
     ImageCache cache;
     FloorplanMeta testMeta;
+    ImageView testImageViewOutput;
+    LinearLayout layout;
+    SVGImageView imageView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_image_cache_view_test);
         testMeta = new FloorplanMeta("CUL", 1);
+        testImageViewOutput = (ImageView) findViewById(R.id.imageCacheViewTestImage);
+        layout = new LinearLayout(this);
+        imageView = new SVGImageView(this);
 
         try {
             // Moment of truth!
             handler = new NetIoTask().execute("").get();
             cache = new ImageCache(handler, getApplicationContext());
+            new CacheUpdaterTask().execute(cache);
 
-            String successState = new CacheUpdaterTask().execute(cache).get();
-            System.console(); // BREAK
+            SVG result = new ImageUpdaterTask().execute("CUL_1.svg").get();
+            imageView.setSVG(result);
+            layout.addView(imageView, new LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+
+            setContentView(layout);
+
         } catch (Exception e) {
             return;
         }
@@ -41,7 +57,7 @@ public class ImageCacheViewTestActivity extends ActionBarActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        getMenuInflater().inflate(R.menu.menu_image_cache_view_test, menu);
         return true;
     }
 
@@ -77,6 +93,20 @@ public class ImageCacheViewTestActivity extends ActionBarActivity {
             } catch (Exception e) {
                 return e.toString();
             } return "SUCCESS";
+        }
+    }
+
+    private class ImageUpdaterTask extends AsyncTask<String, Void, SVG> {
+        protected SVG doInBackground(String... filename) {
+            try {
+                SVG result = SVG.getFromInputStream(getApplicationContext()
+                        .openFileInput(filename[0]));
+
+                return result;
+
+            } catch (Exception e) {
+                return null;
+            }
         }
     }
 }

@@ -7,6 +7,16 @@
     tools:context="edu.gatech.cs4911.mintyfresh.test.ImageCacheViewTestActivity">
 
     <TextView android:text="@string/hello_world" android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:id="@+id/textView2" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/imageCacheViewTestImage"
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@+id/textView2"
+        android:layout_toEndOf="@+id/textView2"
+        android:contentDescription="@string/imageCacheViewTestImage" />
 
 </RelativeLayout>
