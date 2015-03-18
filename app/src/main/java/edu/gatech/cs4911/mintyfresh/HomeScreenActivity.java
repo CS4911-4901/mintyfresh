@@ -41,6 +41,7 @@ public class HomeScreenActivity extends ActionBarActivity {
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     private ExpandableListView expListView;
     protected AmenityFinder amenityFinder;
+    private boolean elvShowing = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,21 +55,40 @@ public class HomeScreenActivity extends ActionBarActivity {
         bathroom.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                expandMenu(0);
+                //todo i have this hacked but i need to make sure it shows the one you click on and hides if you delete it
+                if (elvShowing) {
+                    elvShowing = false;
+                    expListView.setVisibility(View.GONE);
+                }
+                else {
+                    expandMenu(0);
+                }
             }
         });
         Button vending = (Button) findViewById(R.id.vendingButton);
         vending.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                expandMenu(1);
+                if (elvShowing) {
+                    elvShowing = false;
+                    expListView.setVisibility(View.GONE);
+                }
+                else {
+                    expandMenu(1);
+                }
             }
         });
         Button printing = (Button) findViewById(R.id.printerButton);
         printing.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                expandMenu(2);
+                if (elvShowing) {
+                    elvShowing = false;
+                    expListView.setVisibility(View.GONE);
+                }
+                else {
+                    expandMenu(2);
+                }
             }
         });
 
@@ -97,10 +117,6 @@ public class HomeScreenActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    protected Activity returnThis() {
-        return this;
-    }
-
     private void expandMenu(int type) {
         //do nothing
         //find the amenities
@@ -116,13 +132,30 @@ public class HomeScreenActivity extends ActionBarActivity {
         new ConnectToDB(type).execute(curLocation);
     }
 
-    protected void showEFLA(ArrayList<RelativeBuilding> buildings, Map<RelativeBuilding, List<Integer>> map) {
-        final ExpandableFloorListAdapter expListAdapter = new ExpandableFloorListAdapter(
-                this, buildings, map);
-        expListView.setAdapter(expListAdapter);
+    protected boolean getELVShowing() {
+        return elvShowing;
+    }
 
-        expListView.setVisibility(View.VISIBLE);
-        Log.v("SHOWEFLA", "DONE?");
+    protected void showEFLA(ArrayList<RelativeBuilding> buildings, Map<RelativeBuilding, List<Integer>> map, String name) {
+
+        if (!elvShowing) {
+            elvShowing = true;
+            LinearLayout showing = (LinearLayout) findViewById(R.id.showingLayout);
+            Button showingButton = (Button) findViewById(R.id.selectedButton);
+            showingButton.setText("All " + name); //it'll need a little arrow buddy
+            showing.setVisibility(View.VISIBLE);
+
+            final ExpandableFloorListAdapter expListAdapter = new ExpandableFloorListAdapter(
+                    this, buildings, map);
+            expListView.setAdapter(expListAdapter);
+
+            expListView.setVisibility(View.VISIBLE);
+            Log.v("SHOWEFLA", "DONE?");
+        }
+        else {
+            elvShowing = false;
+            expListView.setVisibility(View.GONE);
+        }
     }
 
 
@@ -136,7 +169,6 @@ public class HomeScreenActivity extends ActionBarActivity {
         public ConnectToDB(int type) {
             this.type = type;
             //showing button-name
-            String name = "";
             if (type == 0) {
                 name = "Bathrooms";
             }
@@ -166,13 +198,9 @@ public class HomeScreenActivity extends ActionBarActivity {
                     RelativeBuilding rb = buildingsPQ.poll();
                     buildings.add(rb);
                     floors = amenityFinder.getFloorsInBuilding(rb.getBuilding());
+                    Log.v("yep", floors.toString());
                     map.put(rb, floors);
                 }
-
-                LinearLayout showing = (LinearLayout) findViewById(R.id.showingLayout);
-                Button showingButton = (Button) findViewById(R.id.selectedButton);
-                showingButton.setText("All " + name); //it'll need a little arrow buddy
-                showing.setVisibility(View.VISIBLE);
 
                 Log.v("button", type + "clicked");
 
@@ -186,7 +214,7 @@ public class HomeScreenActivity extends ActionBarActivity {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            showEFLA(buildings, map);
+            showEFLA(buildings, map, name);
         }
     }
 
