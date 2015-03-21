@@ -11,9 +11,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ExpandableListView;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -50,6 +52,9 @@ public class HomeScreenActivity extends ActionBarActivity {
 
         expListView = (ExpandableListView) findViewById(R.id.buildingList);
         expListView.setVisibility(View.GONE);
+
+        //todo what it's doing is printing the floors options n**2 times.  neet to fix that.
+        //todo then i need to get those clicks working.
 
         Button bathroom = (Button) findViewById(R.id.bathroomButton);
         bathroom.setOnClickListener(new OnClickListener() {
@@ -141,8 +146,20 @@ public class HomeScreenActivity extends ActionBarActivity {
         if (!elvShowing) {
             elvShowing = true;
             LinearLayout showing = (LinearLayout) findViewById(R.id.showingLayout);
-            Button showingButton = (Button) findViewById(R.id.selectedButton);
-            showingButton.setText("All " + name); //it'll need a little arrow buddy
+            Spinner showingSpinner = (Spinner) findViewById(R.id.selectedSpinner);
+            // Create an ArrayAdapter using the string array and a default spinner layout
+            ArrayList<CharSequence> array = new ArrayList<CharSequence>();
+            array.add("All Thing");
+// todo somehow i have to get the categories)
+            ArrayAdapter<CharSequence> adapter = new ArrayAdapter<CharSequence>(this, android.R.layout.simple_list_item_1, array); // = ArrayAdapter.createFromResource(this,
+//                    R.array.planets_array, android.R.layout.simple_spinner_item);
+            // Specify the layout to use when the list of choices appears
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            // Apply the adapter to the spinner
+            showingSpinner.setAdapter(adapter);
+
+
+//            showingSpinner.setText("All " + name); //it'll need a little arrow buddy
             showing.setVisibility(View.VISIBLE);
 
             final ExpandableFloorListAdapter expListAdapter = new ExpandableFloorListAdapter(
@@ -193,12 +210,18 @@ public class HomeScreenActivity extends ActionBarActivity {
                 buildings = new ArrayList<RelativeBuilding>();
                 map = new ArrayMap<RelativeBuilding, List<Integer>>();
 
-                List<Integer> floors;
+                List<Integer> floors = new ArrayList<Integer>();
+                floors.add(1);
+                floors.add(2);
+                floors.add(3);
+
                 while (!buildingsPQ.isEmpty()) {
                     RelativeBuilding rb = buildingsPQ.poll();
                     buildings.add(rb);
-                    floors = amenityFinder.getFloorsInBuilding(rb.getBuilding());
-                    Log.v("yep", floors.toString());
+                    //todo I CANNOT MAKE IT ACTUALLY GET THE FLOORS I'M GOING TO KILL SOMEONE
+//                    floors = amenityFinder.getFloorsInBuilding(rb.getBuilding().getId());
+//                    Log.v("yep", floors.toString());
+//                    Log.v("yep", ((Integer)floors.size()).toString());
                     map.put(rb, floors);
                 }
 

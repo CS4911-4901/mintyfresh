@@ -49,7 +49,7 @@ public class ExpandableFloorListAdapter extends BaseExpandableListAdapter {
     @Override
     public View getChildView(int groupPosition, int childPosition, boolean isLastChild,
                              View convertView, ViewGroup parent) {
-        String building = (String) getChild(groupPosition, childPosition);
+//        String building = (String) getChild(groupPosition, childPosition);
         LayoutInflater inflater = context.getLayoutInflater();
 
         if (convertView == null) {
@@ -63,7 +63,7 @@ public class ExpandableFloorListAdapter extends BaseExpandableListAdapter {
 
     @Override
     public int getChildrenCount(int groupPosition) {
-        return floors.get(buildings.get(groupPosition)).size();
+        return 1; //floors.get(buildings.get(groupPosition)).size();
     }
 
     @Override
