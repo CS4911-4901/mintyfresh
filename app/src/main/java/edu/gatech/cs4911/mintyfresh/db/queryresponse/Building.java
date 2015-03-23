@@ -1,17 +1,17 @@
 package edu.gatech.cs4911.mintyfresh.db.queryresponse;
 
 /**
- * A Building holds information about a nearby building's name, id, latitude, and longitude.
+ * A Building holds information about a nearby building's id, name, latitude, and longitude.
  */
 public class Building extends DBResponseObject {
-    /**
-     * The human-readable name of this Building.
-     */
-    private String name;
     /**
      * A three-character ID assigned to this Building.
      */
     private String id;
+    /**
+     * The human-readable name of this Building.
+     */
+    private String name;
     /**
      * The latitude of this Building.<br />
      * latitude > 0 = N<br />
@@ -29,23 +29,16 @@ public class Building extends DBResponseObject {
      * Constructs a new Building object to hold information about a Building's
      * human-readable name, ID, latitude, and longitude.
      *
-     * @param name The human-readable name of this Building.
      * @param id A three-character ID assigned to this Building.
+     * @param name The human-readable name of this Building.
      * @param latitude The latitude of this Building.
      * @param longitude The longitude of this Building.
      */
-    public Building(String name, String id, double latitude, double longitude) {
-        this.name = name;
+    public Building(String id, String name, double latitude, double longitude) {
         this.id = id;
+        this.name = name;
         this.latitude = latitude;
         this.longitude = longitude;
-    }
-
-    /**
-     * @return The human-readable name of this Building.
-     */
-    public String getName() {
-        return name;
     }
 
     /**
@@ -53,6 +46,13 @@ public class Building extends DBResponseObject {
      */
     public String getId() {
         return id;
+    }
+
+    /**
+     * @return The human-readable name of this Building.
+     */
+    public String getName() {
+        return name;
     }
 
     /**

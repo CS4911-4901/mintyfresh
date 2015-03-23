@@ -211,15 +211,15 @@ public class HomeScreenActivity extends ActionBarActivity {
                 map = new ArrayMap<RelativeBuilding, List<Integer>>();
 
                 List<Integer> floors = new ArrayList<Integer>();
-                floors.add(1);
+/*                floors.add(1);
                 floors.add(2);
-                floors.add(3);
+                floors.add(3);*/
 
                 while (!buildingsPQ.isEmpty()) {
                     RelativeBuilding rb = buildingsPQ.poll();
                     buildings.add(rb);
                     //todo I CANNOT MAKE IT ACTUALLY GET THE FLOORS I'M GOING TO KILL SOMEONE
-//                    floors = amenityFinder.getFloorsInBuilding(rb.getBuilding().getId());
+                    floors = amenityFinder.getFloorsInBuilding(rb.getBuilding().getId());
 //                    Log.v("yep", floors.toString());
 //                    Log.v("yep", ((Integer)floors.size()).toString());
                     map.put(rb, floors);
