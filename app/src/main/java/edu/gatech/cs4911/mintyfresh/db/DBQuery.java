@@ -502,8 +502,8 @@ public class DBQuery {
                         .addAttribute(queryResult.getString("attribute"));
             } else {
                 output.add(new Amenity(
-                        new Building(queryResult.getString("name"),
-                                queryResult.getString("building"),
+                        new Building(queryResult.getString("building"),
+                                queryResult.getString("name"),
                                 queryResult.getDouble("latitude"),
                                 queryResult.getDouble("longitude")),
                         queryResult.getString("amenity_type"),
