@@ -439,6 +439,45 @@ public class DBQuery {
     }
 
     /**
+     * Queries the database and returns all distinct Amenity types of Amenity objects
+     * in the given building.
+     *
+     * @param handler The database connection to use.
+     * @param buildingId The building to filter results, identified by a String ID.
+     * @return A list of all distinct Amenity types in a given building.
+     * @throws SQLException if the query was unsuccessful.
+     */
+    public static List<String> getAmenityTypesInBuilding(DBHandler handler,
+              String buildingId) throws SQLException {
+        String query = "SELECT DISTINCT attribute FROM Amenity_Attribute_Lookup " +
+                "WHERE id IN (SELECT id FROM Amenity WHERE building = \"" + buildingId + "\");";
+        List<String> output = new ArrayList<>();
+        ResultSet result = handler.submitQuery(query);
+        while (result.next()) {
+            output.add(result.getString("attribute"));
+        }
+
+        result.close();
+        return output;
+    }
+
+    /**
+     * Queries the database and returns all distinct Amenity types of Amenity objects
+     * in the given building.
+     *
+     * @param handler The database connection to use.
+     * @param building The building to filter results.
+     * @return A list of all distinct Amenity types in a given building.
+     * @throws SQLException if the query was unsuccessful.
+     */
+    public static List<String> getAmenityTypesInBuilding(DBHandler handler,
+              Building building) throws SQLException {
+        return getAmenityTypesInBuilding(handler, building.getId());
+    }
+
+
+
+    /**
      * A helper method for Amenity queries to package their differing ResultSets into
      * a common structure.
      *
@@ -512,7 +551,7 @@ public class DBQuery {
      * image of the provided building and floor.
      *
      * @param handler The database connection to use.
-     * @param buildingId The building to filter results.
+     * @param buildingId The building to filter results, identified by a String ID..
      * @param level The floor of the building to filter results.
      * @return The metadata associated with the floorplan image of the building and floor.
      * @throws SQLException if the query was unsuccessful.
@@ -536,7 +575,7 @@ public class DBQuery {
      * image of the provided building and floor.
      *
      * @param handler The database connection to use.
-     * @param building The building to filter results, identified by a String ID.
+     * @param building The building to filter results.
      * @param level The floor of the building to filter results.
      * @return The metadata associated with the floorplan image of the building and floor.
      * @throws SQLException if the query was unsuccessful.

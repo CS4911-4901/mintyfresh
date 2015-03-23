@@ -182,6 +182,19 @@ public class DBQueryTest extends InstrumentationTestCase {
         assertTrue(result.size() > 0);
     }
 
+    public void testGetAmenityTypesInBuilding() throws Exception {
+        List<String> result = getAmenityTypesInBuilding(handler, "TST");
+        assertNotNull(result);
+
+        // And check each item in result
+        for (String item : result) {
+            assertNotNull(item);
+        }
+
+        // Make sure result actually holds something
+        assertTrue(result.size() > 0);
+    }
+
     public void testGetFloorplanMetadata1() throws Exception {
         List<FloorplanMeta> result = getFloorplanMetadata(handler);
         assertNotNull(result);
