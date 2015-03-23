@@ -29,8 +29,8 @@ public class AmenityFinderTest extends InstrumentationTestCase {
         curLocation.setLatitude(33.7751878);
         curLocation.setLongitude(-84.39687341);
 
-        building = new Building("Clough Undergraduate Learning Commons",
-                "CUL", 33.774792, -84.396386);
+        building = new Building("CUL", "Clough Undergraduate Learning Commons",
+                33.774792, -84.396386);
     }
 
     public void tearDown() throws Exception { }
