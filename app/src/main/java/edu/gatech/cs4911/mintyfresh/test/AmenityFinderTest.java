@@ -65,6 +65,26 @@ public class AmenityFinderTest extends InstrumentationTestCase {
         assertTrue(result.size() > 0);
     }
 
+    public void testGetAmenityTypesInBuilding1() throws Exception {
+        List<String> result = finder.getAmenityTypesInBuilding(building);
+
+        assertNotNull(result);
+        assertNotNull(result.get(0));
+
+        // Make sure result actually holds something
+        assertTrue(result.size() > 0);
+    }
+
+    public void testGetAmenityTypesInBuilding2() throws Exception {
+        List<String> result = finder.getAmenityTypesInBuilding(building.getId());
+
+        assertNotNull(result);
+        assertNotNull(result.get(0));
+
+        // Make sure result actually holds something
+        assertTrue(result.size() > 0);
+    }
+
     public void testGetNearbyAmenities() throws Exception {
         PriorityQueue<RelativeAmenity> result = finder.getNearbyAmenities(curLocation);
 

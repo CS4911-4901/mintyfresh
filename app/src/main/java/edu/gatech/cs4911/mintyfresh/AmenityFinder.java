@@ -79,6 +79,18 @@ public class AmenityFinder {
         }
     }
 
+    public List<String> getAmenityTypesInBuilding(String buildingId) throws NoDbResultException {
+        try {
+            return DBQuery.getAmenityTypesInBuilding(handler, buildingId);
+        } catch (Exception e) {
+            throw new NoDbResultException();
+        }
+    }
+
+    public List<String> getAmenityTypesInBuilding(Building building) throws NoDbResultException {
+        return getAmenityTypesInBuilding(building.getId());
+    }
+
     /**
      * Returns a heap of all RelativeAmenity objects, ordered by relative distance.
      *
