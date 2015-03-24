@@ -82,9 +82,11 @@ public class ExpandableFloorListAdapter extends BaseExpandableListAdapter {
                         String s = ((Button)v).getText().toString();
                         Integer i = Integer.parseInt(s);
                         String bldgName = getGroup(groupPosition);
+                        String bldgID = buildings.get(groupPosition).getBuilding().getId();
                         Intent intent = new Intent(context, ViewFloorplanActivity.class);
                         intent.putExtra("BUILDING_NAME", bldgName);
                         intent.putExtra("FLOOR_NAME", ((Button)v).getText());
+                        intent.putExtra("BUILDING_ID", bldgID);
                         context.startActivity(intent);
 
                     }
