@@ -29,8 +29,8 @@ public class AmenityFinderTest extends InstrumentationTestCase {
         curLocation.setLatitude(33.7751878);
         curLocation.setLongitude(-84.39687341);
 
-        building = new Building("Clough Undergraduate Learning Commons",
-                "CUL", 33.774792, -84.396386);
+        building = new Building("CUL", "Clough Undergraduate Learning Commons",
+                33.774792, -84.396386);
     }
 
     public void tearDown() throws Exception { }
@@ -57,6 +57,26 @@ public class AmenityFinderTest extends InstrumentationTestCase {
 
     public void testGetFloorsInBuilding2() throws Exception {
         List<Integer> result = finder.getFloorsInBuilding(building.getId());
+
+        assertNotNull(result);
+        assertNotNull(result.get(0));
+
+        // Make sure result actually holds something
+        assertTrue(result.size() > 0);
+    }
+
+    public void testGetAmenityTypesInBuilding1() throws Exception {
+        List<String> result = finder.getAmenityTypesInBuilding(building);
+
+        assertNotNull(result);
+        assertNotNull(result.get(0));
+
+        // Make sure result actually holds something
+        assertTrue(result.size() > 0);
+    }
+
+    public void testGetAmenityTypesInBuilding2() throws Exception {
+        List<String> result = finder.getAmenityTypesInBuilding(building.getId());
 
         assertNotNull(result);
         assertNotNull(result.get(0));
