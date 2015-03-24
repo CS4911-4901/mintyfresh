@@ -9,6 +9,7 @@ import java.util.PriorityQueue;
 
 import edu.gatech.cs4911.mintyfresh.AmenityFinder;
 import edu.gatech.cs4911.mintyfresh.db.DBHandler;
+import edu.gatech.cs4911.mintyfresh.db.queryresponse.Amenity;
 import edu.gatech.cs4911.mintyfresh.db.queryresponse.Building;
 import edu.gatech.cs4911.mintyfresh.router.RelativeAmenity;
 import edu.gatech.cs4911.mintyfresh.router.RelativeBuilding;
@@ -107,11 +108,10 @@ public class AmenityFinderTest extends InstrumentationTestCase {
     }
 
     public void testGetAmenitiesInBuilding() throws Exception {
-        PriorityQueue<RelativeAmenity> result = finder.getAmenitiesInBuilding(curLocation,
-                building);
+        List<Amenity> result = finder.getAmenitiesInBuilding(building);
 
         assertNotNull(result);
-        assertNotNull(result.peek());
+        assertNotNull(result.get(0));
 
         // Make sure result actually holds something
         assertTrue(result.size() > 0);
@@ -119,11 +119,10 @@ public class AmenityFinderTest extends InstrumentationTestCase {
     }
 
     public void testGetAmenitiesInBuilding1() throws Exception {
-        PriorityQueue<RelativeAmenity> result = finder.getAmenitiesInBuilding(curLocation,
-                building, "Bathroom");
+        List<Amenity> result = finder.getAmenitiesInBuilding(building, "Bathroom");
 
         assertNotNull(result);
-        assertNotNull(result.peek());
+        assertNotNull(result.get(0));
 
         // Make sure result actually holds something
         assertTrue(result.size() > 0);
@@ -131,11 +130,10 @@ public class AmenityFinderTest extends InstrumentationTestCase {
     }
 
     public void testGetAmenitiesInBuilding2() throws Exception {
-        PriorityQueue<RelativeAmenity> result = finder.getAmenitiesInBuilding(curLocation,
-                building, "Bathroom", 1);
+        List<Amenity> result = finder.getAmenitiesInBuilding(building, "Bathroom", 1);
 
         assertNotNull(result);
-        assertNotNull(result.peek());
+        assertNotNull(result.get(0));
 
         // Make sure result actually holds something
         assertTrue(result.size() > 0);

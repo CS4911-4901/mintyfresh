@@ -139,120 +139,102 @@ public class AmenityFinder {
     }
 
     /**
-     * Returns a heap of all RelativeAmenity objects in a given Building,
-     * ordered by relative distance.
+     * Returns a list of all Amenity objects in a given Building.
      *
-     * @param location The current location.
      * @param building A given building.
-     * @return A heap of nearby amenities.
+     * @return A Amenity objects in a given Building.
      * @throws NoDbResultException if the database did not return any Amenity objects.
      */
-    public PriorityQueue<RelativeAmenity> getAmenitiesInBuilding(Location location,
-            Building building) throws NoDbResultException {
+    public List<Amenity> getAmenitiesInBuilding(Building building)
+            throws NoDbResultException {
         try {
-            return amenityHeapPackager(location, DBQuery.getAmenitiesByBuildingId(handler,
-                    building.getId()));
+            return DBQuery.getAmenitiesByBuildingId(handler, building.getId());
         } catch (Exception e) {
             throw new NoDbResultException();
         }
     }
 
     /**
-     * Returns a heap of all RelativeAmenity objects in a given Building,
-     * ordered by relative distance.
+     * Returns a list of all Amenity objects in a given Building.
      *
-     * @param location The current location.
      * @param buildingId A given building, identified by a String ID.
-     * @return A heap of nearby amenities.
+     * @return A list of Amenity objects in a given Building.
      * @throws NoDbResultException if the database did not return any Amenity objects.
      */
-    public PriorityQueue<RelativeAmenity> getAmenitiesInBuilding(Location location,
-            String buildingId) throws NoDbResultException {
+    public List<Amenity> getAmenitiesInBuilding(String buildingId)
+            throws NoDbResultException {
         try {
-            return amenityHeapPackager(location, DBQuery.getAmenitiesByBuildingId(handler,
-                    buildingId));
+            return DBQuery.getAmenitiesByBuildingId(handler, buildingId);
         } catch (Exception e) {
             throw new NoDbResultException();
         }
     }
 
     /**
-     * Returns a heap of all RelativeAmenity objects of a given type in a given Building,
-     * ordered by relative distance.
+     * Returns a list of all Amenity objects of a given type in a given Building.
      *
-     * @param location The current location.
      * @param building A given building.
      * @param type The type of Amenity object.
-     * @return A heap of nearby amenities.
+     * @return A list of all Amenity objects of a given type in the given Building.
      * @throws NoDbResultException if the database did not return any Amenity objects.
      */
-    public PriorityQueue<RelativeAmenity> getAmenitiesInBuilding(Location location,
-            Building building, String type) throws NoDbResultException {
+    public List<Amenity> getAmenitiesInBuilding(Building building, String type)
+            throws NoDbResultException {
         try {
-            return amenityHeapPackager(location, DBQuery.getAmenities(handler,
-                    building.getId(), type));
+            return DBQuery.getAmenities(handler, building.getId(), type);
         } catch (Exception e) {
             throw new NoDbResultException();
         }
     }
 
     /**
-     * Returns a heap of all RelativeAmenity objects of a given type in a given Building,
-     * ordered by relative distance.
+     * Returns a list of all Amenity objects of a given type in a given Building.
      *
-     * @param location The current location.
-     * @param buildingId A given building, identified by a String ID.
+     * @param building A given building, identified by a String ID.
      * @param type The type of Amenity object.
-     * @return A heap of nearby amenities.
+     * @return A list of all Amenity objects of a given type in the given Building.
      * @throws NoDbResultException if the database did not return any Amenity objects.
      */
-    public PriorityQueue<RelativeAmenity> getAmenitiesInBuilding(Location location,
-            String buildingId, String type) throws NoDbResultException {
+    public List<Amenity> getAmenitiesInBuilding(String buildingId, String type)
+            throws NoDbResultException {
         try {
-            return amenityHeapPackager(location, DBQuery.getAmenities(handler,
-                    buildingId, type));
+            return DBQuery.getAmenities(handler, buildingId, type);
         } catch (Exception e) {
             throw new NoDbResultException();
         }
     }
 
     /**
-     * Returns a heap of all RelativeAmenity objects of a given type in a given Building,
-     * ordered by relative distance.
+     * Returns a list of all Amenity objects of a given type in a given Building level.
      *
-     * @param location The current location.
      * @param building A given building.
      * @param type The type of Amenity object.
      * @param level The floor to filter results by.
-     * @return A heap of nearby amenities.
+     * @return A list of all Amenity objects of a given type in a given Building level
      * @throws NoDbResultException if the database did not return any Amenity objects.
      */
-    public PriorityQueue<RelativeAmenity> getAmenitiesInBuilding(Location location,
-            Building building, String type, int level) throws NoDbResultException {
+    public List<Amenity> getAmenitiesInBuilding(Building building,
+             String type, int level) throws NoDbResultException {
         try {
-            return amenityHeapPackager(location, DBQuery.getAmenities(handler,
-                    building.getId(), type, level));
+            return DBQuery.getAmenities(handler, building.getId(), type, level);
         } catch (Exception e) {
             throw new NoDbResultException();
         }
     }
 
     /**
-     * Returns a heap of all RelativeAmenity objects of a given type in a given Building,
-     * ordered by relative distance.
+     * Returns a list of all Amenity objects of a given type in a given Building level.
      *
-     * @param location The current location.
-     * @param buildingId A given building, identified by a String ID.
+     * @param building A given building, identified by a String ID.
      * @param type The type of Amenity object.
      * @param level The floor to filter results by.
-     * @return A heap of nearby amenities.
+     * @return A list of all Amenity objects of a given type in a given Building level
      * @throws NoDbResultException if the database did not return any Amenity objects.
      */
-    public PriorityQueue<RelativeAmenity> getAmenitiesInBuilding(Location location,
-            String buildingId, String type, int level) throws NoDbResultException {
+    public List<Amenity> getAmenitiesInBuilding(String buildingId,
+             String type, int level) throws NoDbResultException {
         try {
-            return amenityHeapPackager(location, DBQuery.getAmenities(handler,
-                    buildingId, type, level));
+            return DBQuery.getAmenities(handler, buildingId, type, level);
         } catch (Exception e) {
             throw new NoDbResultException();
         }
