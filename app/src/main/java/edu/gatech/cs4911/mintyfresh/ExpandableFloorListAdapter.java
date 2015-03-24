@@ -38,7 +38,7 @@ public class ExpandableFloorListAdapter extends BaseExpandableListAdapter {
     @Override
     //this needs to get a specific floor, i think
     public Object getChild(int groupPosition, int childPosition) {
-        return floors.get(buildings.get(groupPosition)); //.get(childPosition);
+        return floors.get(buildings.get(childPosition));
     }
 
     @Override
@@ -55,15 +55,28 @@ public class ExpandableFloorListAdapter extends BaseExpandableListAdapter {
         if (convertView == null) {
             convertView = inflater.inflate(R.layout.floor_picker_item, null);
         }
+        LinearLayout floorsLayout = (LinearLayout) convertView;
+        View nextChild = ((ViewGroup)convertView).getChildAt(1);
+        if ((nextChild instanceof Button)) {
+            for (int j = 1; j < ((ViewGroup) convertView).getChildCount(); j++) {
+                ((ViewGroup) convertView).removeViewAt(j);
+            }
+        }
 
-        LinearLayout floorsLayout = (LinearLayout) convertView.findViewById(R.id.floorsLayout);
+        for (int i = 0; i<floors.get(buildings.get(groupPosition)).size(); i++) {
+            Integer floorID = floors.get(buildings.get(groupPosition)).get(i);
+            Button floorButton = new Button(convertView.getContext());
+            floorButton.setText(floorID.toString());
+            LayoutParams lp = new LayoutParams(75, LayoutParams.WRAP_CONTENT);
+            floorsLayout.addView(floorButton, lp);
+        }
 
-        return convertView;
+        return floorsLayout;
     }
 
     @Override
     public int getChildrenCount(int groupPosition) {
-        return 1; //floors.get(buildings.get(groupPosition)).size();
+        return 1;//floors.get(buildings.get(groupPosition)).size();
     }
 
     @Override
