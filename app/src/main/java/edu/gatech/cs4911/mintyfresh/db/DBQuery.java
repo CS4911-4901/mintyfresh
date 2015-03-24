@@ -22,11 +22,13 @@ public class DBQuery {
      * The fields to select from the Amenity table to complete an Amenity object.
      */
     public static final String AMENITY_FIELDS_PREFIX = "SELECT Amenity.id, building, name, " +
-            "amenity_type, building_level, floor_x, floor_y, attribute, latitude, longitude " +
-            "FROM Amenity INNER JOIN Building ON Amenity.building = Building.id " +
+            "amenity_type, building_level, floor_x, floor_y, Amenity_Attribute_Lookup.attribute, " +
+            "full_name AS attr_f, latitude, longitude FROM Amenity " +
+            "INNER JOIN Building ON Amenity.building = Building.id " +
             "INNER JOIN Building_Location ON Building.id = Building_Location.id " +
             "LEFT OUTER JOIN Amenity_MapLocation ON Amenity.id = Amenity_MapLocation.id " +
-            "LEFT OUTER JOIN Amenity_Attribute_Lookup ON Amenity.id = Amenity_Attribute_Lookup.id ";
+            "LEFT OUTER JOIN Amenity_Attribute_Lookup ON Amenity.id = Amenity_Attribute_Lookup.id " +
+            "INNER JOIN Amenity_Attribute ON Amenity_Attribute_Lookup.attribute = Amenity_Attribute.attribute ";
 
     /**
      * Queries the database and returns all Building objects.
@@ -211,7 +213,7 @@ public class DBQuery {
         String query = AMENITY_FIELDS_PREFIX +
                 "WHERE Building.id = \"" + buildingId + "\" " +
                 "AND amenity_type = \"" + type + "\" " +
-                "AND attribute = \"" + attribute + "\";";
+                "AND Amenity_Attribute_Lookup.attribute = \"" + attribute + "\";";
 
         // Query cache
         List<Amenity> output = cache.getAmenityList(query);
@@ -249,7 +251,7 @@ public class DBQuery {
 
         // Append list of attributes to query string
         for (int i = 0; i < attributes.length; i++) {
-            query += "attribute = \""
+            query += "Amenity_Attribute_Lookup.attribute = \""
                     + attributes[i] + "\"";
             if (i != attributes.length - 1) {
                 query += " OR ";
@@ -291,7 +293,7 @@ public class DBQuery {
                 "WHERE Building.id = \"" + buildingId + "\" " +
                 "AND building_level = \"" + floor + "\" " +
                 "AND amenity_type = \"" + type + "\" " +
-                "AND attribute = \"" + attribute + "\";";
+                "AND Amenity_Attribute_Lookup.attribute = \"" + attribute + "\";";
 
         // Query cache
         List<Amenity> output = cache.getAmenityList(query);
@@ -414,7 +416,7 @@ public class DBQuery {
 
         // Append list of attributes to query string
         for (int i = 0; i < attributes.length; i++) {
-            query += "attribute = \""
+            query += "Amenity_Attribute_Lookup.attribute = \""
                     + attributes[i] + "\" ";
             if (i != attributes.length - 1) {
                 query += " OR ";
@@ -449,7 +451,9 @@ public class DBQuery {
      */
     public static List<String> getAmenityTypesInBuilding(DBHandler handler,
               String buildingId) throws SQLException {
-        String query = "SELECT DISTINCT attribute FROM Amenity_Attribute_Lookup " +
+        String query = "SELECT DISTINCT full_name AS attribute FROM Amenity_Attribute " +
+                "INNER JOIN Amenity_Attribute_Lookup " +
+                "ON Amenity_Attribute.attribute = Amenity_Attribute_Lookup.attribute " +
                 "WHERE id IN (SELECT id FROM Amenity WHERE building = \"" + buildingId + "\");";
         List<String> output = new ArrayList<>();
         ResultSet result = handler.submitQuery(query);
@@ -499,7 +503,7 @@ public class DBQuery {
                 // We just need to add a new attribute to it
                 output.get(
                         existanceCheck.get(queryResult.getString("id")))
-                        .addAttribute(queryResult.getString("attribute"));
+                        .addAttribute(queryResult.getString("attr_f"));
             } else {
                 output.add(new Amenity(
                         new Building(queryResult.getString("building"),
@@ -509,7 +513,7 @@ public class DBQuery {
                         queryResult.getString("amenity_type"),
                         queryResult.getInt("building_level"),
                         queryResult.getString("id"),
-                        queryResult.getString("attribute"),
+                        queryResult.getString("attr_f"),
                         queryResult.getInt("floor_x"),
                         queryResult.getInt("floor_y")
                 ));
