@@ -47,6 +47,10 @@
             android:name=".test.ImageCacheViewTestActivity"
             android:label="@string/title_activity_image_cache_view_test" >
         </activity>
+        <activity
+            android:name=".ViewFloorplanActivity"
+            android:label="ViewFloorplanActivity">
+        </activity>
     </application>
 
 </manifest>

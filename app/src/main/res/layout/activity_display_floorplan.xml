@@ -19,7 +19,8 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/leftButton"/>
+            android:id="@+id/leftButton"
+            android:text="@string/leftArrow"/>
         <ImageSwitcher
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -27,7 +28,8 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/rightButton"/>
+            android:id="@+id/rightButton"
+            android:text="@string/rightArrow"/>
         
         </LinearLayout>
     <LinearLayout
@@ -37,11 +39,13 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/cancelButton"/>
+            android:id="@+id/cancelButton"
+            android:text="@string/cancel"/>
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/routeMeButton"/>
+            android:id="@+id/routeMeButton"
+            android:text="@string/routeMe"/>
 
         </LinearLayout>
 

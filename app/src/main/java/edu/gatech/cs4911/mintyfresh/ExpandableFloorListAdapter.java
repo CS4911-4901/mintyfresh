@@ -2,10 +2,12 @@ package edu.gatech.cs4911.mintyfresh;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.View.OnClickListener;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -47,31 +49,56 @@ public class ExpandableFloorListAdapter extends BaseExpandableListAdapter {
     }
 
     @Override
-    public View getChildView(int groupPosition, int childPosition, boolean isLastChild,
+    public View getChildView(final int groupPosition, int childPosition, boolean isLastChild,
                              View convertView, ViewGroup parent) {
-//        String building = (String) getChild(groupPosition, childPosition);
         LayoutInflater inflater = context.getLayoutInflater();
 
-        if (convertView == null) {
-            convertView = inflater.inflate(R.layout.floor_picker_item, null);
-        }
-        LinearLayout floorsLayout = (LinearLayout) convertView;
-        View nextChild = ((ViewGroup)convertView).getChildAt(1);
-        if ((nextChild instanceof Button)) {
-            for (int j = 1; j < ((ViewGroup) convertView).getChildCount(); j++) {
-                ((ViewGroup) convertView).removeViewAt(j);
+        if (convertView != null) {
+            if (convertView.getVisibility() == View.VISIBLE) {
+
+                //        if (convertView != null) {
+                View nextChild = ((ViewGroup) convertView).getChildAt(1);
+                if ((nextChild instanceof Button)) {
+                    for (int j = 1; j < ((ViewGroup) convertView).getChildCount(); j++) {
+                        ((ViewGroup) convertView).removeViewAt(j);
+                    }
+                }
             }
         }
+//        else {
+        if (convertView == null) {
+            convertView = inflater.inflate(R.layout.floor_picker_item, null);
 
-        for (int i = 0; i<floors.get(buildings.get(groupPosition)).size(); i++) {
-            Integer floorID = floors.get(buildings.get(groupPosition)).get(i);
-            Button floorButton = new Button(convertView.getContext());
-            floorButton.setText(floorID.toString());
-            LayoutParams lp = new LayoutParams(75, LayoutParams.WRAP_CONTENT);
-            floorsLayout.addView(floorButton, lp);
+            LinearLayout floorsLayout = (LinearLayout) convertView;
+
+
+            for (int i = 0; i<floors.get(buildings.get(groupPosition)).size(); i++) {
+                Integer floorID = floors.get(buildings.get(groupPosition)).get(i);
+                Button floorButton = new Button(convertView.getContext());
+                floorButton.setText(floorID.toString());
+                floorButton.setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        String s = ((Button)v).getText().toString();
+                        Integer i = Integer.parseInt(s);
+                        String bldgName = getGroup(groupPosition);
+                        Intent intent = new Intent(context, ViewFloorplanActivity.class);
+                        intent.putExtra("BUILDING_NAME", bldgName);
+                        intent.putExtra("FLOOR_NAME", ((Button)v).getText());
+                        context.startActivity(intent);
+
+                    }
+                });
+                LayoutParams lp = new LayoutParams(75, LayoutParams.WRAP_CONTENT);
+                floorsLayout.addView(floorButton, lp);
+                Log.v("sigh", "yes yes");
+            }
+
+            return floorsLayout;
         }
 
-        return floorsLayout;
+        return convertView;
+
     }
 
     @Override
@@ -116,6 +143,6 @@ public class ExpandableFloorListAdapter extends BaseExpandableListAdapter {
 
     @Override
     public boolean isChildSelectable(int groupPosition, int childPosition) {
-        return true;
+        return false;
     }
 }

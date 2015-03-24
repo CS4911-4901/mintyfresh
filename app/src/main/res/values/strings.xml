@@ -15,5 +15,9 @@
     <string name="showing">Showing:</string>
     <string name="title_activity_image_cache_view_test">ImageCacheViewTestActivity</string>
     <string name="imageCacheViewTestImage">Test image CUL_1.svg</string>
+    <string name="rightArrow"> right </string>
+    <string name="leftArrow"> left </string>
+    <string name="cancel">Cancel</string>
+    <string name="routeMe">Route Me</string>
 
 </resources>

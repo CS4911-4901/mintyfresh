@@ -53,7 +53,6 @@ public class HomeScreenActivity extends ActionBarActivity {
         expListView = (ExpandableListView) findViewById(R.id.buildingList);
         expListView.setVisibility(View.GONE);
 
-        //todo what it's doing is printing the floors options n**2 times.  neet to fix that.
         //todo then i need to get those clicks working.
 
         Button bathroom = (Button) findViewById(R.id.bathroomButton);
@@ -148,13 +147,40 @@ public class HomeScreenActivity extends ActionBarActivity {
             LinearLayout showing = (LinearLayout) findViewById(R.id.showingLayout);
             Spinner showingSpinner = (Spinner) findViewById(R.id.selectedSpinner);
             // Create an ArrayAdapter using the string array and a default spinner layout
-            ArrayList<CharSequence> array = new ArrayList<CharSequence>();
-            array.add("All Thing");
 // todo somehow i have to get the categories)
-            ArrayAdapter<CharSequence> adapter = new ArrayAdapter<CharSequence>(this, android.R.layout.simple_list_item_1, array); // = ArrayAdapter.createFromResource(this,
 //                    R.array.planets_array, android.R.layout.simple_spinner_item);
             // Specify the layout to use when the list of choices appears
+            ArrayAdapter<CharSequence> adapter;
+            if (name == "Printers") {
+                ArrayList<CharSequence> printerList = new ArrayList<CharSequence>();
+                printerList.add("All");
+                printerList.add("Color");
+                printerList.add("Black and White");
+                printerList.add("Free");
+                adapter = new ArrayAdapter<CharSequence>(this, android.R.layout.simple_list_item_1, printerList);
+
+            }
+            else if (name == "Vending") {
+                ArrayList<CharSequence> vendingList = new ArrayList<CharSequence>();
+                vendingList.add("All");
+                vendingList.add("Snacks");
+                vendingList.add("Drinks");
+                adapter = new ArrayAdapter<CharSequence>(this, android.R.layout.simple_list_item_1, vendingList);
+
+            }
+            else {
+                ArrayList<CharSequence> bathroomList = new ArrayList<CharSequence>();
+                bathroomList.add("All");
+                bathroomList.add("Men's");
+                bathroomList.add("Women's");
+                bathroomList.add("Unisex");
+                bathroomList.add("Handicap");
+                adapter = new ArrayAdapter<CharSequence>(this, android.R.layout.simple_list_item_1, bathroomList);
+            }
+
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+
             // Apply the adapter to the spinner
             showingSpinner.setAdapter(adapter);
 
