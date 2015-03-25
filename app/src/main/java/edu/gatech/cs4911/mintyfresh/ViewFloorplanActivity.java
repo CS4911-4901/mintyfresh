@@ -10,6 +10,9 @@ import android.view.MenuItem;
 import android.widget.ImageSwitcher;
 import android.widget.TextView;
 
+import com.caverock.androidsvg.SVGImageView;
+import com.caverock.androidsvg.SVG;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +41,8 @@ public class ViewFloorplanActivity extends Activity {
         String bldgName = "Building in the Sky";
         String floorName = "infinity";
         String bldID = "123";
+        //SVG floorplanSVG;
+
         if (extras != null) {
             bldgName = extras.getString("BUILDING_NAME");
             floorName = extras.getString("FLOOR_NAME");
@@ -48,6 +53,27 @@ public class ViewFloorplanActivity extends Activity {
         TextView amenityReminder = (TextView)findViewById(R.id.amenityReminder);
         ImageSwitcher imgSwitch = (ImageSwitcher)findViewById(R.id.floorplan);
 //        imgSwitch.setImageDrawable();
+
+        /**
+         * High-level cobbling things together here.
+         *
+         * Things that need to happen:
+         * + Figure out how to get the building from the proper building and floor from the db
+         * + Get that as an SVG
+         * + Turn the SVG into a Drawable
+         * + Display the Drawable (give it to the imageswitcher)
+         * + Define some animations for when the image is switched
+         * --> (How is swipe input represented here?)
+         * + Hook those up
+         */
+
+        /**
+         * floorplanSVG = new ImageUpdaterTask().execute("CUL_1.svg").get();
+         * imgSwitch.setSVG(floorplanSVG);
+         * Drawable drawable = new PictureDrawable(floorplanSVG.renderToPicture());
+         * imgSwitch.setImageDrawable(drawable);
+        **/
+
         bldgAndFloor.setText(bldgName + " - Floor " + floorName);
         Log.v("hello1", "Doing the thing");
 
