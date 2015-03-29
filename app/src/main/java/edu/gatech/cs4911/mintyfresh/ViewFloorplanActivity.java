@@ -1,23 +1,19 @@
 package edu.gatech.cs4911.mintyfresh;
 
 import android.app.Activity;
-import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.util.ArrayMap;
 import android.util.Log;
-import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageSwitcher;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.ViewSwitcher;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.PriorityQueue;
 
 import edu.gatech.cs4911.mintyfresh.db.DBHandler;
-import edu.gatech.cs4911.mintyfresh.db.queryresponse.Building;
-import edu.gatech.cs4911.mintyfresh.router.RelativeBuilding;
 
 import static edu.gatech.cs4911.mintyfresh.db.DatabaseConfig.STEAKSCORP_READ_ONLY;
 
@@ -27,6 +23,8 @@ import static edu.gatech.cs4911.mintyfresh.db.DatabaseConfig.STEAKSCORP_READ_ONL
 public class ViewFloorplanActivity extends Activity {
 
     protected AmenityFinder amenityFinder;
+    private Button leftButton, rightButton;
+    private String buildingName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,37 +33,91 @@ public class ViewFloorplanActivity extends Activity {
 
 
         Bundle extras = getIntent().getExtras();
-        String bldgName = "Building in the Sky";
+        buildingName = "Building in the Sky";
         String floorName = "infinity";
         String bldID = "123";
         if (extras != null) {
-            bldgName = extras.getString("BUILDING_NAME");
+            buildingName = extras.getString("BUILDING_NAME");
             floorName = extras.getString("FLOOR_NAME");
             bldID = extras.getString("BUILDING_ID");
         }
 
-        TextView bldgAndFloor = (TextView)findViewById(R.id.buildingAndFloor);
         TextView amenityReminder = (TextView)findViewById(R.id.amenityReminder);
         ImageSwitcher imgSwitch = (ImageSwitcher)findViewById(R.id.floorplan);
-//        imgSwitch.setImageDrawable();
-        bldgAndFloor.setText(bldgName + " - Floor " + floorName);
+        imgSwitch.setImageResource(R.drawable.ic_launcher);
+        imgSwitch.setFactory(new ViewSwitcher.ViewFactory() {
+                                 public View makeView() {
+                                     ImageView myView = new ImageView(getApplicationContext());
+                                     return myView;
+                                 }
+                             });
         Log.v("hello1", "Doing the thing");
 
-//        new ConnectToDB().execute();
+        setFloorDisplay(buildingName, floorName);
+
+        new ConnectToDB(floorName).execute(bldID);
 
 
     }
 
+    private void setFloorDisplay (String building, String floor) {
+        TextView bldgAndFloor = (TextView)findViewById(R.id.buildingAndFloor);
+        bldgAndFloor.setText(buildingName + " - Floor " + floor);
 
-    private class ConnectToDB extends AsyncTask<Integer, Void, Void> {
+    }
+
+    protected void doTheButtonThing(List<Integer> floors, Integer floor) {
+
+        final Integer flr = floor;
+
+        leftButton = (Button)findViewById(R.id.leftButton);
+        rightButton = (Button)findViewById(R.id.rightButton);
+        if (floors.contains(floor)) {
+            int curIndex = floors.indexOf(floor);
+            if (curIndex == 0) {
+                leftButton.setEnabled(false);
+            }
+            if (curIndex == floors.size()-1) {
+                rightButton.setEnabled(false);
+            }
+
+            if (rightButton.isEnabled()) {
+                rightButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        //switch imageSwitcher
+                        final int floorPlusOne = flr + 1;
+                        setFloorDisplay(buildingName, ((Integer)floorPlusOne).toString());
+                    }
+                });
+            }
+            if (leftButton.isEnabled()) {
+                leftButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        //switch imageSwitcher
+                        final int floorMinusOne = flr - 1;
+                        setFloorDisplay(buildingName, ((Integer)floorMinusOne).toString());
+
+                    }
+                });
+            }
+        }
+    }
 
 
+    private class ConnectToDB extends AsyncTask<String, String, Void> {
 
-        public ConnectToDB() {
+
+        List<Integer> floors;
+        Integer floor;
+
+        public ConnectToDB(String floor) {
+            this.floor = Integer.parseInt(floor);
         }
 
         @Override
-        protected Void doInBackground(Integer... params) {
+        protected Void doInBackground(String... params) {
             DBHandler dbh;
 
             try {
@@ -73,7 +125,10 @@ public class ViewFloorplanActivity extends Activity {
                 dbh = new DBHandler(STEAKSCORP_READ_ONLY);
                 amenityFinder = new AmenityFinder(dbh);
 
-//                amenityFinder.getAmenitiesInBuilding();
+//                amenityFinder.getAmenitiesInBuilding(params[0]);
+                floors = amenityFinder.getFloorsInBuilding(params[0]);
+
+
 
 
             } catch (Exception e) {
@@ -86,6 +141,8 @@ public class ViewFloorplanActivity extends Activity {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
+
+            doTheButtonThing(floors, floor);
         }
     }
 
