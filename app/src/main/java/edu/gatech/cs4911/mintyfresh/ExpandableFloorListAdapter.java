@@ -48,25 +48,18 @@ public class ExpandableFloorListAdapter extends BaseExpandableListAdapter {
         return childPosition;
     }
 
-    @Override
-    public View getChildView(final int groupPosition, int childPosition, boolean isLastChild,
-                             View convertView, ViewGroup parent) {
+    private View buildChildView(final int groupPosition, View convertView) {
+        View a = convertView;
         LayoutInflater inflater = context.getLayoutInflater();
 
         if (convertView != null) {
-            if (convertView.getVisibility() == View.VISIBLE) {
-
-                //        if (convertView != null) {
-                View nextChild = ((ViewGroup) convertView).getChildAt(1);
-                if ((nextChild instanceof Button)) {
-                    for (int j = 1; j < ((ViewGroup) convertView).getChildCount(); j++) {
-                        ((ViewGroup) convertView).removeViewAt(j);
-                    }
-                }
+            if (convertView.getId() == groupPosition) {
+                return convertView;
             }
         }
 //        else {
-        if (convertView == null) {
+        if ((convertView == null)||(convertView.getId() != groupPosition)) {
+            convertView = null;
             convertView = inflater.inflate(R.layout.floor_picker_item, null);
 
             LinearLayout floorsLayout = (LinearLayout) convertView;
@@ -95,12 +88,19 @@ public class ExpandableFloorListAdapter extends BaseExpandableListAdapter {
                 floorsLayout.addView(floorButton, lp);
                 Log.v("sigh", "yes yes");
             }
-
+            floorsLayout.setId(groupPosition);
             return floorsLayout;
         }
 
         return convertView;
 
+    }
+
+    @Override
+    public View getChildView(final int groupPosition, int childPosition, boolean isLastChild,
+                             View convertView, ViewGroup parent) {
+
+        return buildChildView(groupPosition, convertView);
     }
 
     @Override
