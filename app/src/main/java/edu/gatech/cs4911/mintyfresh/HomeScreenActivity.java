@@ -43,7 +43,8 @@ public class HomeScreenActivity extends ActionBarActivity {
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     private ExpandableListView expListView;
     protected AmenityFinder amenityFinder;
-    private boolean elvShowing = false;
+    private enum elvType {NONE, VENDING, BATHROOMS, PRINTERS};
+    private elvType current = elvType.NONE;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,8 +61,8 @@ public class HomeScreenActivity extends ActionBarActivity {
             @Override
             public void onClick(View v) {
                 //todo i have this hacked but i need to make sure it shows the one you click on and hides if you delete it
-                if (elvShowing) {
-                    elvShowing = false;
+                if (current == elvType.BATHROOMS) {
+                    current = elvType.NONE;
                     expListView.setVisibility(View.GONE);
                 }
                 else {
@@ -73,8 +74,8 @@ public class HomeScreenActivity extends ActionBarActivity {
         vending.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (elvShowing) {
-                    elvShowing = false;
+                if (current == elvType.VENDING) {
+                    current = elvType.NONE;
                     expListView.setVisibility(View.GONE);
                 }
                 else {
@@ -86,8 +87,8 @@ public class HomeScreenActivity extends ActionBarActivity {
         printing.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (elvShowing) {
-                    elvShowing = false;
+                if (current == elvType.PRINTERS) {
+                    current = elvType.NONE;
                     expListView.setVisibility(View.GONE);
                 }
                 else {
@@ -136,18 +137,28 @@ public class HomeScreenActivity extends ActionBarActivity {
         new ConnectToDB(type).execute(curLocation);
     }
 
-    protected void showEFLA(ArrayList<RelativeBuilding> buildings, Map<RelativeBuilding, List<Integer>> map, String name) {
+    protected void showEFLA(ArrayList<RelativeBuilding> buildings, Map<RelativeBuilding, List<Integer>> map, elvType curType) {
 
-        if (!elvShowing) {
-            elvShowing = true;
+
+        if ((current != curType) || (current == elvType.NONE)) {
+//            elvShowing = true;
+            current = curType;
             LinearLayout showing = (LinearLayout) findViewById(R.id.showingLayout);
             Spinner showingSpinner = (Spinner) findViewById(R.id.selectedSpinner);
             // Create an ArrayAdapter using the string array and a default spinner layout
 // todo somehow i have to get the categories)
+            for (int k = 0; k < buildings.size(); k++){
+                try {
+                    amenityFinder.getAmenitiesInBuilding(buildings.get(k).getBuilding());
+                }
+                catch (NoDbResultException ndbre) {
+
+                }
+            }
 //                    R.array.planets_array, android.R.layout.simple_spinner_item);
             // Specify the layout to use when the list of choices appears
             ArrayAdapter<CharSequence> adapter;
-            if (name == "Printers") {
+            if (curType == elvType.PRINTERS) {
                 ArrayList<CharSequence> printerList = new ArrayList<CharSequence>();
                 printerList.add("All");
                 printerList.add("Color");
@@ -156,7 +167,7 @@ public class HomeScreenActivity extends ActionBarActivity {
                 adapter = new ArrayAdapter<CharSequence>(this, android.R.layout.simple_list_item_1, printerList);
 
             }
-            else if (name == "Vending") {
+            else if (curType == elvType.VENDING) {
                 ArrayList<CharSequence> vendingList = new ArrayList<CharSequence>();
                 vendingList.add("All");
                 vendingList.add("Snacks");
@@ -191,7 +202,7 @@ public class HomeScreenActivity extends ActionBarActivity {
             Log.v("SHOWEFLA", "DONE?");
         }
         else {
-            elvShowing = false;
+            current = elvType.NONE;
             expListView.setVisibility(View.GONE);
         }
     }
@@ -200,6 +211,7 @@ public class HomeScreenActivity extends ActionBarActivity {
     private class ConnectToDB extends AsyncTask <Location, Integer, Void> {
 
         private String name;
+        private elvType curElvType;
         private int type;
         private ArrayList<RelativeBuilding> buildings;
         private Map<RelativeBuilding, List<Integer>> map;
@@ -209,12 +221,16 @@ public class HomeScreenActivity extends ActionBarActivity {
             //showing button-name
             if (type == 0) {
                 name = "Bathrooms";
+                curElvType = elvType.BATHROOMS;
+
             }
             else if (type == 1) {
                 name = "Vending";
+                curElvType = elvType.VENDING;
             }
             else {
                 name = "Printers";
+                curElvType = elvType.PRINTERS;
             }
         }
 
@@ -254,7 +270,7 @@ public class HomeScreenActivity extends ActionBarActivity {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            showEFLA(buildings, map, name);
+            showEFLA(buildings, map, curElvType);
         }
     }
 
