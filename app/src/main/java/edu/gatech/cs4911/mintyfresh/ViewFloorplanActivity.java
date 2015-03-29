@@ -309,11 +309,14 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
 
     private class CacheUpdaterTask extends AsyncTask<ImageCache, Void, String> {
         protected String doInBackground(ImageCache... cache) {
+
             try {
                 //cache[0].update();
             } catch (Exception e) {
                 return e.toString();
             } return "SUCCESS";
+    //  return "SUCCESS";
+
         }
     }
 }
