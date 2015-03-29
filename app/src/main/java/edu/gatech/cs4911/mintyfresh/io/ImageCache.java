@@ -115,35 +115,6 @@ public class ImageCache {
     }
 
     /**
-     * Updates the ImageCache by contacting the server for file hashes,
-     * downloading files to replace old or missing images if necessary.
-     *
-     * @throws SQLException if there was a problem connecting to the database.
-     * @throws IOException if there was a problem writing to a file.
-     */
-    public void update() throws SQLException, IOException {
-        // Generates a list of invalid or missing images...
-        Queue<FloorplanMeta> downloadQueue;
-        try {
-            downloadQueue = generateDownloadQueue();
-        } catch (SQLException e) {
-            // We can't do anything without upstream results!
-            return;
-        }
-
-        // And download them!
-        for (FloorplanMeta image : downloadQueue) {
-            ImageDownloader.downloadToImageFile(handler, image, context);
-
-            // And update the cache
-            insert(image);
-        }
-
-        // Update hashfile at end!
-        updateHashFile();
-    }
-
-    /**
      * Updates the ImageCache by contacting the server for the image
      * corresponding to the metadata object requested.
      *
@@ -171,39 +142,6 @@ public class ImageCache {
         if (meta.equals(upstreamMeta) && meta.hashEquals(upstreamMeta)) {
             return false;
         } return true; // If there is a hash mismatch, we need to redownload!
-    }
-
-    /**
-     * Generates a queue of image metadata corresponding to
-     * images that need to be downloaded from the upstream server,
-     * based on the local contents of this ImageCache.
-     *
-     * @return A queue of image metadata to be downloaded.
-     * @throws SQLException if there are no results from the server (e.g. no images)
-     */
-    private Queue<FloorplanMeta> generateDownloadQueue() throws SQLException {
-        /**
-         * Stores a list of metadata retrieved from the database.
-         */
-        List<FloorplanMeta> upstreamMetadata = DBQuery.getFloorplanMetadata(handler);
-        /**
-         * Stores a list of metadata corresponding to images that
-         * must be downloaded from the server.
-         */
-        Queue<FloorplanMeta> refreshQueue = new LinkedList<>();
-
-        for (FloorplanMeta meta : upstreamMetadata) {
-            if (!cache.contains(meta) || (cache.contains(meta)
-                    && !cache.get(cache.indexOf(meta)).hashEquals(meta))) {
-                // If cache node doesn't exist locally...
-                // Or exists but hash mismatch...
-
-                // We need to download from the server!
-                refreshQueue.add(meta);
-            } // Else, this node is up-to-date!
-        }
-
-        return refreshQueue;
     }
 
     /**
