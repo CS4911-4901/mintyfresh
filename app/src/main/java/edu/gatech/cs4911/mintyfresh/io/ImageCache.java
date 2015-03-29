@@ -2,6 +2,9 @@ package edu.gatech.cs4911.mintyfresh.io;
 
 import android.content.Context;
 
+import com.caverock.androidsvg.SVG;
+
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -12,7 +15,9 @@ import java.util.Queue;
 
 import edu.gatech.cs4911.mintyfresh.db.DBHandler;
 import edu.gatech.cs4911.mintyfresh.db.DBQuery;
+import edu.gatech.cs4911.mintyfresh.db.queryresponse.Building;
 import edu.gatech.cs4911.mintyfresh.db.queryresponse.FloorplanMeta;
+import edu.gatech.cs4911.mintyfresh.exception.DisplayFloorplanException;
 
 /**
  * An ImageCache maintains the mappings of image files to hashes.
@@ -54,6 +59,57 @@ public class ImageCache {
         this.context = context;
 
         populate();
+    }
+
+    /**
+     * Gets a floorplan image, as an SVG object, given floorplan metadata.
+     *
+     * @param cacheNode The node to access an image.
+     * @return A floorplan image, as an SVG.
+     * @throws DisplayFloorplanException if there was a problem accessing/decoding the image.
+     */
+    public SVG get(FloorplanMeta cacheNode) throws DisplayFloorplanException {
+        SVG result = null;
+
+        if (contains(cacheNode)) {
+            try {
+                String filename = cacheNode.getId() + "_" + cacheNode.getLevel() + IMAGE_EXTENSION;
+                // Explicitly declared so we can close this cleanly after we're done
+                FileInputStream inputStream = context.openFileInput(filename);
+                result = SVG.getFromInputStream(inputStream);
+
+                // We're done!
+                inputStream.close();
+            } catch (Exception e) {
+                throw new DisplayFloorplanException();
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Gets a floorplan image, as an SVG object, given a building ID and floor number.
+     *
+     * @param buildingId A provided building, identified by a String ID.
+     * @param level The floor of the building to return an image for.
+     * @return A floorplan image, as an SVG.
+     * @throws DisplayFloorplanException if there was a problem accessing/decoding the image.
+     */
+    public SVG get(String buildingId, int level) throws DisplayFloorplanException {
+        return get(new FloorplanMeta(buildingId, level));
+    }
+
+    /**
+     * Gets a floorplan image, as an SVG object, given a Building object and floor number.
+     *
+     * @param building A provided building.
+     * @param level The floor of the building to return an image for.
+     * @return A floorplan image, as an SVG.
+     * @throws DisplayFloorplanException if there was a problem accessing/decoding the image.
+     */
+    public SVG get(Building building, int level) throws DisplayFloorplanException {
+        return get(new FloorplanMeta(building.getId(), level));
     }
 
     /**
