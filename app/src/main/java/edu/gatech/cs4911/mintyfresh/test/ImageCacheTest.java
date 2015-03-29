@@ -46,31 +46,20 @@ public class ImageCacheTest extends AndroidTestCase {
         assertNotNull(cache);
     }
 
-    public void testUpdate() throws Exception {
-        cache = new ImageCache(handler, context);
-        cache.update();
-
-        assertTrue(cache.size() > 0);
-        assertTrue(cache.contains(testMeta));
-    }
-
     public void testGet1() throws Exception {
         cache = new ImageCache(handler, context);
-        cache.update();
 
         assertNotNull(cache.get(testMeta));
     }
 
     public void testGet2() throws Exception {
         cache = new ImageCache(handler, context);
-        cache.update();
 
         assertNotNull(cache.get(testMeta.getId(), testMeta.getLevel()));
     }
 
     public void testGet3() throws Exception {
         cache = new ImageCache(handler, context);
-        cache.update();
 
         assertNotNull(cache.get(
                 new Building("CUL", "Clough Undergraduate Learning Commons", 0.0, 0.0),
