@@ -69,20 +69,22 @@ public class ImageCache {
      * @throws DisplayFloorplanException if there was a problem accessing/decoding the image.
      */
     public SVG get(FloorplanMeta cacheNode) throws DisplayFloorplanException {
-        SVG result = null;
+        SVG result;
 
-        if (contains(cacheNode)) {
-            try {
-                String filename = cacheNode.getId() + "_" + cacheNode.getLevel() + IMAGE_EXTENSION;
-                // Explicitly declared so we can close this cleanly after we're done
-                FileInputStream inputStream = context.openFileInput(filename);
-                result = SVG.getFromInputStream(inputStream);
-
-                // We're done!
-                inputStream.close();
-            } catch (Exception e) {
-                throw new DisplayFloorplanException();
+        try {
+            if (!contains(cacheNode) || needsUpdate(cacheNode)) {
+                update(cacheNode);
             }
+
+            String filename = cacheNode.getId() + "_" + cacheNode.getLevel() + IMAGE_EXTENSION;
+            // Explicitly declared so we can close this cleanly after we're done
+            FileInputStream inputStream = context.openFileInput(filename);
+            result = SVG.getFromInputStream(inputStream);
+
+            // We're done!
+            inputStream.close();
+        } catch (Exception e) {
+            throw new DisplayFloorplanException();
         }
 
         return result;
@@ -139,6 +141,36 @@ public class ImageCache {
 
         // Update hashfile at end!
         updateHashFile();
+    }
+
+    /**
+     * Updates the ImageCache by contacting the server for the image
+     * corresponding to the metadata object requested.
+     *
+     * @throws SQLException if there was a problem connecting to the database.
+     * @throws IOException if there was a problem writing to a file.
+     */
+    private void update(FloorplanMeta meta) throws SQLException, IOException {
+        ImageDownloader.downloadToImageFile(handler, meta, context);
+        insert(meta);
+        updateHashFile();
+    }
+
+    /**
+     * Checks a local metadata object against the upstream database to
+     * see if there is a mismatch between local and upstream metadata.
+     *
+     * @param meta The node to access the images.
+     * @return true if there is a cache mismatch; false otherwise.
+     * @throws SQLException if there are no results from the server (e.g. no images)
+     */
+    private boolean needsUpdate(FloorplanMeta meta) throws SQLException {
+        FloorplanMeta upstreamMeta = DBQuery.getFloorplanMetadata(
+                handler, meta.getId(), meta.getLevel());
+
+        if (meta.equals(upstreamMeta) && meta.hashEquals(upstreamMeta)) {
+            return false;
+        } return true; // If there is a hash mismatch, we need to redownload!
     }
 
     /**
