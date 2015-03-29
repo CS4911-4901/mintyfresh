@@ -87,6 +87,7 @@ public class ExpandableFloorListAdapter extends BaseExpandableListAdapter {
                         intent.putExtra("BUILDING_NAME", bldgName);
                         intent.putExtra("FLOOR_NAME", ((Button)v).getText());
                         intent.putExtra("BUILDING_ID", bldgID);
+                        intent.putExtra("FLOOR_ID", i);
                         context.startActivity(intent);
 
                     }
