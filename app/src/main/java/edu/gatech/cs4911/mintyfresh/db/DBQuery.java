@@ -658,4 +658,19 @@ public class DBQuery {
         return output;
     }
 
+    public static List<String> getDistinctAmenityAttributes(DBHandler handler, String amenityType)
+            throws SQLException {
+        ResultSet result = handler.submitQuery("SELECT DISTINCT attribute FROM " +
+                "Amenity_Attribute_Lookup INNER JOIN (SELECT id FROM Amenity " +
+                "WHERE amenity_type = \"" + amenityType + "\") AS AmenitySubtable ON " +
+                "Amenity_Attribute_Lookup.id = AmenitySubtable.id");
+        List<String> output = new ArrayList<>();
+
+        while (result.next()) {
+            output.add(result.getString("attribute"));
+        }
+
+        result.close();
+        return output;
+    }
 }

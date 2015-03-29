@@ -138,4 +138,14 @@ public class AmenityFinderTest extends InstrumentationTestCase {
         // Make sure result actually holds something
         assertTrue(result.size() > 0);
     }
+
+    public void testGetDistinctAttributesByType() throws Exception {
+        List<String> result = finder.getDistinctAttributesByType("Bathroom");
+
+        assertNotNull(result);
+        assertNotNull(result.get(0));
+
+        // Make sure result actually holds something
+        assertTrue(result.size() > 0);
+    }
 }

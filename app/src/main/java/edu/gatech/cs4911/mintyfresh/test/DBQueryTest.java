@@ -243,4 +243,17 @@ public class DBQueryTest extends InstrumentationTestCase {
         // Make sure result actually holds something
         assertTrue(result.size() > 0);
     }
+
+    public void testGetDistinctAmenityAttributes() throws Exception {
+        List<String> result = getDistinctAmenityAttributes(handler, "Bathroom");
+        assertNotNull(result);
+
+        // And check each item in result
+        for (String item : result) {
+            assertNotNull(item);
+        }
+
+        // Make sure result actually holds something
+        assertTrue(result.size() > 0);
+    }
 }

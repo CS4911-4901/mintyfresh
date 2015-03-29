@@ -190,7 +190,7 @@ public class AmenityFinder {
     /**
      * Returns a list of all Amenity objects of a given type in a given Building.
      *
-     * @param building A given building, identified by a String ID.
+     * @param buildingId A given building, identified by a String ID.
      * @param type The type of Amenity object.
      * @return A list of all Amenity objects of a given type in the given Building.
      * @throws NoDbResultException if the database did not return any Amenity objects.
@@ -225,16 +225,32 @@ public class AmenityFinder {
     /**
      * Returns a list of all Amenity objects of a given type in a given Building level.
      *
-     * @param building A given building, identified by a String ID.
+     * @param buildingId A given building, identified by a String ID.
      * @param type The type of Amenity object.
      * @param level The floor to filter results by.
-     * @return A list of all Amenity objects of a given type in a given Building level
+     * @return A list of all Amenity objects of a given type in a given Building level.
      * @throws NoDbResultException if the database did not return any Amenity objects.
      */
     public List<Amenity> getAmenitiesInBuilding(String buildingId,
              String type, int level) throws NoDbResultException {
         try {
             return DBQuery.getAmenities(handler, buildingId, type, level);
+        } catch (Exception e) {
+            throw new NoDbResultException();
+        }
+    }
+
+    /**
+     * Returns a list of all distinct amenity attributes for the given amenity type.
+     *
+     * @param type The type of Amenity object.
+     * @return A list of all distinct amenity attributes for the given amenity type.
+     * @throws NoDbResultException if the database did not return any attributes.
+     */
+    public List<String> getDistinctAttributesByType(String type)
+             throws NoDbResultException {
+        try {
+            return DBQuery.getDistinctAmenityAttributes(handler, type);
         } catch (Exception e) {
             throw new NoDbResultException();
         }
