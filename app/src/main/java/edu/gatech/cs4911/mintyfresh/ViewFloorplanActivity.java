@@ -97,7 +97,7 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
 
         TextView amenityReminder = (TextView)findViewById(R.id.amenityReminder);
         ImageSwitcher imgSwitch = (ImageSwitcher)findViewById(R.id.floorplan);
-        imgSwitch.setImageResource(R.drawable.ic_launcher);
+        //imgSwitch.setImageResource(R.drawable.ic_launcher);
         imgSwitch.setFactory(new ViewSwitcher.ViewFactory() {
                                  public View makeView() {
                                      ImageView myView = new ImageView(getApplicationContext());
@@ -129,23 +129,6 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
 
 //        bldgAndFloor.setText(bldgName + " - Floor " + floorName);
         Log.v("hello1", "Doing the thing");
-
-
-
-        try {
-            handler = new NetIoTask().execute("").get();
-            bldgAndFloor.setText(buildingName + " - Floorer " + floorName);
-
-            cache = new ImageCache(handler, getApplicationContext());
-            new CacheUpdaterTask().execute(cache);
-            bldgAndFloor.setText(bldID + " - Floorest " + floorID);
-
-            floorplanSVG = cache.get(bldID, floorID);
-            if (floorplanSVG!=null) bldgAndFloor.setText(buildingName+ " - Flooresti " + floorName);
-        }
-        catch (Exception e) {
-            return;
-        }
 
             /**
              * High-level cobbling things together here.
@@ -192,6 +175,25 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
         setFloorDisplay(buildingName, floorName);
 
         new ConnectToDB(floorName).execute(bldID);
+        cache = new ImageCache(handler, getApplicationContext());
+        bldgAndFloor.setText(bldID + " - Floorest " + floorID);
+
+       /*
+          try {
+            handler = new NetIoTask().execute("").get();
+            bldgAndFloor.setText(buildingName + " - Floorer " + floorName);
+
+            cache = new ImageCache(handler, getApplicationContext());
+            new CacheUpdaterTask().execute(cache);
+            bldgAndFloor.setText(bldID + " - Floorest " + floorID);
+
+            floorplanSVG = cache.get(bldID, floorID);
+            if (floorplanSVG!=null) bldgAndFloor.setText(buildingName+ " - Flooresti " + floorName);
+        }
+        catch (Exception e) {
+            return;
+        }
+         */
 
 
 
@@ -308,7 +310,7 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
     private class CacheUpdaterTask extends AsyncTask<ImageCache, Void, String> {
         protected String doInBackground(ImageCache... cache) {
             try {
-                cache[0].update();
+                //cache[0].update();
             } catch (Exception e) {
                 return e.toString();
             } return "SUCCESS";
