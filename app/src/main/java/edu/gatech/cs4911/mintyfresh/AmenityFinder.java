@@ -3,6 +3,7 @@ package edu.gatech.cs4911.mintyfresh;
 import android.location.Location;
 
 import java.util.List;
+import java.util.Map;
 import java.util.PriorityQueue;
 
 import edu.gatech.cs4911.mintyfresh.db.DBHandler;
@@ -241,13 +242,14 @@ public class AmenityFinder {
     }
 
     /**
-     * Returns a list of all distinct amenity attributes for the given amenity type.
+     * Returns a map of all distinct amenity attributes for a given amenity
+     * type - the map maps the attribute name to its human-readable form.
      *
      * @param type The type of Amenity object.
      * @return A list of all distinct amenity attributes for the given amenity type.
      * @throws NoDbResultException if the database did not return any attributes.
      */
-    public List<String> getDistinctAttributesByType(String type)
+    public Map<String, String> getDistinctAttributesByType(String type)
              throws NoDbResultException {
         try {
             return DBQuery.getDistinctAmenityAttributes(handler, type);

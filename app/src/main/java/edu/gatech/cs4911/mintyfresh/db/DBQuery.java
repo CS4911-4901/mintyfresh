@@ -658,16 +658,28 @@ public class DBQuery {
         return output;
     }
 
-    public static List<String> getDistinctAmenityAttributes(DBHandler handler, String amenityType)
-            throws SQLException {
-        ResultSet result = handler.submitQuery("SELECT DISTINCT attribute FROM " +
-                "Amenity_Attribute_Lookup INNER JOIN (SELECT id FROM Amenity " +
-                "WHERE amenity_type = \"" + amenityType + "\") AS AmenitySubtable ON " +
-                "Amenity_Attribute_Lookup.id = AmenitySubtable.id");
-        List<String> output = new ArrayList<>();
+    /**
+     * Queries the database and returns a map of all distinct amenity attributes
+     * for a given amenity type - the map maps the attribute name to its
+     * human-readable form.
+     *
+     * @param handler The database connection to use.
+     * @param amenityType The type of amenity to filter by.
+     * @return A map of all distinct amenity attributes for a given amenity type.
+     * @throws SQLException if the query was unsuccessful.
+     */
+    public static Map<String, String> getDistinctAmenityAttributes(DBHandler handler,
+             String amenityType) throws SQLException {
+        ResultSet result = handler.submitQuery("SELECT DISTINCT B.attribute, full_name FROM " +
+                "((SELECT DISTINCT attribute FROM Amenity_Attribute_Lookup INNER JOIN (SELECT " +
+                "id FROM Amenity WHERE amenity_type = \"" + amenityType + "\") AS A ON " +
+                "Amenity_Attribute_Lookup.id = A.id) AS B " +
+                "INNER JOIN Amenity_Attribute ON B.attribute = Amenity_Attribute.attribute);");
+
+        Map<String, String> output = new HashMap<>();
 
         while (result.next()) {
-            output.add(result.getString("attribute"));
+            output.put(result.getString("attribute"), result.getString("full_name"));
         }
 
         result.close();

@@ -4,6 +4,8 @@ import android.test.InstrumentationTestCase;
 
 import java.io.InputStream;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import edu.gatech.cs4911.mintyfresh.db.DBHandler;
 import edu.gatech.cs4911.mintyfresh.db.queryresponse.*;
@@ -245,12 +247,14 @@ public class DBQueryTest extends InstrumentationTestCase {
     }
 
     public void testGetDistinctAmenityAttributes() throws Exception {
-        List<String> result = getDistinctAmenityAttributes(handler, "Bathroom");
+        Map<String, String> result = getDistinctAmenityAttributes(handler, "Bathroom");
+        Set<String> keyset = result.keySet();
         assertNotNull(result);
 
         // And check each item in result
-        for (String item : result) {
+        for (String item : keyset) {
             assertNotNull(item);
+            assertNotNull(result.get(item));
         }
 
         // Make sure result actually holds something

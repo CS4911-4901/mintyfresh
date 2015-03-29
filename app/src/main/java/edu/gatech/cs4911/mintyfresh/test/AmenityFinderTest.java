@@ -5,7 +5,9 @@ import android.test.InstrumentationTestCase;
 
 
 import java.util.List;
+import java.util.Map;
 import java.util.PriorityQueue;
+import java.util.Set;
 
 import edu.gatech.cs4911.mintyfresh.AmenityFinder;
 import edu.gatech.cs4911.mintyfresh.db.DBHandler;
@@ -140,10 +142,10 @@ public class AmenityFinderTest extends InstrumentationTestCase {
     }
 
     public void testGetDistinctAttributesByType() throws Exception {
-        List<String> result = finder.getDistinctAttributesByType("Bathroom");
+        Map<String, String> result = finder.getDistinctAttributesByType("Bathroom");
 
         assertNotNull(result);
-        assertNotNull(result.get(0));
+        assertNotNull(result.get("male"));
 
         // Make sure result actually holds something
         assertTrue(result.size() > 0);
