@@ -61,6 +61,8 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
 
     TextView bldgAndFloor;
 
+    SVGImageView testView;
+
     private Button leftButton, rightButton;
     private String buildingName;
 
@@ -102,9 +104,12 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
             return;
         }
 
+        //Got there.
         if(floorplanSVG!=null) {
-            bldgAndFloor.setText(buildingName + " - Behold " + floorID);
             Log.v("HUZZAH", "Floorplan isn't null!");
+            testView = new SVGImageView(this);
+            testView.setSVG(floorplanSVG);
+            layout.addView(testView);
         }
 
     }
