@@ -1,6 +1,5 @@
 package edu.gatech.cs4911.mintyfresh;
 
-import android.app.Activity;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.support.v4.util.ArrayMap;
@@ -17,14 +16,10 @@ import android.widget.ExpandableListView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 
-import com.google.android.gms.maps.CameraUpdate;
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
@@ -137,7 +132,7 @@ public class HomeScreenActivity extends ActionBarActivity {
         new ConnectToDB(type).execute(curLocation);
     }
 
-    protected void showEFLA(ArrayList<RelativeBuilding> buildings, Map<RelativeBuilding, List<Integer>> map, elvType curType) {
+    protected void showEFLA(ArrayList<RelativeBuilding> buildings, Map<RelativeBuilding, List<Integer>> map, elvType curType, Map<String, String> spinnerContents) {
 
 
         if ((current != curType) || (current == elvType.NONE)) {
@@ -147,49 +142,18 @@ public class HomeScreenActivity extends ActionBarActivity {
             Spinner showingSpinner = (Spinner) findViewById(R.id.selectedSpinner);
             // Create an ArrayAdapter using the string array and a default spinner layout
 // todo somehow i have to get the categories)
-            for (int k = 0; k < buildings.size(); k++){
-                try {
-                    amenityFinder.getAmenitiesInBuilding(buildings.get(k).getBuilding());
-                }
-                catch (NoDbResultException ndbre) {
-
-                }
-            }
-//                    R.array.planets_array, android.R.layout.simple_spinner_item);
-            // Specify the layout to use when the list of choices appears
             ArrayAdapter<CharSequence> adapter;
-            if (curType == elvType.PRINTERS) {
-                ArrayList<CharSequence> printerList = new ArrayList<CharSequence>();
-                printerList.add("All");
-                printerList.add("Color");
-                printerList.add("Black and White");
-                printerList.add("Free");
-                adapter = new ArrayAdapter<CharSequence>(this, android.R.layout.simple_list_item_1, printerList);
-
-            }
-            else if (curType == elvType.VENDING) {
-                ArrayList<CharSequence> vendingList = new ArrayList<CharSequence>();
-                vendingList.add("All");
-                vendingList.add("Snacks");
-                vendingList.add("Drinks");
-                adapter = new ArrayAdapter<CharSequence>(this, android.R.layout.simple_list_item_1, vendingList);
-
-            }
-            else {
-                ArrayList<CharSequence> bathroomList = new ArrayList<CharSequence>();
-                bathroomList.add("All");
-                bathroomList.add("Men's");
-                bathroomList.add("Women's");
-                bathroomList.add("Unisex");
-                bathroomList.add("Handicap");
-                adapter = new ArrayAdapter<CharSequence>(this, android.R.layout.simple_list_item_1, bathroomList);
-            }
-
+            Collection<String> coll = spinnerContents.values();
+            List list;
+            if (coll instanceof List)
+                list = (List)coll;
+            else
+                list = new ArrayList(coll);
+            adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, list);
+            //bathroom or printer or vending
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-
-            // Apply the adapter to the spinner
             showingSpinner.setAdapter(adapter);
+            Log.v("showefla", "hopefully set the array adapter?");
 
 
             showing.setVisibility(View.VISIBLE);
@@ -214,7 +178,8 @@ public class HomeScreenActivity extends ActionBarActivity {
         private elvType curElvType;
         private int type;
         private ArrayList<RelativeBuilding> buildings;
-        private Map<RelativeBuilding, List<Integer>> map;
+        private Map<RelativeBuilding, List<Integer>> buildingToFloorMap;
+        private Map<String, String> spinnerContents;
 
         public ConnectToDB(int type) {
             this.type = type;
@@ -245,7 +210,7 @@ public class HomeScreenActivity extends ActionBarActivity {
 
                 PriorityQueue<RelativeBuilding> buildingsPQ = amenityFinder.getNearbyBuildings(params[0]);
                 buildings = new ArrayList<RelativeBuilding>();
-                map = new ArrayMap<RelativeBuilding, List<Integer>>();
+                buildingToFloorMap = new ArrayMap<RelativeBuilding, List<Integer>>();
 
                 List<Integer> floors = new ArrayList<Integer>();
 
@@ -255,7 +220,18 @@ public class HomeScreenActivity extends ActionBarActivity {
                     buildings.add(rb);
                     //todo I CANNOT MAKE IT ACTUALLY GET THE FLOORS I'M GOING TO KILL SOMEONE
                     floors = amenityFinder.getFloorsInBuilding(rb.getBuilding().getId());
-                    map.put(rb, floors);
+                    buildingToFloorMap.put(rb, floors);
+                }
+
+                if (curElvType == elvType.BATHROOMS) {
+
+                    spinnerContents  = amenityFinder.getDistinctAttributesByType("bathroom");
+                }
+                else if (curElvType == elvType.VENDING) {
+//                    spinnerContents = amenityFinder.getDistinctAttributesByType("vending");
+                }
+                else {
+//                    spinnerContents = amenityFinder.getDistinctAttributesByType("printer");
                 }
 
                 Log.v("button", type + "clicked");
@@ -270,7 +246,7 @@ public class HomeScreenActivity extends ActionBarActivity {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            showEFLA(buildings, map, curElvType);
+            showEFLA(buildings, buildingToFloorMap, curElvType, spinnerContents);
         }
     }
 
