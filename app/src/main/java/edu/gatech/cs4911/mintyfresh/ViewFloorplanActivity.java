@@ -56,8 +56,10 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
     ImageCache cache;
     SVG floorplanSVG;
     LinearLayout floorSwitch;
-    SVGImageView willItShowUp;
+    ImageView willItShowUp;
+    LinearLayout layout;
 
+    TextView bldgAndFloor;
 
     private Button leftButton, rightButton;
     private String buildingName;
@@ -67,6 +69,7 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_display_floorplan);
+        layout = (LinearLayout) findViewById(R.id.floorSwitch);
 
         Bundle extras = getIntent().getExtras();
         buildingName = "Building in the Sky";
@@ -81,126 +84,33 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
             floorID = extras.getInt("FLOOR_ID");
         }
 
+        String floorInfo[] = {bldID, floorName};
 
-        TextView bldgAndFloor = (TextView) findViewById(R.id.buildingAndFloor);
-        //TextView amenityReminder = (TextView) findViewById(R.id.amenityReminder);
-        //ImageSwitcher imgSwitch = (ImageSwitcher) findViewById(R.id.floorplan);
-
-        //Setting up the image switcher; I think these are required
-        /*
-        imgSwitch.setFactory(this);
-        imgSwitch.setInAnimation(AnimationUtils.loadAnimation(this,
-                android.R.anim.fade_in));
-        imgSwitch.setOutAnimation(AnimationUtils.loadAnimation(this,
-                android.R.anim.fade_out));
-        */
-
-        TextView amenityReminder = (TextView)findViewById(R.id.amenityReminder);
-        ImageSwitcher imgSwitch = (ImageSwitcher)findViewById(R.id.floorplan);
-        //imgSwitch.setImageResource(R.drawable.ic_launcher);
-        imgSwitch.setFactory(new ViewSwitcher.ViewFactory() {
-                                 public View makeView() {
-                                     ImageView myView = new ImageView(getApplicationContext());
-                                     return myView;
-                                 }
-                             });
-//        imgSwitch.setImageDrawable();
-
-        /**
-         * High-level cobbling things together here.
-         *
-         * Things that need to happen:
-         * + Figure out how to get the building from the proper building and floor from the db
-         * + Get that as an SVG
-         * + Turn the SVG into a Drawable
-         * + Display the Drawable (give it to the imageswitcher)
-         * + Define some animations for when the image is switched
-         * --> (How is swipe input represented here?)
-         * + Hook those up
-         */
-
-        /**
-         * floorplanSVG = new ImageUpdaterTask().execute("CUL_1.svg").get();
-         * imgSwitch.setSVG(floorplanSVG);
-         * Drawable drawable = new PictureDrawable(floorplanSVG.renderToPicture());
-         * imgSwitch.setImageDrawable(drawable);
-        **/
-
-
-//        bldgAndFloor.setText(bldgName + " - Floor " + floorName);
         Log.v("hello1", "Doing the thing");
-
-            /**
-             * High-level cobbling things together here.
-             *
-             * Things that need to happen:
-             * + Figure out how to get the building from the proper building and floor from the db
-             * + Get that as an SVG
-             * + Turn the SVG into a Drawable
-             * + Display the Drawable (give it to the imageswitcher)
-             *
-             * + Define some animations for when the image is switched
-             * --> (How is swipe input represented here?)
-             * + Hook those up
-             */
-
-            /**
-             *
-             * static database config:
-             *  new DBHandler(STEAKSCORP_READ_ONLY)
-             *
-             * method I need:
-             * ImageCache.get(buildingId, level)
-             * */
-
-/*             Drawable drawable = new PictureDrawable(floorplanSVG.renderToPicture());
-             imgSwitch.setImageDrawable(drawable);
-*/
-            /**
-             * Let's see if anything happens at all.
-             * */
-
-            //floorSwitch = (LinearLayout) findViewById(R.id.floorSwitch);
-            //willItShowUp = new SVGImageView(this);
-            //floorSwitch.addView(willItShowUp);
-            //setContentView(floorSwitch);
-
-        /** Reminder of what was happening:
-         * addView - the view to be added has to be a child view. Figure that out.
-         * cache thing needs to not be null
-         * */
-
-//        new ConnectToDB().execute();
 
         setFloorDisplay(buildingName, floorName);
 
-        new ConnectToDB(floorName).execute(bldID);
-        cache = new ImageCache(handler, getApplicationContext());
-        bldgAndFloor.setText(bldID + " - Floorest " + floorID);
-
-       /*
-          try {
-            handler = new NetIoTask().execute("").get();
-            bldgAndFloor.setText(buildingName + " - Floorer " + floorName);
-
+        try {
+            handler = new ConnectToDB(floorName).execute(bldID).get();
+            Log.v("check1", "Handler set up");
             cache = new ImageCache(handler, getApplicationContext());
-            new CacheUpdaterTask().execute(cache);
-            bldgAndFloor.setText(bldID + " - Floorest " + floorID);
-
-            floorplanSVG = cache.get(bldID, floorID);
-            if (floorplanSVG!=null) bldgAndFloor.setText(buildingName+ " - Flooresti " + floorName);
+            Log.v("check2", "Cache set up");
+            floorplanSVG = new ImageUpdaterTask(cache).execute(floorInfo).get();
+            Log.v("check3", "SVG begged for");
         }
-        catch (Exception e) {
+        catch(Exception e){
             return;
         }
-         */
 
-
+        if(floorplanSVG!=null) {
+            bldgAndFloor.setText(buildingName + " - Behold " + floorID);
+            Log.v("HUZZAH", "Floorplan isn't null!");
+        }
 
     }
 
     private void setFloorDisplay (String building, String floor) {
-        TextView bldgAndFloor = (TextView)findViewById(R.id.buildingAndFloor);
+        bldgAndFloor = (TextView)findViewById(R.id.buildingAndFloor);
         bldgAndFloor.setText(buildingName + " - Floor " + floor);
 
     }
@@ -244,8 +154,10 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
         }
     }
 
-
-    private class ConnectToDB extends AsyncTask<String, String, Void> {
+    /**
+     * Updated to return the DBHandler being created for referencing purposes.
+     */
+    private class ConnectToDB extends AsyncTask<String, String, DBHandler> {
 
 
         List<Integer> floors;
@@ -256,9 +168,8 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
         }
 
         @Override
-        protected Void doInBackground(String... params) {
+        protected DBHandler doInBackground(String... params) {
             DBHandler dbh;
-
             try {
 
                 dbh = new DBHandler(STEAKSCORP_READ_ONLY);
@@ -269,7 +180,7 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
 
 
 
-
+                return dbh;
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -278,8 +189,8 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
         }
 
         @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
+        protected void onPostExecute(DBHandler dbh) {
+            super.onPostExecute(dbh);
 
             doTheButtonThing(floors, floor);
         }
@@ -296,27 +207,21 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
         return iView;
     }
 
-
-    private class NetIoTask extends AsyncTask<String, Void, DBHandler> {
-        protected DBHandler doInBackground(String... handler) {
+    /**
+     * floorInfo = {bldgID, floorID} (Strings)
+     */
+    private class ImageUpdaterTask extends AsyncTask<String, Void, SVG> {
+        ImageCache cache;
+        public ImageUpdaterTask(ImageCache cache) { this.cache = cache;}
+        protected SVG doInBackground(String... params) {
+            if (params.length!=2) return null;
             try {
-                return new DBHandler(STEAKSCORP_READ_ONLY);
+                SVG result = cache.get(params[0], Integer.parseInt(params[1]));
+                return result;
+
             } catch (Exception e) {
                 return null;
             }
-        }
-    }
-
-    private class CacheUpdaterTask extends AsyncTask<ImageCache, Void, String> {
-        protected String doInBackground(ImageCache... cache) {
-
-            try {
-                //cache[0].update();
-            } catch (Exception e) {
-                return e.toString();
-            } return "SUCCESS";
-    //  return "SUCCESS";
-
         }
     }
 }
