@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageSwitcher;
 import android.widget.ImageView;
@@ -55,13 +56,13 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
     DBHandler handler;
     ImageCache cache;
     SVG floorplanSVG;
-    LinearLayout floorSwitch;
-    ImageView willItShowUp;
     LinearLayout layout;
 
     TextView bldgAndFloor;
 
     SVGImageView testView;
+
+    ImageSwitcher imgSwitcher;
 
     private Button leftButton, rightButton;
     private String buildingName;
@@ -104,13 +105,32 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
             return;
         }
 
+        //Functional test:
         //Got there.
         if(floorplanSVG!=null) {
             Log.v("HUZZAH", "Floorplan isn't null!");
-            testView = new SVGImageView(this);
-            testView.setSVG(floorplanSVG);
-            layout.addView(testView);
+            //testView = new SVGImageView(this);
+            //testView.setSVG(floorplanSVG);
+            //layout.addView(testView);
         }
+
+        //For real this time.
+        //Set up image switcher with view factory, in/out animation, initial image.
+        imgSwitcher = (ImageSwitcher) findViewById(R.id.floorplanSwitcher);
+        imgSwitcher.setFactory(this);
+
+        Animation fadeIn = AnimationUtils.loadAnimation(this,android.R.anim.fade_in);
+        Animation fadeOut = AnimationUtils.loadAnimation(this,android.R.anim.fade_out);
+
+        imgSwitcher.setInAnimation(fadeIn);
+        imgSwitcher.setOutAnimation(fadeOut);
+
+        //imgSwitcher.setImageDrawable(new PictureDrawable(floorplanSVG.renderToPicture()));
+        Log.v("Checking the thing", imgSwitcher.getCurrentView().toString());
+        SVGImageView currView = (SVGImageView) imgSwitcher.getCurrentView();
+        currView.setSVG(floorplanSVG);
+
+
 
     }
 
@@ -206,8 +226,8 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
         SVGImageView iView = new SVGImageView(getApplicationContext());
         iView.setScaleType(SVGImageView.ScaleType.FIT_CENTER);
         iView.setLayoutParams(new LayoutParams
-                (LinearLayout.LayoutParams.MATCH_PARENT,
-                        LinearLayout.LayoutParams.MATCH_PARENT));
+                (ImageSwitcher.LayoutParams.MATCH_PARENT,
+                        ImageSwitcher.LayoutParams.MATCH_PARENT));
 
         return iView;
     }

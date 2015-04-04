@@ -26,11 +26,7 @@
         <ImageSwitcher
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/floorplan"/>
-        <ImageView
-            android:id="@+id/svgFloorplanView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:id="@+id/floorplanSwitcher"/>
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
