@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageSwitcher;
 import android.widget.ImageView;
@@ -61,15 +62,16 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
 
     TextView bldgAndFloor;
 
-    SVGImageView testView;
-
     ImageSwitcher imgSwitcher;
 
-    private ImageButton leftButton, rightButton;
+    private ImageButton leftButton, rightButton, cancelButton, routeButton;
     private String buildingName;
     Integer currentFloor;
     SVGImageView currView;
     String[] floorInfo;
+
+    int defaultSize;
+    FrameLayout.LayoutParams defaultScale;
 
 
     @Override
@@ -86,15 +88,17 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
 
         if (extras != null) {
             buildingName = extras.getString("BUILDING_NAME");
-            floorName = extras.getString("FLOOR_NAME");
+            floorID = extras.getInt("FLOOR_NAME");
             bldID = extras.getString("BUILDING_ID");
-            floorID = extras.getInt("FLOOR_ID");
+            floorName = Integer.toString(floorID);
         }
         currentFloor = floorID;
 
+        defaultSize = 768;
+
         floorInfo = new String[2];
         floorInfo[0] = bldID;
-        floorInfo[1] = Integer.toString(floorID);
+        floorInfo[1] = floorName;
 
         Log.v("hello1", "Doing the thing");
 
@@ -132,6 +136,10 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
         currView = (SVGImageView) imgSwitcher.getCurrentView();
         currView.setSVG(floorplanSVG);
 
+        defaultScale = new FrameLayout.LayoutParams(defaultSize,defaultSize);
+
+        currView.setLayoutParams(defaultScale);
+
 
 
     }
@@ -150,6 +158,8 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
 
         leftButton = (ImageButton)findViewById(R.id.leftButton);
         rightButton = (ImageButton)findViewById(R.id.rightButton);
+
+        cancelButton = (ImageButton)findViewById(R.id.cancelButton);
 
         if (floors.contains(flr)) {
 
@@ -190,9 +200,11 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
                         currentFloor = floorMinusOne;
                         floorInfo[1] = currentFloor.toString();
                         try {
+                            Log.v("onClickL", "Hit the left button");
                             floorplanSVG = new ImageUpdaterTask(cache).execute(floorInfo).get();
                         }
                         catch(Exception e){
+                            Log.v("onClickL", "Welp, that didn't work");
                             return;
                         }
                         currView.setSVG(floorplanSVG);
@@ -202,6 +214,13 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
                 });
             }
         }
+
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+               finish();
+            }
+        });
     }
 
 
