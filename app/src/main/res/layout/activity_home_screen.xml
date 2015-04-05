@@ -16,41 +16,58 @@
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:layout_gravity="bottom">
 
         <LinearLayout
             android:id="@+id/amenity_type_buttons"
             android:layout_width="match_parent"
-            android:layout_height="48dp"
+            android:layout_height="72dp"
             android:orientation="horizontal"
-            android:background="#80000000"
-            android:padding="4dp" >
+            android:background="#30000000"
+            android:padding="4dp">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:text="@string/needToFind"/>
+                android:text="@string/needToFind"
+                android:textStyle="bold"
+                android:gravity="center_vertical"
+                android:textSize="20dp" />
             <ImageButton
                 android:id="@+id/bathroomButton"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:text="@string/bathrooms"
                 android:gravity="center_horizontal|center_vertical"
-                android:layout_weight="1" />
+                android:background="@android:color/transparent"
+                android:src="@drawable/button_toilet_inactive"
+                android:adjustViewBounds="false"
+                android:layout_weight="1"
+                android:scaleType="fitCenter"
+                android:layout_marginLeft="10dp" />
             <ImageButton
                 android:id="@+id/printerButton"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:gravity="center_horizontal|center_vertical"
                 android:text="@string/printers"
-                android:layout_weight="1" />
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
+                android:src="@drawable/button_printer_inactive"
+                android:scaleType="fitCenter"
+                android:layout_marginLeft="10dp" />
             <ImageButton
                 android:id="@+id/vendingButton"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:gravity="center_horizontal|center_vertical"
                 android:text="@string/vending"
-                android:layout_weight="1" />
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
+                android:src="@drawable/button_vending_inactive"
+                android:scaleType="fitCenter"
+                android:layout_marginLeft="10dp" />
         </LinearLayout>
 
         <LinearLayout
@@ -76,7 +93,7 @@
         <ExpandableListView
             android:id="@+id/buildingList"
             android:layout_width="match_parent"
-            android:layout_height="300dp">
+            android:layout_height="98dp">
         </ExpandableListView>
     </LinearLayout>
 

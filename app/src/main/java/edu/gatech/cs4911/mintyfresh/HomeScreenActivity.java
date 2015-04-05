@@ -39,6 +39,7 @@ public class HomeScreenActivity extends ActionBarActivity {
     protected AmenityFinder amenityFinder;
     private enum elvType {NONE, VENDING, BATHROOMS, PRINTERS};
     private elvType current = elvType.NONE;
+    private ImageButton bathroom, vending, printing;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +49,7 @@ public class HomeScreenActivity extends ActionBarActivity {
         expListView = (ExpandableListView) findViewById(R.id.buildingList);
         expListView.setVisibility(View.GONE);
 
-        ImageButton bathroom = (ImageButton) findViewById(R.id.bathroomButton);
+        bathroom = (ImageButton) findViewById(R.id.bathroomButton);
         bathroom.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -58,10 +59,13 @@ public class HomeScreenActivity extends ActionBarActivity {
                 }
                 else {
                     expandMenu(0);
+                    bathroom.setImageResource(R.drawable.button_toilet_active);
+                    vending.setImageResource(R.drawable.button_vending_inactive);
+                    printing.setImageResource(R.drawable.button_printer_inactive);
                 }
             }
         });
-        ImageButton vending = (ImageButton) findViewById(R.id.vendingButton);
+        vending = (ImageButton) findViewById(R.id.vendingButton);
         vending.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -71,10 +75,13 @@ public class HomeScreenActivity extends ActionBarActivity {
                 }
                 else {
                     expandMenu(1);
+                    bathroom.setImageResource(R.drawable.button_toilet_inactive);
+                    vending.setImageResource(R.drawable.button_vending_active);
+                    printing.setImageResource(R.drawable.button_printer_inactive);
                 }
             }
         });
-        ImageButton printing = (ImageButton) findViewById(R.id.printerButton);
+        printing = (ImageButton) findViewById(R.id.printerButton);
         printing.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -84,6 +91,9 @@ public class HomeScreenActivity extends ActionBarActivity {
                 }
                 else {
                     expandMenu(2);
+                    bathroom.setImageResource(R.drawable.button_toilet_inactive);
+                    vending.setImageResource(R.drawable.button_vending_inactive);
+                    printing.setImageResource(R.drawable.button_printer_active);
                 }
             }
         });
