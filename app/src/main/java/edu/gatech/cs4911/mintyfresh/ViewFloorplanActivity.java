@@ -138,7 +138,7 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
 
         defaultScale = new FrameLayout.LayoutParams(defaultSize,defaultSize);
 
-        currView.setLayoutParams(defaultScale);
+        //currView.setLayoutParams(defaultScale);
 
 
 

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+    android:orientation="vertical" android:layout_width="wrap_content"
     android:layout_height="match_parent" android:layout_centerHorizontal="true"
     android:id="@+id/topLevelLayout">
 
@@ -16,22 +16,29 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:id="@+id/floorSwitch">
+        android:id="@+id/floorSwitch"
+        android:layout_weight="1.0">
         
         <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/leftButton"
-            android:text="@string/leftArrow"/>
+            android:text="@string/leftArrow"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="15dp"/>
         <ImageSwitcher
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/floorplanSwitcher"/>
+            android:id="@+id/floorplanSwitcher"
+            android:adjustViewBounds="true"
+            android:layout_weight="1.0"/>
         <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/rightButton"
-            android:text="@string/rightArrow"/>
+            android:text="@string/rightArrow"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="15dp"/>
         
         </LinearLayout>
     <LinearLayout
