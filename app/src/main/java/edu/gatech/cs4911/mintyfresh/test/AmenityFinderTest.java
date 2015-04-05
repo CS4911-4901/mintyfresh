@@ -141,11 +141,38 @@ public class AmenityFinderTest extends InstrumentationTestCase {
         assertTrue(result.size() > 0);
     }
 
+    public void testGetBuildingById() throws Exception {
+        assertNotNull(finder.getBuildingById("CUL"));
+    }
+
     public void testGetDistinctAttributesByType() throws Exception {
         Map<String, String> result = finder.getDistinctAttributesByType("Bathroom");
 
         assertNotNull(result);
         assertNotNull(result.get("male"));
+
+        // Make sure result actually holds something
+        assertTrue(result.size() > 0);
+    }
+
+    public void testGetNearbyAmenitiesByTypeAndAttribute() throws Exception {
+        PriorityQueue<RelativeAmenity> result =
+                finder.getNearbyAmenitiesByTypeAndAttribute(curLocation, "Bathroom", "male");
+
+        assertNotNull(result);
+        assertNotNull(result.peek());
+
+        // Make sure result actually holds something
+        assertTrue(result.size() > 0);
+    }
+
+    public void testGetNearbyAmenitiesByTypeAndAttributes() throws Exception {
+        String[] attributes = {"male", "handicapped"};
+        PriorityQueue<RelativeAmenity> result =
+                finder.getNearbyAmenitiesByTypeAndAttributes(curLocation, "Bathroom", attributes);
+
+        assertNotNull(result);
+        assertNotNull(result.peek());
 
         // Make sure result actually holds something
         assertTrue(result.size() > 0);
