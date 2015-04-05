@@ -2,19 +2,24 @@ package edu.gatech.cs4911.mintyfresh;
 
 import android.app.Activity;
 
+import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.PictureDrawable;
 import android.location.Location;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.util.Log;
 
+import android.view.Display;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.ImageSwitcher;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -57,18 +62,20 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
     ImageCache cache;
     SVG floorplanSVG;
     LinearLayout layout;
+    ArrayList<SVG> floorsInBuilding;
 
     TextView bldgAndFloor;
 
-    SVGImageView testView;
-
     ImageSwitcher imgSwitcher;
 
-    private Button leftButton, rightButton;
+    private ImageButton leftButton, rightButton, cancelButton, routeButton;
     private String buildingName;
     Integer currentFloor;
     SVGImageView currView;
     String[] floorInfo;
+
+    int defaultSize;
+    FrameLayout.LayoutParams defaultScale;
 
 
     @Override
@@ -85,15 +92,17 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
 
         if (extras != null) {
             buildingName = extras.getString("BUILDING_NAME");
-            floorName = extras.getString("FLOOR_NAME");
+            floorID = extras.getInt("FLOOR_NAME");
             bldID = extras.getString("BUILDING_ID");
-            floorID = extras.getInt("FLOOR_ID");
+            floorName = Integer.toString(floorID);
         }
         currentFloor = floorID;
 
+        defaultSize = 512;
+
         floorInfo = new String[2];
         floorInfo[0] = bldID;
-        floorInfo[1] = Integer.toString(floorID);
+        floorInfo[1] = floorName;
 
         Log.v("hello1", "Doing the thing");
 
@@ -129,8 +138,38 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
         imgSwitcher.setOutAnimation(fadeOut);
 
         currView = (SVGImageView) imgSwitcher.getCurrentView();
-        currView.setSVG(floorplanSVG);
 
+
+        //Shenanigans trying to get the imageview to stick to a uniform size.
+        double percentPerButton = 0.15;
+        double percentImageView = 1.0 - 2*percentPerButton;
+
+        DisplayMetrics metrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(metrics);
+
+        int screenHeight = metrics.heightPixels;
+        int screenWidth = metrics.widthPixels;
+
+        Log.v("Width in pixels", "Allegedly " + screenWidth);
+
+        /**
+        Display display = getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        int screenWidth = size.x;
+        Log.v("Screen width: ", "" + screenWidth);
+        int screenHeight = size.y;
+        Log.v("Screen height: ", "" + screenHeight);
+        **/
+
+        int viewWidth = (int) (screenWidth*percentImageView);
+
+        FrameLayout.LayoutParams defaultSize = new FrameLayout.LayoutParams(viewWidth, viewWidth);
+        currView.setLayoutParams(defaultSize);
+
+        //And back to things that are strictly necessary.
+        currView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+        currView.setSVG(floorplanSVG);
 
 
     }
@@ -147,8 +186,10 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
         final Integer flr = currentFloor;
         final List<Integer> flrList = floors;
 
-        leftButton = (Button)findViewById(R.id.leftButton);
-        rightButton = (Button)findViewById(R.id.rightButton);
+        leftButton = (ImageButton)findViewById(R.id.leftButton);
+        rightButton = (ImageButton)findViewById(R.id.rightButton);
+
+        cancelButton = (ImageButton)findViewById(R.id.cancelButton);
 
         if (floors.contains(flr)) {
 
@@ -189,9 +230,11 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
                         currentFloor = floorMinusOne;
                         floorInfo[1] = currentFloor.toString();
                         try {
+                            Log.v("onClickL", "Hit the left button");
                             floorplanSVG = new ImageUpdaterTask(cache).execute(floorInfo).get();
                         }
                         catch(Exception e){
+                            Log.v("onClickL", "Welp, that didn't work");
                             return;
                         }
                         currView.setSVG(floorplanSVG);
@@ -201,18 +244,28 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
                 });
             }
         }
+
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+
     }
+
+
 
     //Button support.
     private void checkButtonAble(List<Integer> floors, Integer floor){
         //needs to be checked anytime a button is clicked
         if(floors.contains(floor)) {
             int curIndex = floors.indexOf(floor);
-            if (curIndex == 0) {
+            if (curIndex <= 0) {
                 leftButton.setEnabled(false);
             }
             else{leftButton.setEnabled(true);}
-            if (curIndex == floors.size() - 1) {
+            if (curIndex >= floors.size() - 1) {
                 rightButton.setEnabled(false);
             }
             else{rightButton.setEnabled(true);}
@@ -268,9 +321,7 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
 
         SVGImageView iView = new SVGImageView(getApplicationContext());
         iView.setScaleType(SVGImageView.ScaleType.FIT_CENTER);
-        iView.setLayoutParams(new LayoutParams
-                (ImageSwitcher.LayoutParams.MATCH_PARENT,
-                        ImageSwitcher.LayoutParams.MATCH_PARENT));
+        iView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
 
         return iView;
     }
