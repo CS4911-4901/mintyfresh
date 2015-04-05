@@ -11,8 +11,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ExpandableListView;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 
@@ -25,7 +25,6 @@ import java.util.Map;
 import java.util.PriorityQueue;
 
 import edu.gatech.cs4911.mintyfresh.db.DBHandler;
-import edu.gatech.cs4911.mintyfresh.exception.NoDbResultException;
 import edu.gatech.cs4911.mintyfresh.router.RelativeBuilding;
 
 import static edu.gatech.cs4911.mintyfresh.db.DatabaseConfig.STEAKSCORP_READ_ONLY;
@@ -49,13 +48,10 @@ public class HomeScreenActivity extends ActionBarActivity {
         expListView = (ExpandableListView) findViewById(R.id.buildingList);
         expListView.setVisibility(View.GONE);
 
-        //todo then i need to get those clicks working.
-
-        Button bathroom = (Button) findViewById(R.id.bathroomButton);
+        ImageButton bathroom = (ImageButton) findViewById(R.id.bathroomButton);
         bathroom.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                //todo i have this hacked but i need to make sure it shows the one you click on and hides if you delete it
                 if (current == elvType.BATHROOMS) {
                     current = elvType.NONE;
                     expListView.setVisibility(View.GONE);
@@ -65,7 +61,7 @@ public class HomeScreenActivity extends ActionBarActivity {
                 }
             }
         });
-        Button vending = (Button) findViewById(R.id.vendingButton);
+        ImageButton vending = (ImageButton) findViewById(R.id.vendingButton);
         vending.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -78,7 +74,7 @@ public class HomeScreenActivity extends ActionBarActivity {
                 }
             }
         });
-        Button printing = (Button) findViewById(R.id.printerButton);
+        ImageButton printing = (ImageButton) findViewById(R.id.printerButton);
         printing.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -91,9 +87,7 @@ public class HomeScreenActivity extends ActionBarActivity {
                 }
             }
         });
-
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -118,11 +112,6 @@ public class HomeScreenActivity extends ActionBarActivity {
     }
 
     private void expandMenu(int type) {
-        //do nothing
-        //find the amenities
-        //make them into the list view
-        //post them
-
         Log.v("sigh", "yeah");
 
         Location curLocation = new Location("TEST_PROVIDER");
@@ -136,12 +125,9 @@ public class HomeScreenActivity extends ActionBarActivity {
 
 
         if ((current != curType) || (current == elvType.NONE)) {
-//            elvShowing = true;
             current = curType;
             LinearLayout showing = (LinearLayout) findViewById(R.id.showingLayout);
             Spinner showingSpinner = (Spinner) findViewById(R.id.selectedSpinner);
-            // Create an ArrayAdapter using the string array and a default spinner layout
-// todo somehow i have to get the categories)
             ArrayAdapter<CharSequence> adapter;
             Collection<String> coll = spinnerContents.values();
             List list;
@@ -174,7 +160,7 @@ public class HomeScreenActivity extends ActionBarActivity {
 
     private class ConnectToDB extends AsyncTask <Location, Integer, Void> {
 
-        private String name;
+//        private String name;
         private elvType curElvType;
         private int type;
         private ArrayList<RelativeBuilding> buildings;
@@ -185,16 +171,16 @@ public class HomeScreenActivity extends ActionBarActivity {
             this.type = type;
             //showing button-name
             if (type == 0) {
-                name = "Bathrooms";
+//                name = "Bathrooms";
                 curElvType = elvType.BATHROOMS;
 
             }
             else if (type == 1) {
-                name = "Vending";
+//                name = "Vending";
                 curElvType = elvType.VENDING;
             }
             else {
-                name = "Printers";
+//                name = "Printers";
                 curElvType = elvType.PRINTERS;
             }
         }
@@ -218,7 +204,6 @@ public class HomeScreenActivity extends ActionBarActivity {
                     RelativeBuilding rb = buildingsPQ.poll();
 
                     buildings.add(rb);
-                    //todo I CANNOT MAKE IT ACTUALLY GET THE FLOORS I'M GOING TO KILL SOMEONE
                     floors = amenityFinder.getFloorsInBuilding(rb.getBuilding().getId());
                     buildingToFloorMap.put(rb, floors);
                 }
@@ -228,10 +213,10 @@ public class HomeScreenActivity extends ActionBarActivity {
                     spinnerContents  = amenityFinder.getDistinctAttributesByType("bathroom");
                 }
                 else if (curElvType == elvType.VENDING) {
-//                    spinnerContents = amenityFinder.getDistinctAttributesByType("vending");
+                    spinnerContents = amenityFinder.getDistinctAttributesByType("vending");
                 }
                 else {
-//                    spinnerContents = amenityFinder.getDistinctAttributesByType("printer");
+                    spinnerContents = amenityFinder.getDistinctAttributesByType("printer");
                 }
 
                 Log.v("button", type + "clicked");

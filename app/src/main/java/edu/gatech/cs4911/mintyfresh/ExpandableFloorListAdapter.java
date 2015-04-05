@@ -9,15 +9,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import android.widget.BaseExpandableListAdapter;
-import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.TextView;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.PriorityQueue;
 
 import edu.gatech.cs4911.mintyfresh.router.RelativeBuilding;
 
@@ -38,7 +36,6 @@ public class ExpandableFloorListAdapter extends BaseExpandableListAdapter {
         this.buildings = buildings;
     }
     @Override
-    //this needs to get a specific floor, i think
     public Object getChild(int groupPosition, int childPosition) {
         return floors.get(buildings.get(childPosition));
     }
@@ -57,7 +54,6 @@ public class ExpandableFloorListAdapter extends BaseExpandableListAdapter {
                 return convertView;
             }
         }
-//        else {
         if ((convertView == null)||(convertView.getId() != groupPosition)) {
             convertView = null;
             convertView = inflater.inflate(R.layout.floor_picker_item, null);
@@ -67,18 +63,16 @@ public class ExpandableFloorListAdapter extends BaseExpandableListAdapter {
 
             for (int i = 0; i<floors.get(buildings.get(groupPosition)).size(); i++) {
                 Integer floorID = floors.get(buildings.get(groupPosition)).get(i);
-                Button floorButton = new Button(convertView.getContext());
-                floorButton.setText(floorID.toString());
+                FloorButton floorButton = new FloorButton(convertView.getContext(), floorID);
                 floorButton.setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        String s = ((Button)v).getText().toString();
-                        Integer i = Integer.parseInt(s);
+                        Integer i = ((FloorButton)v).getFloorNumber();
                         String bldgName = getGroup(groupPosition);
                         String bldgID = buildings.get(groupPosition).getBuilding().getId();
                         Intent intent = new Intent(context, ViewFloorplanActivity.class);
                         intent.putExtra("BUILDING_NAME", bldgName);
-                        intent.putExtra("FLOOR_NAME", ((Button)v).getText());
+                        intent.putExtra("FLOOR_NAME", ((FloorButton)v).getFloorNumber());
                         intent.putExtra("BUILDING_ID", bldgID);
                         intent.putExtra("FLOOR_ID", i);
                         context.startActivity(intent);
@@ -106,7 +100,7 @@ public class ExpandableFloorListAdapter extends BaseExpandableListAdapter {
 
     @Override
     public int getChildrenCount(int groupPosition) {
-        return 1;//floors.get(buildings.get(groupPosition)).size();
+        return 1;
     }
 
     @Override
@@ -147,5 +141,23 @@ public class ExpandableFloorListAdapter extends BaseExpandableListAdapter {
     @Override
     public boolean isChildSelectable(int groupPosition, int childPosition) {
         return false;
+    }
+
+    public class FloorButton extends ImageButton {
+
+        int floorNumber;
+
+        public FloorButton(Context context, int floorNumber) {
+            super(context);
+            this.floorNumber = floorNumber;
+        }
+
+        public int getFloorNumber() {
+            return floorNumber;
+        }
+
+        public void setFloorNumber(int number) {
+            floorNumber = number;
+        }
     }
 }
