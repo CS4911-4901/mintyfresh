@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.ImageButton;
 import android.widget.ImageSwitcher;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -64,7 +65,7 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
 
     ImageSwitcher imgSwitcher;
 
-    private Button leftButton, rightButton;
+    private ImageButton leftButton, rightButton;
     private String buildingName;
     Integer currentFloor;
     SVGImageView currView;
@@ -147,8 +148,8 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
         final Integer flr = currentFloor;
         final List<Integer> flrList = floors;
 
-        leftButton = (Button)findViewById(R.id.leftButton);
-        rightButton = (Button)findViewById(R.id.rightButton);
+        leftButton = (ImageButton)findViewById(R.id.leftButton);
+        rightButton = (ImageButton)findViewById(R.id.rightButton);
 
         if (floors.contains(flr)) {
 
@@ -203,16 +204,18 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
         }
     }
 
+
+
     //Button support.
     private void checkButtonAble(List<Integer> floors, Integer floor){
         //needs to be checked anytime a button is clicked
         if(floors.contains(floor)) {
             int curIndex = floors.indexOf(floor);
-            if (curIndex == 0) {
+            if (curIndex <= 0) {
                 leftButton.setEnabled(false);
             }
             else{leftButton.setEnabled(true);}
-            if (curIndex == floors.size() - 1) {
+            if (curIndex >= floors.size() - 1) {
                 rightButton.setEnabled(false);
             }
             else{rightButton.setEnabled(true);}
