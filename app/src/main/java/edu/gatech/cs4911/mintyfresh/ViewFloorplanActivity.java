@@ -66,6 +66,9 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
 
     private Button leftButton, rightButton;
     private String buildingName;
+    Integer currentFloor;
+    SVGImageView currView;
+    String[] floorInfo;
 
 
     @Override
@@ -86,12 +89,15 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
             bldID = extras.getString("BUILDING_ID");
             floorID = extras.getInt("FLOOR_ID");
         }
+        currentFloor = floorID;
 
-        String floorInfo[] = {bldID, floorName};
+        floorInfo = new String[2];
+        floorInfo[0] = bldID;
+        floorInfo[1] = Integer.toString(floorID);
 
         Log.v("hello1", "Doing the thing");
 
-        setFloorDisplay(buildingName, floorName);
+        setFloorDisplay(buildingName, currentFloor.toString());
 
         try {
             handler = new ConnectToDB(floorName).execute(bldID).get();
@@ -109,9 +115,6 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
         //Got there.
         if(floorplanSVG!=null) {
             Log.v("HUZZAH", "Floorplan isn't null!");
-            //testView = new SVGImageView(this);
-            //testView.setSVG(floorplanSVG);
-            //layout.addView(testView);
         }
 
         //For real this time.
@@ -125,9 +128,7 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
         imgSwitcher.setInAnimation(fadeIn);
         imgSwitcher.setOutAnimation(fadeOut);
 
-        //imgSwitcher.setImageDrawable(new PictureDrawable(floorplanSVG.renderToPicture()));
-        Log.v("Checking the thing", imgSwitcher.getCurrentView().toString());
-        SVGImageView currView = (SVGImageView) imgSwitcher.getCurrentView();
+        currView = (SVGImageView) imgSwitcher.getCurrentView();
         currView.setSVG(floorplanSVG);
 
 
@@ -140,28 +141,40 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
 
     }
 
+    //Called to set up buttons initially.
     protected void doTheButtonThing(List<Integer> floors, Integer floor) {
 
-        final Integer flr = floor;
+        final Integer flr = currentFloor;
+        final List<Integer> flrList = floors;
 
         leftButton = (Button)findViewById(R.id.leftButton);
         rightButton = (Button)findViewById(R.id.rightButton);
-        if (floors.contains(floor)) {
-            int curIndex = floors.indexOf(floor);
-            if (curIndex == 0) {
-                leftButton.setEnabled(false);
-            }
-            if (curIndex == floors.size()-1) {
-                rightButton.setEnabled(false);
-            }
 
+        if (floors.contains(flr)) {
+
+            //needs to be checked anytime a button is clicked
+            checkButtonAble(floors, flr);
+
+            //things that happen when buttons are clicked; re-enable/disable
             if (rightButton.isEnabled()) {
                 rightButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         //switch imageSwitcher
-                        final int floorPlusOne = flr + 1;
+                        final int floorPlusOne = currentFloor + 1;
                         setFloorDisplay(buildingName, ((Integer)floorPlusOne).toString());
+                        //Everything after here might be terrible
+                        currentFloor = floorPlusOne;
+                        floorInfo[1] = currentFloor.toString();
+                        try {
+                            floorplanSVG = new ImageUpdaterTask(cache).execute(floorInfo).get();
+                        }
+                        catch(Exception e){
+                            return;
+                        }
+                        currView.setSVG(floorplanSVG);
+                        checkButtonAble(flrList, currentFloor);
+
                     }
                 });
             }
@@ -170,12 +183,42 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
                     @Override
                     public void onClick(View v) {
                         //switch imageSwitcher
-                        final int floorMinusOne = flr - 1;
+                        final int floorMinusOne = currentFloor - 1;
                         setFloorDisplay(buildingName, ((Integer)floorMinusOne).toString());
+                        //Hereafter lie today's changes
+                        currentFloor = floorMinusOne;
+                        floorInfo[1] = currentFloor.toString();
+                        try {
+                            floorplanSVG = new ImageUpdaterTask(cache).execute(floorInfo).get();
+                        }
+                        catch(Exception e){
+                            return;
+                        }
+                        currView.setSVG(floorplanSVG);
+                        checkButtonAble(flrList, currentFloor);
 
                     }
                 });
             }
+        }
+    }
+
+    //Button support.
+    private void checkButtonAble(List<Integer> floors, Integer floor){
+        //needs to be checked anytime a button is clicked
+        if(floors.contains(floor)) {
+            int curIndex = floors.indexOf(floor);
+            if (curIndex == 0) {
+                leftButton.setEnabled(false);
+            }
+            else{leftButton.setEnabled(true);}
+            if (curIndex == floors.size() - 1) {
+                rightButton.setEnabled(false);
+            }
+            else{rightButton.setEnabled(true);}
+        }
+        else{
+            Log.v("Floor not found", "Something went wrong in this list of floors");
         }
     }
 
