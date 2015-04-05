@@ -141,6 +141,10 @@ public class AmenityFinderTest extends InstrumentationTestCase {
         assertTrue(result.size() > 0);
     }
 
+    public void testGetBuildingById() throws Exception {
+        assertNotNull(finder.getBuildingById("CUL"));
+    }
+
     public void testGetDistinctAttributesByType() throws Exception {
         Map<String, String> result = finder.getDistinctAttributesByType("Bathroom");
 

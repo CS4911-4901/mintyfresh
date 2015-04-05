@@ -260,4 +260,8 @@ public class DBQueryTest extends InstrumentationTestCase {
         // Make sure result actually holds something
         assertTrue(result.size() > 0);
     }
+
+    public void testGetBuildingById() throws Exception {
+        assertNotNull(getBuildingById(handler, "CUL"));
+    }
 }

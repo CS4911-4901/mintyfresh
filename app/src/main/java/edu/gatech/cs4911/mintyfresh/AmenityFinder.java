@@ -259,6 +259,21 @@ public class AmenityFinder {
     }
 
     /**
+     * Returns a Building object associated with a String building ID.
+     *
+     * @param id The ID associated with a building.
+     * @return A Building object associated with a String building ID.
+     * @throws NoDbResultException if the database did not return any buildings.
+     */
+    public Building getBuildingById(String id) throws NoDbResultException {
+        try {
+            return DBQuery.getBuildingById(handler, id);
+        } catch (Exception e) {
+            throw new NoDbResultException();
+        }
+    }
+
+    /**
      * Calculates relative distances between a given location and a set of Amenity objects,
      * and packages them into a PriorityQueue to rank by closest distance.
      *

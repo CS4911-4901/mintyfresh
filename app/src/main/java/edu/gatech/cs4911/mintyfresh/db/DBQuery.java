@@ -659,6 +659,29 @@ public class DBQuery {
     }
 
     /**
+     * Returns a Building object associated with a String building ID.
+     *
+     * @param handler The database connection to use.
+     * @param buildingId The ID associated with a building.
+     * @return A Building object associated with a String building ID.
+     * @throws SQLException if the query was unsuccessful.
+     */
+    public static Building getBuildingById(DBHandler handler, String buildingId)
+            throws SQLException {
+        ResultSet result = handler.submitQuery("SELECT Building.id, name, latitude, longitude " +
+                "FROM Building INNER JOIN Building_Location ON Building.id = " +
+                "Building_Location.id WHERE Building.id = \"" + buildingId + "\";");
+        Building output;
+
+        result.next();
+        output = new Building(result.getString("id"), result.getString("name"),
+                result.getDouble("latitude"), result.getDouble("longitude"));
+        result.close();
+
+        return output;
+    }
+
+    /**
      * Queries the database and returns a map of all distinct amenity attributes
      * for a given amenity type - the map maps the attribute name to its
      * human-readable form.
