@@ -2,14 +2,17 @@ package edu.gatech.cs4911.mintyfresh;
 
 import android.app.Activity;
 
+import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.PictureDrawable;
 import android.location.Location;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.util.Log;
 
+import android.view.Display;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -59,6 +62,7 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
     ImageCache cache;
     SVG floorplanSVG;
     LinearLayout layout;
+    ArrayList<SVG> floorsInBuilding;
 
     TextView bldgAndFloor;
 
@@ -94,7 +98,7 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
         }
         currentFloor = floorID;
 
-        defaultSize = 768;
+        defaultSize = 512;
 
         floorInfo = new String[2];
         floorInfo[0] = bldID;
@@ -134,12 +138,38 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
         imgSwitcher.setOutAnimation(fadeOut);
 
         currView = (SVGImageView) imgSwitcher.getCurrentView();
+
+
+        //Shenanigans trying to get the imageview to stick to a uniform size.
+        double percentPerButton = 0.15;
+        double percentImageView = 1.0 - 2*percentPerButton;
+
+        DisplayMetrics metrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(metrics);
+
+        int screenHeight = metrics.heightPixels;
+        int screenWidth = metrics.widthPixels;
+
+        Log.v("Width in pixels", "Allegedly " + screenWidth);
+
+        /**
+        Display display = getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        int screenWidth = size.x;
+        Log.v("Screen width: ", "" + screenWidth);
+        int screenHeight = size.y;
+        Log.v("Screen height: ", "" + screenHeight);
+        **/
+
+        int viewWidth = (int) (screenWidth*percentImageView);
+
+        FrameLayout.LayoutParams defaultSize = new FrameLayout.LayoutParams(viewWidth, viewWidth);
+        currView.setLayoutParams(defaultSize);
+
+        //And back to things that are strictly necessary.
+        currView.setScaleType(ImageView.ScaleType.FIT_CENTER);
         currView.setSVG(floorplanSVG);
-
-        defaultScale = new FrameLayout.LayoutParams(defaultSize,defaultSize);
-
-        //currView.setLayoutParams(defaultScale);
-
 
 
     }
@@ -218,9 +248,10 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               finish();
+                finish();
             }
         });
+
     }
 
 
@@ -290,9 +321,7 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
 
         SVGImageView iView = new SVGImageView(getApplicationContext());
         iView.setScaleType(SVGImageView.ScaleType.FIT_CENTER);
-        iView.setLayoutParams(new LayoutParams
-                (ImageSwitcher.LayoutParams.MATCH_PARENT,
-                        ImageSwitcher.LayoutParams.MATCH_PARENT));
+        iView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
 
         return iView;
     }
