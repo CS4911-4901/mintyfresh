@@ -140,6 +140,46 @@ public class AmenityFinder {
     }
 
     /**
+     * Returns a heap of all RelativeAmenity objects of a given type and attribute,
+     * ordered by relative distance.
+     *
+     * @param location The current location.
+     * @param type The type of Amenity object.
+     * @param attribute An attribute to filter results by.
+     * @return A heap of nearby amenities.
+     * @throws NoDbResultException if the database did not return any Amenity objects.
+     */
+    public PriorityQueue<RelativeAmenity> getNearbyAmenitiesByTypeAndAttribute(Location location,
+            String type, String attribute) throws NoDbResultException {
+        try {
+            return amenityHeapPackager(location, DBQuery.getAmenitiesByTypeAndAttribute(handler,
+                    type, attribute));
+        } catch (Exception e) {
+            throw new NoDbResultException();
+        }
+    }
+
+    /**
+     * Returns a heap of all RelativeAmenity objects of a given type and attribute,
+     * ordered by relative distance.
+     *
+     * @param location The current location.
+     * @param type The type of Amenity object.
+     * @param attributes An attribute array to filter results by.
+     * @return A heap of nearby amenities.
+     * @throws NoDbResultException if the database did not return any Amenity objects.
+     */
+    public PriorityQueue<RelativeAmenity> getNearbyAmenitiesByTypeAndAttributes(Location location,
+            String type, String[] attributes) throws NoDbResultException {
+        try {
+            return amenityHeapPackager(location, DBQuery.getAmenitiesByTypeAndAttributes(handler,
+                    type, attributes));
+        } catch (Exception e) {
+            throw new NoDbResultException();
+        }
+    }
+
+    /**
      * Returns a list of all Amenity objects in a given Building.
      *
      * @param building A given building.
