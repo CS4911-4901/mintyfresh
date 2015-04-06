@@ -17,6 +17,7 @@ import android.widget.TextView;
 import java.util.List;
 import java.util.Map;
 
+import edu.gatech.cs4911.mintyfresh.db.queryresponse.Building;
 import edu.gatech.cs4911.mintyfresh.router.RelativeBuilding;
 
 
@@ -26,11 +27,11 @@ import edu.gatech.cs4911.mintyfresh.router.RelativeBuilding;
 public class ExpandableFloorListAdapter extends BaseExpandableListAdapter {
 
     private Activity context;
-    private Map<RelativeBuilding, List<Integer>> floors;
-    private List<RelativeBuilding> buildings;
+    private Map<Building, List<Integer>> floors;
+    private List<Building> buildings;
 
-    public ExpandableFloorListAdapter(Activity context, List<RelativeBuilding> buildings,
-                                      Map<RelativeBuilding, List<Integer>> floors) {
+    public ExpandableFloorListAdapter(Activity context, List<Building> buildings,
+                                      Map<Building, List<Integer>> floors) {
         this.context = context;
         this.floors = floors;
         this.buildings = buildings;
@@ -69,7 +70,7 @@ public class ExpandableFloorListAdapter extends BaseExpandableListAdapter {
                     public void onClick(View v) {
                         Integer i = ((FloorButton)v).getFloorNumber();
                         String bldgName = getGroup(groupPosition);
-                        String bldgID = buildings.get(groupPosition).getBuilding().getId();
+                        String bldgID = buildings.get(groupPosition).getId();
                         Intent intent = new Intent(context, ViewFloorplanActivity.class);
                         intent.putExtra("BUILDING_NAME", bldgName);
                         intent.putExtra("FLOOR_NAME", ((FloorButton)v).getFloorNumber());
@@ -105,7 +106,7 @@ public class ExpandableFloorListAdapter extends BaseExpandableListAdapter {
 
     @Override
     public String getGroup(int groupPosition) {
-        return buildings.get(groupPosition).getBuilding().getName();
+        return buildings.get(groupPosition).getName();
     }
 
     @Override

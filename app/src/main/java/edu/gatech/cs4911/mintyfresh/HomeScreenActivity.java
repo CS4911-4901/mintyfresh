@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
 import android.os.AsyncTask;
-import android.support.v4.util.ArrayMap;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -28,11 +27,15 @@ import com.google.android.gms.maps.GoogleMap;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
 
 import edu.gatech.cs4911.mintyfresh.db.DBHandler;
+import edu.gatech.cs4911.mintyfresh.db.queryresponse.Building;
+import edu.gatech.cs4911.mintyfresh.exception.NoDbResultException;
+import edu.gatech.cs4911.mintyfresh.router.RelativeAmenity;
 import edu.gatech.cs4911.mintyfresh.router.RelativeBuilding;
 
 import static edu.gatech.cs4911.mintyfresh.db.DatabaseConfig.STEAKSCORP_READ_ONLY;
@@ -132,15 +135,12 @@ public class HomeScreenActivity extends ActionBarActivity {
         new ConnectToDB(type).execute(curLocation);
     }
 
-    protected void showEFLA(ArrayList<RelativeBuilding> buildings, Map<RelativeBuilding, List<Integer>> map, elvType curType, Map<String, String> spinnerContents) {
-
+    protected void showEFLA(ArrayList<Building> buildings, Map<Building, List<Integer>> map, elvType curType, Map<String, String> spinnerContents) {
+        LinearLayout showing = (LinearLayout) findViewById(R.id.showingLayout);
 
         if ((current != curType) || (current == elvType.NONE)) {
             current = curType;
-            LinearLayout showing = (LinearLayout) findViewById(R.id.showingLayout);
-//            Spinner showingSpinner = (Spinner) findViewById(R.id.selectedSpinner);
 
-//            ArrayAdapter<CharSequence> adapter;
             Collection<String> coll = spinnerContents.values();
             List list;
             if (coll instanceof List)
@@ -152,8 +152,6 @@ public class HomeScreenActivity extends ActionBarActivity {
             for (int i = 0; i < checkSelected.length; i++) {
                 checkSelected[i] = false;
             }
-
-
 
 
             final TextView tv = (TextView) findViewById(R.id.dropDownList_SelectBox);
@@ -197,15 +195,7 @@ public class HomeScreenActivity extends ActionBarActivity {
                 }
             });
 
-
-
-
-
-
-
             Log.v("showefla", "hopefully set the array adapter?");
-
-
             showing.setVisibility(View.VISIBLE);
 
             final ExpandableFloorListAdapter expListAdapter = new ExpandableFloorListAdapter(
@@ -217,6 +207,8 @@ public class HomeScreenActivity extends ActionBarActivity {
         }
         else {
             current = elvType.NONE;
+
+            showing.setVisibility(View.GONE);
             expListView.setVisibility(View.GONE);
         }
     }
@@ -232,7 +224,7 @@ public class HomeScreenActivity extends ActionBarActivity {
 
         //get the view to which drop-down layout is to be anchored
         RelativeLayout layout1 = (RelativeLayout)findViewById(R.id.relativeLayout1);
-        pw = new PopupWindow(layout, ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
+        pw = new PopupWindow(layout, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
 
         //Pop-up window background cannot be null if we want the pop-up to listen touch events outside its window
         pw.setBackgroundDrawable(new BitmapDrawable());
@@ -270,29 +262,78 @@ public class HomeScreenActivity extends ActionBarActivity {
 
     private class ConnectToDB extends AsyncTask <Location, Integer, Void> {
 
-//        private String name;
         private elvType curElvType;
         private int type;
-        private ArrayList<RelativeBuilding> buildings;
-        private Map<RelativeBuilding, List<Integer>> buildingToFloorMap;
+        private String name;
+        private ArrayList<Building> buildings;
+        private Map<Building, List<Integer>> buildingToFloorMap;
         private Map<String, String> spinnerContents;
 
         public ConnectToDB(int type) {
             this.type = type;
             //showing button-name
             if (type == 0) {
-//                name = "Bathrooms";
+                name = "Bathroom";
                 curElvType = elvType.BATHROOMS;
 
             }
             else if (type == 1) {
-//                name = "Vending";
+                name = "Vending";
                 curElvType = elvType.VENDING;
             }
             else {
-//                name = "Printers";
+                name = "Printer";
                 curElvType = elvType.PRINTERS;
             }
+        }
+
+        private Map<Building, List<Integer>> constructMap(PriorityQueue<RelativeAmenity> amenitiesPQ) {
+            buildings = new ArrayList<Building>();
+            Map <Building, List<Integer>> floorMap = new HashMap<Building, List<Integer>>();
+            List<Integer> floors;
+
+            while (!amenitiesPQ.isEmpty()) {
+                RelativeAmenity ra = amenitiesPQ.poll();
+
+                String bID = ra.getAmenity().getBuildingId();
+
+                try {
+                    Building curBldg = amenityFinder.getBuildingById(bID);
+                    int floor = ra.getAmenity().getLevel();
+                    Log.v("construct1", buildings.toString());
+                    Log.v("construct2", curBldg.toString());
+                    Building bldg = doesContain(buildings, curBldg);
+                    if (bldg==null) {
+                        buildings.add(curBldg);
+                        floors = new ArrayList<Integer>();
+                        floors.add(floor);
+                        floorMap.put(curBldg, floors);
+                    } else {
+                        floors = floorMap.get(bldg);
+                        Log.v("floor", ((Integer)floor).toString());
+                        Log.v("floors", floors.toString());
+
+                        if (!floors.contains(floor)) {
+                            floors.add(floor);
+                        }
+                        floorMap.put(curBldg, floors);
+                    }
+                }
+                catch (NoDbResultException ndbre) {
+                    ndbre.printStackTrace();
+                    return null;
+                }
+            }
+            return floorMap;
+        }
+
+        private Building doesContain(ArrayList<Building> list, Building b) {
+            for (int i = 0; i < list.size(); i++) {
+                if (list.get(i).getId().equals(b.getId())) {
+                    return list.get(i);
+                }
+            }
+            return null;
         }
 
         @Override
@@ -304,22 +345,23 @@ public class HomeScreenActivity extends ActionBarActivity {
                 dbh = new DBHandler(STEAKSCORP_READ_ONLY);
                 amenityFinder = new AmenityFinder(dbh);
 
-                PriorityQueue<RelativeBuilding> buildingsPQ = amenityFinder.getNearbyBuildings(params[0]);
-                buildings = new ArrayList<RelativeBuilding>();
-                buildingToFloorMap = new ArrayMap<RelativeBuilding, List<Integer>>();
+//                PriorityQueue<RelativeBuilding> buildingsPQ = amenityFinder.getNearbyBuildings(params[0]);
 
-                List<Integer> floors = new ArrayList<Integer>();
+                PriorityQueue<RelativeAmenity> amenitiesPQ = amenityFinder.getNearbyAmenitiesByType(params[0], name);
+                buildingToFloorMap = constructMap(amenitiesPQ);
 
-                while (!buildingsPQ.isEmpty()) {
-                    RelativeBuilding rb = buildingsPQ.poll();
 
-                    buildings.add(rb);
-                    floors = amenityFinder.getFloorsInBuilding(rb.getBuilding().getId());
-                    buildingToFloorMap.put(rb, floors);
-                }
+
+
+//                while (!buildingsPQ.isEmpty()) {
+//                    RelativeBuilding rb = buildingsPQ.poll();
+//
+//                    buildings.add(rb);
+//                    floors = amenityFinder.getFloorsInBuilding(rb.getBuilding().getId());
+//                    buildingToFloorMap.put(rb, floors);
+//                }
 
                 if (curElvType == elvType.BATHROOMS) {
-
                     spinnerContents  = amenityFinder.getDistinctAttributesByType("bathroom");
                 }
                 else if (curElvType == elvType.VENDING) {
@@ -332,6 +374,7 @@ public class HomeScreenActivity extends ActionBarActivity {
                 Log.v("button", type + "clicked");
 
             } catch (Exception e) {
+                Log.e("doInBackground", "FUCK");
                 e.printStackTrace();
             }
             return null;
