@@ -40,6 +40,7 @@ import com.caverock.androidsvg.SVG;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.HashMap;
 
 import edu.gatech.cs4911.mintyfresh.db.DBHandler;
 
@@ -62,7 +63,8 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
     ImageCache cache;
     SVG floorplanSVG;
     LinearLayout layout;
-    ArrayList<SVG> floorsInBuilding;
+    HashMap<Integer,SVG> floorplanMap;
+    List<Integer> floorsInBuilding;
 
     TextView bldgAndFloor;
 
@@ -104,6 +106,7 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
         floorInfo[0] = bldID;
         floorInfo[1] = floorName;
 
+        floorsInBuilding = new ArrayList<>();
         Log.v("hello1", "Doing the thing");
 
         setFloorDisplay(buildingName, currentFloor.toString());
@@ -113,7 +116,7 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
             Log.v("check1", "Handler set up");
             cache = new ImageCache(handler, getApplicationContext());
             Log.v("check2", "Cache set up");
-            floorplanSVG = new ImageUpdaterTask(cache).execute(floorInfo).get();
+            floorplanMap = new ImageUpdaterTask(cache).execute(floorInfo).get();
             Log.v("check3", "SVG begged for");
         }
         catch(Exception e){
@@ -122,9 +125,11 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
 
         //Functional test:
         //Got there.
-        if(floorplanSVG!=null) {
-            Log.v("HUZZAH", "Floorplan isn't null!");
+
+        if(floorsInBuilding!=null) {
+            Log.v("HUZZAH", "Floorplan list isn't null!");
         }
+        floorplanSVG = floorplanMap.get(currentFloor);
 
         //For real this time.
         //Set up image switcher with view factory, in/out animation, initial image.
@@ -208,7 +213,7 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
                         currentFloor = floorPlusOne;
                         floorInfo[1] = currentFloor.toString();
                         try {
-                            floorplanSVG = new ImageUpdaterTask(cache).execute(floorInfo).get();
+                            floorplanSVG = floorplanMap.get(currentFloor);
                         }
                         catch(Exception e){
                             return;
@@ -231,7 +236,7 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
                         floorInfo[1] = currentFloor.toString();
                         try {
                             Log.v("onClickL", "Hit the left button");
-                            floorplanSVG = new ImageUpdaterTask(cache).execute(floorInfo).get();
+                            floorplanSVG = floorplanMap.get(currentFloor);
                         }
                         catch(Exception e){
                             Log.v("onClickL", "Welp, that didn't work");
@@ -298,6 +303,9 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
 
 //                amenityFinder.getAmenitiesInBuilding(params[0]);
                 floors = amenityFinder.getFloorsInBuilding(params[0]);
+                for (Integer i : floors) {
+                    floorsInBuilding.add(i);
+                }
 
 
 
@@ -329,14 +337,17 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
     /**
      * floorInfo = {bldgID, floorID} (Strings)
      */
-    private class ImageUpdaterTask extends AsyncTask<String, Void, SVG> {
+    private class ImageUpdaterTask extends AsyncTask<String, Void, HashMap<Integer,SVG>> {
         ImageCache cache;
         public ImageUpdaterTask(ImageCache cache) { this.cache = cache;}
-        protected SVG doInBackground(String... params) {
+        protected HashMap<Integer,SVG> doInBackground(String... params) {
             if (params.length!=2) return null;
             try {
-                SVG result = cache.get(params[0], Integer.parseInt(params[1]));
-                return result;
+                HashMap<Integer,SVG> resultMap = new HashMap<>();
+                for(Integer f : floorsInBuilding){
+                    resultMap.put(f, cache.get(params[0], f));
+                }
+                return resultMap;
 
             } catch (Exception e) {
                 return null;
