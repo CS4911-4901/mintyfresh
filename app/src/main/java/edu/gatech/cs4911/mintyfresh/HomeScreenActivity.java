@@ -50,6 +50,7 @@ public class HomeScreenActivity extends ActionBarActivity {
     protected AmenityFinder amenityFinder;
     private enum elvType {NONE, VENDING, BATHROOMS, PRINTERS};
     private elvType current = elvType.NONE;
+    private ImageButton bathroom, vending, printing;
     public static boolean[] checkSelected;
     private boolean expanded;
     private PopupWindow pw;
@@ -62,7 +63,7 @@ public class HomeScreenActivity extends ActionBarActivity {
         expListView = (ExpandableListView) findViewById(R.id.buildingList);
         expListView.setVisibility(View.GONE);
 
-        ImageButton bathroom = (ImageButton) findViewById(R.id.bathroomButton);
+        bathroom = (ImageButton) findViewById(R.id.bathroomButton);
         bathroom.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -72,10 +73,13 @@ public class HomeScreenActivity extends ActionBarActivity {
                 }
                 else {
                     expandMenu(0);
+                    bathroom.setImageResource(R.drawable.button_toilet_active);
+                    vending.setImageResource(R.drawable.button_vending_inactive);
+                    printing.setImageResource(R.drawable.button_printer_inactive);
                 }
             }
         });
-        ImageButton vending = (ImageButton) findViewById(R.id.vendingButton);
+        vending = (ImageButton) findViewById(R.id.vendingButton);
         vending.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -85,10 +89,13 @@ public class HomeScreenActivity extends ActionBarActivity {
                 }
                 else {
                     expandMenu(1);
+                    bathroom.setImageResource(R.drawable.button_toilet_inactive);
+                    vending.setImageResource(R.drawable.button_vending_active);
+                    printing.setImageResource(R.drawable.button_printer_inactive);
                 }
             }
         });
-        ImageButton printing = (ImageButton) findViewById(R.id.printerButton);
+        printing = (ImageButton) findViewById(R.id.printerButton);
         printing.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -98,6 +105,9 @@ public class HomeScreenActivity extends ActionBarActivity {
                 }
                 else {
                     expandMenu(2);
+                    bathroom.setImageResource(R.drawable.button_toilet_inactive);
+                    vending.setImageResource(R.drawable.button_vending_inactive);
+                    printing.setImageResource(R.drawable.button_printer_active);
                 }
             }
         });
@@ -152,7 +162,6 @@ public class HomeScreenActivity extends ActionBarActivity {
             for (int i = 0; i < checkSelected.length; i++) {
                 checkSelected[i] = false;
             }
-
 
             final TextView tv = (TextView) findViewById(R.id.dropDownList_SelectBox);
             OnClickListener ocl = new OnClickListener() {
@@ -258,7 +267,6 @@ public class HomeScreenActivity extends ActionBarActivity {
         DropDownListAdapter adapter = new DropDownListAdapter(this, items, tv);
         list.setAdapter(adapter);
     }
-
 
     private class ConnectToDB extends AsyncTask <Location, Integer, Void> {
 
