@@ -31,7 +31,7 @@ public class DropDownListAdapter extends BaseAdapter {
         DropDownListAdapter.selected = selected;
     }
 
-    public DropDownListAdapter(Context context, ArrayList<String> items,
+    public DropDownListAdapter(Context context, ArrayList<String> items, ArrayList<String> itemIDs,
                                TextView tv) {
         mListItems = new ArrayList<String>();
         mListItems.addAll(items);

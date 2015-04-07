@@ -3,8 +3,9 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/listRowLayout"
     android:orientation="horizontal"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent">
+    android:layout_width="wrap_content"
+    android:layout_height="fill_parent"
+    android:background="#ffffff">
 
     <CheckBox
         android:id="@+id/dropDownList_checkbox"
@@ -13,8 +14,7 @@
 
     <TextView
         android:id="@+id/dropDownList_SelectOption"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:backgroundTint="@color/background_floating_material_dark"/>
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
 
 </LinearLayout>

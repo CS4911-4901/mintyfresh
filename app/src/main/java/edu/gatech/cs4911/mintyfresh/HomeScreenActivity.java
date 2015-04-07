@@ -72,7 +72,7 @@ public class HomeScreenActivity extends ActionBarActivity {
                     expListView.setVisibility(View.GONE);
                 }
                 else {
-                    expandMenu(0);
+                    expandMenu(elvType.BATHROOMS);
                     bathroom.setImageResource(R.drawable.button_toilet_active);
                     vending.setImageResource(R.drawable.button_vending_inactive);
                     printing.setImageResource(R.drawable.button_printer_inactive);
@@ -88,7 +88,7 @@ public class HomeScreenActivity extends ActionBarActivity {
                     expListView.setVisibility(View.GONE);
                 }
                 else {
-                    expandMenu(1);
+                    expandMenu(elvType.VENDING);
                     bathroom.setImageResource(R.drawable.button_toilet_inactive);
                     vending.setImageResource(R.drawable.button_vending_active);
                     printing.setImageResource(R.drawable.button_printer_inactive);
@@ -102,9 +102,8 @@ public class HomeScreenActivity extends ActionBarActivity {
                 if (current == elvType.PRINTERS) {
                     current = elvType.NONE;
                     expListView.setVisibility(View.GONE);
-                }
-                else {
-                    expandMenu(2);
+                } else {
+                    expandMenu(elvType.PRINTERS);
                     bathroom.setImageResource(R.drawable.button_toilet_inactive);
                     vending.setImageResource(R.drawable.button_vending_inactive);
                     printing.setImageResource(R.drawable.button_printer_active);
@@ -135,7 +134,7 @@ public class HomeScreenActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void expandMenu(int type) {
+    private void expandMenu(elvType type) {
         Log.v("sigh", "yeah");
 
         Location curLocation = new Location("TEST_PROVIDER");
@@ -145,19 +144,23 @@ public class HomeScreenActivity extends ActionBarActivity {
         new ConnectToDB(type).execute(curLocation);
     }
 
-    protected void showEFLA(ArrayList<Building> buildings, Map<Building, List<Integer>> map, elvType curType, Map<String, String> spinnerContents) {
+    protected void showEFLA(ArrayList<Building> buildings, Map<Building, List<Integer>> map, elvType curType, Map<String, String> spinnerContents, final boolean refreshSpinner) {
         LinearLayout showing = (LinearLayout) findViewById(R.id.showingLayout);
-
         if ((current != curType) || (current == elvType.NONE)) {
             current = curType;
-
+            Collection<String> idColl = spinnerContents.keySet();
             Collection<String> coll = spinnerContents.values();
             List list;
-            if (coll instanceof List)
-                list = (List)coll;
-            else
+            List idList;
+            if (coll instanceof List) {
+                list = (List) coll;
+                idList = (List) idColl;
+            } else {
                 list = new ArrayList(coll);
+                idList = new ArrayList(idColl);
+            }
             final List finalList = list;
+            final List finalIDList = idList;
             checkSelected = new boolean[list.size()];
             for (int i = 0; i < checkSelected.length; i++) {
                 checkSelected[i] = false;
@@ -168,8 +171,8 @@ public class HomeScreenActivity extends ActionBarActivity {
 
                 @Override
                 public void onClick(View v) {
-                    // TODO Auto-generated method stub
-                    if(!expanded){
+//                    if (refreshSpinner || !expanded) {
+                    if (!expanded) {
                         //display all selected values
                         String selected = "";
                         int flag = 0;
@@ -180,11 +183,10 @@ public class HomeScreenActivity extends ActionBarActivity {
                                 flag = 1;
                             }
                         }
-                        if(flag==1)
+                        if (flag == 1)
                             tv.setText(selected);
-                        expanded =true;
-                    }
-                    else{
+                        expanded = true;
+                    } else {
                         //display shortened representation of selected values
                         tv.setText(DropDownListAdapter.getSelected());
                         expanded = false;
@@ -195,12 +197,11 @@ public class HomeScreenActivity extends ActionBarActivity {
             tv.setOnClickListener(ocl);
 
             //onClickListener to initiate the dropDown list
-            Button createButton = (Button)findViewById(R.id.dropDownList_create);
+            Button createButton = (Button) findViewById(R.id.dropDownList_create);
             createButton.setOnClickListener(new OnClickListener() {
 
                 public void onClick(View v) {
-                    // TODO Auto-generated method stub
-                    initiatePopUp((ArrayList)finalList,tv);
+                    initiatePopUp((ArrayList) finalList, (ArrayList) finalIDList, tv);
                 }
             });
 
@@ -213,19 +214,33 @@ public class HomeScreenActivity extends ActionBarActivity {
 
             expListView.setVisibility(View.VISIBLE);
             Log.v("SHOWEFLA", "DONE?");
-        }
-        else {
+        } else {
             current = elvType.NONE;
 
+            Log.v("SHOWEFLA", "none?");
             showing.setVisibility(View.GONE);
             expListView.setVisibility(View.GONE);
+        }
+
+    }
+
+    private void refreshList(ArrayList<String> items) {
+        String[] attributes = {};
+        int curIndex = 0;
+        for (int i = 0; i<checkSelected.length; i++) {
+            if (checkSelected[i]) {
+                Log.v("refresh list", items.get(i));
+                attributes[curIndex] = items.get(i);
+                curIndex++;
+            }
         }
     }
 
     /*
-         * Function to set up the pop-up window which acts as drop-down list
-         * */
-    private void initiatePopUp(ArrayList<String> items, TextView tv){
+    * Function to set up the pop-up window which acts as drop-down list
+    * */
+    private void initiatePopUp(ArrayList<String> items, ArrayList<String> itemIDs, TextView tv){
+        final ArrayList<String> finalItemIDs = itemIDs;
         LayoutInflater inflater = (LayoutInflater)HomeScreenActivity.this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         //get the pop-up window i.e.  drop-down layout
@@ -247,8 +262,12 @@ public class HomeScreenActivity extends ActionBarActivity {
         pw.setTouchInterceptor(new View.OnTouchListener() {
 
             public boolean onTouch(View v, MotionEvent event) {
-                // TODO Auto-generated method stub
+                Log.v("ontouch","i guess i clicked something");
                 if (event.getAction() == MotionEvent.ACTION_OUTSIDE) {
+//                    refreshList(finalItemIDs);
+//                    showEFLA();
+//                    new ConnectToDB(current).execute(curLocation);
+                    Log.v("onTouch", "should be dismissed");
                     pw.dismiss();
                     return true;
                 }
@@ -264,28 +283,29 @@ public class HomeScreenActivity extends ActionBarActivity {
 
         //populate the drop-down list
         final ListView list = (ListView) layout.findViewById(R.id.dropDownList_dropDownList);
-        DropDownListAdapter adapter = new DropDownListAdapter(this, items, tv);
+        DropDownListAdapter adapter = new DropDownListAdapter(this, items, itemIDs, tv);
         list.setAdapter(adapter);
     }
 
-    private class ConnectToDB extends AsyncTask <Location, Integer, Void> {
+    private class ConnectToDB extends AsyncTask <Location, elvType, Void> {
 
         private elvType curElvType;
-        private int type;
+//        private int type;
         private String name;
         private ArrayList<Building> buildings;
         private Map<Building, List<Integer>> buildingToFloorMap;
         private Map<String, String> spinnerContents;
 
-        public ConnectToDB(int type) {
-            this.type = type;
+        public ConnectToDB(elvType type) {
+//            this.type = type;
             //showing button-name
-            if (type == 0) {
+            Log.v("ctdb", "UGH PLEASE");
+            if (type == elvType.BATHROOMS) {
                 name = "Bathroom";
                 curElvType = elvType.BATHROOMS;
 
             }
-            else if (type == 1) {
+            else if (type == elvType.VENDING) {
                 name = "Vending";
                 curElvType = elvType.VENDING;
             }
@@ -308,8 +328,8 @@ public class HomeScreenActivity extends ActionBarActivity {
                 try {
                     Building curBldg = amenityFinder.getBuildingById(bID);
                     int floor = ra.getAmenity().getLevel();
-                    Log.v("construct1", buildings.toString());
-                    Log.v("construct2", curBldg.toString());
+//                    Log.v("construct1", buildings.toString());
+//                    Log.v("construct2", curBldg.toString());
                     Building bldg = doesContain(buildings, curBldg);
                     if (bldg==null) {
                         buildings.add(curBldg);
@@ -318,8 +338,8 @@ public class HomeScreenActivity extends ActionBarActivity {
                         floorMap.put(curBldg, floors);
                     } else {
                         floors = floorMap.get(bldg);
-                        Log.v("floor", ((Integer)floor).toString());
-                        Log.v("floors", floors.toString());
+//                        Log.v("floor", ((Integer)floor).toString());
+//                        Log.v("floors", floors.toString());
 
                         if (!floors.contains(floor)) {
                             floors.add(floor);
@@ -344,6 +364,10 @@ public class HomeScreenActivity extends ActionBarActivity {
             return null;
         }
 
+//        protected Void refreshVisibleList(Location l) {
+//          todo i need to set this up so it basically calls the showEFLA on a modified list but doesn't hide shit.
+//        }
+
         @Override
         protected Void doInBackground(Location... params) {
             DBHandler dbh;
@@ -353,21 +377,8 @@ public class HomeScreenActivity extends ActionBarActivity {
                 dbh = new DBHandler(STEAKSCORP_READ_ONLY);
                 amenityFinder = new AmenityFinder(dbh);
 
-//                PriorityQueue<RelativeBuilding> buildingsPQ = amenityFinder.getNearbyBuildings(params[0]);
-
                 PriorityQueue<RelativeAmenity> amenitiesPQ = amenityFinder.getNearbyAmenitiesByType(params[0], name);
                 buildingToFloorMap = constructMap(amenitiesPQ);
-
-
-
-
-//                while (!buildingsPQ.isEmpty()) {
-//                    RelativeBuilding rb = buildingsPQ.poll();
-//
-//                    buildings.add(rb);
-//                    floors = amenityFinder.getFloorsInBuilding(rb.getBuilding().getId());
-//                    buildingToFloorMap.put(rb, floors);
-//                }
 
                 if (curElvType == elvType.BATHROOMS) {
                     spinnerContents  = amenityFinder.getDistinctAttributesByType("bathroom");
@@ -379,7 +390,7 @@ public class HomeScreenActivity extends ActionBarActivity {
                     spinnerContents = amenityFinder.getDistinctAttributesByType("printer");
                 }
 
-                Log.v("button", type + "clicked");
+//                Log.v("button", type + "clicked");
 
             } catch (Exception e) {
                 Log.e("doInBackground", "FUCK");
@@ -392,7 +403,7 @@ public class HomeScreenActivity extends ActionBarActivity {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            showEFLA(buildings, buildingToFloorMap, curElvType, spinnerContents);
+            showEFLA(buildings, buildingToFloorMap, curElvType, spinnerContents, false);
         }
     }
 
