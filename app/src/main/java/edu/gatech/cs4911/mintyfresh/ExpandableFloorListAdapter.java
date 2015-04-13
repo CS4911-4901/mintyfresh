@@ -151,6 +151,10 @@ public class ExpandableFloorListAdapter extends BaseExpandableListAdapter {
         public FloorButton(Context context, int floorNumber) {
             super(context);
             this.floorNumber = floorNumber;
+
+            int resId = context.getResources().getIdentifier(("button_" + floorNumber), "drawable", context.getPackageName());
+            setImageResource(resId);
+            setBackgroundColor(00000000);
         }
 
         public int getFloorNumber() {
