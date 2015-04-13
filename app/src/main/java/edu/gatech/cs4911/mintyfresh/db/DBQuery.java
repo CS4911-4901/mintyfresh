@@ -543,7 +543,8 @@ public class DBQuery {
 
         while (result.next()) {
             output.add(new FloorplanMeta(result.getString("id"), result.getInt("map_level"), 
-                    result.getString("image_hash")));
+                    result.getString("image_hash"), result.getInt("native_width"),
+                    result.getInt("native_height")));
         }
 
         result.close();
@@ -562,13 +563,14 @@ public class DBQuery {
      */
     public static FloorplanMeta getFloorplanMetadata(DBHandler handler, String buildingId, 
             int level) throws SQLException {
-        ResultSet result = handler.submitQuery("SELECT * FROM Floorplan "
+        ResultSet result = handler.submitQuery("SELECT * FROM Floorplan INNER JOIN Floorplan_Image "
                 + "WHERE id = \"" + buildingId + "\" AND map_level = " + level + ";");
         FloorplanMeta output;
 
         result.next();
         output = new FloorplanMeta(result.getString("id"), result.getInt("map_level"), 
-                result.getString("image_hash"));
+                result.getString("image_hash"), result.getInt("native_width"),
+                result.getInt("native_height"));
         result.close();
 
         return output;

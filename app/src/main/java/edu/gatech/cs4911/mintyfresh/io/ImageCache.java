@@ -172,13 +172,13 @@ public class ImageCache {
      * on the FloorplanMeta items currently in this ImageCache. <br><br>
      *
      * The format of each hash file line is as follows: <br>
-     * <b>buildingID:floor:hash</b> <br><br>
+     * <b>buildingID:floor:hash:native_width:native_height</b> <br><br>
      *
      * For example, this FloorplanMeta: <br>
      * <b>("TST", 1) with hash 1234f</b> <br>
      *
      * ...will be written as this hash file line: <br>
-     * <b>"TST:1:1234f"</b>
+     * <b>"TST:1:1234f:x:y"</b>
      *
      * @throws IOException if we were prevented from writing to the context's data directory.
      */
@@ -188,7 +188,9 @@ public class ImageCache {
 
         for (FloorplanMeta meta : cache) {
             outputHash.write(
-                    (meta.getId() + ":" + meta.getLevel() + ":" + meta.getHash() + "\n").getBytes()
+                    (meta.getId() + ":" + meta.getLevel() + ":" + meta.getHash() + ":" +
+                            meta.getNativeWidth() + ":" + meta.getNativeHeight() + "\n")
+                            .getBytes()
             );
         }
 

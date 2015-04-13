@@ -18,6 +18,33 @@ public class FloorplanMeta {
      * The hash of the image this node refers to.
      */
     private String hash;
+    /**
+     * The native width of the image file (SVG).
+     */
+    private int nativeWidth;
+    /**
+     * The native height of the image file (SVG).
+     */
+    private int nativeHeight;
+
+    /**
+     * Constructs a new FloorplanMeta with a provided Building ID,
+     * Building level, file hash, native width, and native height.
+     *
+     * @param id An ID corresponding to a Building object.
+     * @param level The floor of the building this node points to.
+     * @param hash The hash of the image this node refers to.
+     * @param nativeWidth The native width of the image file (SVG).
+     * @param nativeHeight The native height of the image file (SVG).
+     */
+    public FloorplanMeta(String id, int level, String hash,
+                         int nativeWidth, int nativeHeight) {
+        this.id = id;
+        this.level = level;
+        this.hash = hash;
+        this.nativeWidth = nativeWidth;
+        this.nativeHeight = nativeHeight;
+    }
 
     /**
      * Constructs a new FloorplanMeta with a provided Building ID,
@@ -28,9 +55,7 @@ public class FloorplanMeta {
      * @param hash The hash of the image this node refers to.
      */
     public FloorplanMeta(String id, int level, String hash) {
-        this.id = id;
-        this.level = level;
-        this.hash = hash;
+        this(id, level, hash, 0, 0);
     }
 
     /**
@@ -96,6 +121,26 @@ public class FloorplanMeta {
      */
     public String getHash() {
         return hash;
+    }
+
+    /**
+     * Returns the native width of the image file. If the returned
+     * value is 0, there is no stored native width for this image.
+     *
+     * @return The native width of the image file.
+     */
+    public int getNativeWidth() {
+        return nativeWidth;
+    }
+
+    /**
+     * Returns the native height of the image file. If the returned
+     * value is 0, there is no stored native width for this image.
+     *
+     * @return The native width of the image file.
+     */
+    public int getNativeHeight() {
+        return nativeHeight;
     }
 
     /**

@@ -67,7 +67,7 @@ public class CacheLoader {
      */
     public static List<FloorplanMeta> loadHashes(Context context) {
         /**
-         * Format of file: buildingID:floor:hash
+         * Format of file: buildingID:floor:hash:native_width:native_height
          */
         List<FloorplanMeta> hashNodes = new ArrayList<>();
         try {
@@ -76,9 +76,18 @@ public class CacheLoader {
             // Read file line-by-line and populate map
             BufferedReader reader = new BufferedReader(new FileReader(path));
             for (String line; (line = reader.readLine()) != null;) {
-                // "stu:1:hash123" -> "(STU, 1)" with hash: hash123
-                hashNodes.add(new FloorplanMeta(line.split(":")[0],
-                        Integer.parseInt(line.split(":")[1]), line.split(":")[2]));
+                // "stu:1:hash123:100:200" -> "(STU, 1)" with hash: hash123
+                try {
+                    hashNodes.add(new FloorplanMeta(line.split(":")[0],
+                            Integer.parseInt(line.split(":")[1]), line.split(":")[2],
+                            Integer.parseInt(line.split(":")[3]),
+                            Integer.parseInt(line.split(":")[4])));
+                } catch (IndexOutOfBoundsException e) {
+                    // Hashfile is malformed, delete it!
+                    context.deleteFile(ImageCache.HASH_FILENAME);
+                    reader.close();
+                    return hashNodes;
+                }
             }
 
             // We're done with the file!
