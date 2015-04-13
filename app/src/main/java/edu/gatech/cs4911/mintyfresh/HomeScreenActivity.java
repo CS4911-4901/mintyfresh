@@ -54,6 +54,7 @@ public class HomeScreenActivity extends ActionBarActivity {
     public static boolean[] checkSelected;
     private boolean expanded;
     private PopupWindow pw;
+    private Location cl;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -137,103 +138,117 @@ public class HomeScreenActivity extends ActionBarActivity {
     private void expandMenu(elvType type) {
         Log.v("sigh", "yeah");
 
-        Location curLocation = new Location("TEST_PROVIDER");
-        curLocation.setLatitude(33.7751878);
-        curLocation.setLongitude(-84.39687341);
+        cl = new Location("TEST_PROVIDER");
+        cl.setLatitude(33.7751878);
+        cl.setLongitude(-84.39687341);
 
-        new ConnectToDB(type).execute(curLocation);
+        new ConnectToDB(type).execute(cl, "");
     }
 
     protected void showEFLA(ArrayList<Building> buildings, Map<Building, List<Integer>> map, elvType curType, Map<String, String> spinnerContents, final boolean refreshSpinner) {
         LinearLayout showing = (LinearLayout) findViewById(R.id.showingLayout);
-        if ((current != curType) || (current == elvType.NONE)) {
-            current = curType;
-            Collection<String> idColl = spinnerContents.keySet();
-            Collection<String> coll = spinnerContents.values();
-            List list;
-            List idList;
-            if (coll instanceof List) {
-                list = (List) coll;
-                idList = (List) idColl;
-            } else {
-                list = new ArrayList(coll);
-                idList = new ArrayList(idColl);
-            }
-            final List finalList = list;
-            final List finalIDList = idList;
-            checkSelected = new boolean[list.size()];
-            for (int i = 0; i < checkSelected.length; i++) {
-                checkSelected[i] = false;
-            }
+//        if (!refreshSpinner) {
+            if ((refreshSpinner) || (current != curType) || (current == elvType.NONE)) {
+                current = curType;
+                Collection<String> idColl = spinnerContents.keySet();
+                Collection<String> coll = spinnerContents.values();
+                List list;
+                List idList;
+                if (coll instanceof List) {
+                    list = (List) coll;
+                    idList = (List) idColl;
+                } else {
+                    list = new ArrayList(coll);
+                    idList = new ArrayList(idColl);
+                }
+                final List finalList = list;
+                final List finalIDList = idList;
+                checkSelected = new boolean[list.size()];
+                for (int i = 0; i < checkSelected.length; i++) {
+                    checkSelected[i] = false;
+                }
 
-            final TextView tv = (TextView) findViewById(R.id.dropDownList_SelectBox);
-            OnClickListener ocl = new OnClickListener() {
+                final TextView tv = (TextView) findViewById(R.id.dropDownList_SelectBox);
+                OnClickListener ocl = new OnClickListener() {
 
-                @Override
-                public void onClick(View v) {
+                    @Override
+                    public void onClick(View v) {
 //                    if (refreshSpinner || !expanded) {
-                    if (!expanded) {
-                        //display all selected values
-                        String selected = "";
-                        int flag = 0;
-                        for (int i = 0; i < finalList.size(); i++) {
-                            if (checkSelected[i] == true) {
-                                selected += finalList.get(i);
-                                selected += ", ";
-                                flag = 1;
+                        if (!expanded) {
+                            //display all selected values
+                            String selected = "";
+                            int flag = 0;
+                            for (int i = 0; i < finalList.size(); i++) {
+                                if (checkSelected[i] == true) {
+                                    selected += finalList.get(i);
+                                    selected += ", ";
+                                    flag = 1;
+                                }
                             }
+                            if (flag == 1)
+                                tv.setText(selected);
+                            expanded = true;
+                        } else {
+                            //display shortened representation of selected values
+                            tv.setText(DropDownListAdapter.getSelected());
+                            expanded = false;
                         }
-                        if (flag == 1)
-                            tv.setText(selected);
-                        expanded = true;
-                    } else {
-                        //display shortened representation of selected values
-                        tv.setText(DropDownListAdapter.getSelected());
-                        expanded = false;
                     }
-                }
-            };
+                };
 
-            tv.setOnClickListener(ocl);
+                tv.setOnClickListener(ocl);
 
-            //onClickListener to initiate the dropDown list
-            Button createButton = (Button) findViewById(R.id.dropDownList_create);
-            createButton.setOnClickListener(new OnClickListener() {
+                //onClickListener to initiate the dropDown list
+                Button createButton = (Button) findViewById(R.id.dropDownList_create);
+                createButton.setOnClickListener(new OnClickListener() {
 
-                public void onClick(View v) {
-                    initiatePopUp((ArrayList) finalList, (ArrayList) finalIDList, tv);
-                }
-            });
+                    public void onClick(View v) {
+                        initiatePopUp((ArrayList) finalList, (ArrayList) finalIDList, tv);
+                    }
+                });
 
-            Log.v("showefla", "hopefully set the array adapter?");
-            showing.setVisibility(View.VISIBLE);
+                Log.v("showefla", "hopefully set the array adapter?");
+                showing.setVisibility(View.VISIBLE);
 
-            final ExpandableFloorListAdapter expListAdapter = new ExpandableFloorListAdapter(
-                    this, buildings, map);
-            expListView.setAdapter(expListAdapter);
+                final ExpandableFloorListAdapter expListAdapter = new ExpandableFloorListAdapter(
+                        this, buildings, map);
+                expListView.setAdapter(expListAdapter);
 
-            expListView.setVisibility(View.VISIBLE);
-            Log.v("SHOWEFLA", "DONE?");
-        } else {
-            current = elvType.NONE;
+                expListView.setVisibility(View.VISIBLE);
+                Log.v("SHOWEFLA", "DONE?");
+            }
+//        else if ((current == curType) && (refreshSpinner)) {
+//
+//        }
+            else {
+                current = elvType.NONE;
 
-            Log.v("SHOWEFLA", "none?");
-            showing.setVisibility(View.GONE);
-            expListView.setVisibility(View.GONE);
-        }
+                Log.v("SHOWEFLA", "none?");
+                showing.setVisibility(View.GONE);
+                expListView.setVisibility(View.GONE);
+            }
+//        }
+//        else {
+//            Log.v("showefla", "blah blah blah");
+//        }
 
     }
 
-    private void refreshList(ArrayList<String> items) {
-        String[] attributes = {};
-        int curIndex = 0;
+    private String refreshList(ArrayList<String> items) {
+        //todo what i need to do is make this return a list of the attributes
+        //and make efla whatever take in that list
+        //and when the list is null or empty, do what it does now
+        //but if it isn't, it needs to consider the attribute list
+        String attributes = "";
+        Log.v("refresh list", ""+ checkSelected);
+        Log.v("refresh list", "" + checkSelected.length);
         for (int i = 0; i<checkSelected.length; i++) {
             if (checkSelected[i]) {
                 Log.v("refresh list", items.get(i));
-                attributes[curIndex] = items.get(i);
-                curIndex++;
+                attributes += " " + items.get(i);
             }
         }
+        return attributes;
     }
 
     /*
@@ -264,14 +279,28 @@ public class HomeScreenActivity extends ActionBarActivity {
             public boolean onTouch(View v, MotionEvent event) {
                 Log.v("ontouch","i guess i clicked something");
                 if (event.getAction() == MotionEvent.ACTION_OUTSIDE) {
-//                    refreshList(finalItemIDs);
-//                    showEFLA();
-//                    new ConnectToDB(current).execute(curLocation);
                     Log.v("onTouch", "should be dismissed");
+
+
                     pw.dismiss();
                     return true;
                 }
+                else {
+                    Log.v("ontouch", "sigh more");
+                }
                 return false;
+            }
+        });
+
+        pw.setOnDismissListener(new PopupWindow.OnDismissListener() {
+
+            @Override
+            public void onDismiss() {
+                Log.v("ondismiss", "dismissing");
+                String atts = refreshList(finalItemIDs);
+//                    showEFLA(buildings, map, curType, spinnerContents, refreshSpinner);
+
+                new ConnectToDB(current).execute(cl, atts);
             }
         });
 
@@ -287,7 +316,7 @@ public class HomeScreenActivity extends ActionBarActivity {
         list.setAdapter(adapter);
     }
 
-    private class ConnectToDB extends AsyncTask <Location, elvType, Void> {
+    private class ConnectToDB extends AsyncTask <Object, elvType, Void> {
 
         private elvType curElvType;
 //        private int type;
@@ -295,6 +324,7 @@ public class HomeScreenActivity extends ActionBarActivity {
         private ArrayList<Building> buildings;
         private Map<Building, List<Integer>> buildingToFloorMap;
         private Map<String, String> spinnerContents;
+        private String atts;
 
         public ConnectToDB(elvType type) {
 //            this.type = type;
@@ -320,7 +350,9 @@ public class HomeScreenActivity extends ActionBarActivity {
             Map <Building, List<Integer>> floorMap = new HashMap<Building, List<Integer>>();
             List<Integer> floors;
 
+            Log.v("constructMap", ""+amenitiesPQ.size());
             while (!amenitiesPQ.isEmpty()) {
+                Log.v("loop forever", "looploop");
                 RelativeAmenity ra = amenitiesPQ.poll();
 
                 String bID = ra.getAmenity().getBuildingId();
@@ -331,7 +363,7 @@ public class HomeScreenActivity extends ActionBarActivity {
 //                    Log.v("construct1", buildings.toString());
 //                    Log.v("construct2", curBldg.toString());
                     Building bldg = doesContain(buildings, curBldg);
-                    if (bldg==null) {
+                    if (bldg == null) {
                         buildings.add(curBldg);
                         floors = new ArrayList<Integer>();
                         floors.add(floor);
@@ -352,6 +384,7 @@ public class HomeScreenActivity extends ActionBarActivity {
                     return null;
                 }
             }
+            Log.v("constructMap", "" + floorMap.size());
             return floorMap;
         }
 
@@ -369,15 +402,23 @@ public class HomeScreenActivity extends ActionBarActivity {
 //        }
 
         @Override
-        protected Void doInBackground(Location... params) {
+        protected Void doInBackground(Object... params) {
             DBHandler dbh;
 
             try {
-
+                atts = (String)params[1];
                 dbh = new DBHandler(STEAKSCORP_READ_ONLY);
                 amenityFinder = new AmenityFinder(dbh);
-
-                PriorityQueue<RelativeAmenity> amenitiesPQ = amenityFinder.getNearbyAmenitiesByType(params[0], name);
+                PriorityQueue<RelativeAmenity> amenitiesPQ;
+                Log.v("dib", (String)params[1]);
+                if ((atts == null)||(atts == "")) {
+                    amenitiesPQ = amenityFinder.getNearbyAmenitiesByType((Location)params[0], name);
+                    Log.v("dib", "nullnull");
+                }
+                else {
+                    amenitiesPQ = amenityFinder.getNearbyAmenitiesByTypeAndAttribute((Location) params[0], name, (String) atts);
+                    Log.v("dib", ""+amenitiesPQ.size());
+                }
                 buildingToFloorMap = constructMap(amenitiesPQ);
 
                 if (curElvType == elvType.BATHROOMS) {
@@ -403,7 +444,12 @@ public class HomeScreenActivity extends ActionBarActivity {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            showEFLA(buildings, buildingToFloorMap, curElvType, spinnerContents, false);
+            if (atts == "") {
+                showEFLA(buildings, buildingToFloorMap, curElvType, spinnerContents, false);
+            }
+            else {
+                showEFLA(buildings, buildingToFloorMap, curElvType, spinnerContents, true);
+            }
         }
     }
 
