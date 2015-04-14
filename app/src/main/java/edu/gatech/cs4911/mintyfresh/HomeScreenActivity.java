@@ -250,10 +250,9 @@ public class HomeScreenActivity extends ActionBarActivity {
         for (int i = 0; i<checkSelected.length; i++) {
             if (checkSelected[i]) {
                 Log.v("refresh list", items.get(i));
-                attributes += items.get(i) + " ";
+                attributes += " " + items.get(i);
             }
         }
-        boolean [] abc = checkSelected;
         return attributes;
     }
 
@@ -293,7 +292,6 @@ public class HomeScreenActivity extends ActionBarActivity {
                 }
                 else {
                     Log.v("ontouch", "sigh more");
-                    Log.v("ontouch", ""+v.getId());
                 }
                 return false;
             }
@@ -404,6 +402,10 @@ public class HomeScreenActivity extends ActionBarActivity {
             return null;
         }
 
+//        protected Void refreshVisibleList(Location l) {
+//          todo i need to set this up so it basically calls the showEFLA on a modified list but doesn't hide shit.
+//        }
+
         @Override
         protected Void doInBackground(Object... params) {
             DBHandler dbh;
@@ -448,7 +450,7 @@ public class HomeScreenActivity extends ActionBarActivity {
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
             if (atts == "") {
-                showEFLA(buildings, buildingToFloorMap, curElvType, spinnerContents, true);
+                showEFLA(buildings, buildingToFloorMap, curElvType, spinnerContents, false);
             }
             else {
                 showEFLA(buildings, buildingToFloorMap, curElvType, spinnerContents, true);
