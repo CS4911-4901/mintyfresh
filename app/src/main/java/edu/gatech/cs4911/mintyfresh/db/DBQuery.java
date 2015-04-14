@@ -563,7 +563,7 @@ public class DBQuery {
      */
     public static FloorplanMeta getFloorplanMetadata(DBHandler handler, String buildingId, 
             int level) throws SQLException {
-        ResultSet result = handler.submitQuery("SELECT * FROM Floorplan INNER JOIN Floorplan_Image "
+        ResultSet result = handler.submitQuery("SELECT * FROM Floorplan "
                 + "WHERE id = \"" + buildingId + "\" AND map_level = " + level + ";");
         FloorplanMeta output;
 
