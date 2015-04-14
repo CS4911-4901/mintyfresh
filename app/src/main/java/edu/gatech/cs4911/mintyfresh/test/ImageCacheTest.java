@@ -65,4 +65,17 @@ public class ImageCacheTest extends AndroidTestCase {
                 new Building("CUL", "Clough Undergraduate Learning Commons", 0.0, 0.0),
                 testMeta.getLevel()));
     }
+
+    public void testGetMeta1() throws Exception {
+        cache = new ImageCache(handler, context);
+
+        assertNotNull(cache.getMeta("STU", 1));
+    }
+
+    public void testGetMeta2() throws Exception {
+        cache = new ImageCache(handler, context);
+
+        assertNotNull(cache.getMeta(
+                new Building("CUL", "Clough Undergraduate Learning Commons", 0.0, 0.0), 1));
+    }
 }

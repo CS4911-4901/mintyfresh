@@ -18,6 +18,7 @@ import edu.gatech.cs4911.mintyfresh.db.DBQuery;
 import edu.gatech.cs4911.mintyfresh.db.queryresponse.Building;
 import edu.gatech.cs4911.mintyfresh.db.queryresponse.FloorplanMeta;
 import edu.gatech.cs4911.mintyfresh.exception.DisplayFloorplanException;
+import edu.gatech.cs4911.mintyfresh.exception.NoDbResultException;
 
 /**
  * An ImageCache maintains the mappings of image files to hashes.
@@ -112,6 +113,50 @@ public class ImageCache {
      */
     public SVG get(Building building, int level) throws DisplayFloorplanException {
         return get(new FloorplanMeta(building.getId(), level));
+    }
+
+    /**
+     * Returns a FloorplanMeta object from this cache, given a building and level.
+     * Performs a database query and downloads the image and metadata from the database
+     * if necessary.
+     *
+     * @param buildingId A provided building, identified by a String ID.
+     * @param level The floor of the building to return an image for.
+     * @return Returns a FloorplanMeta object corresponding to the given building and leve.
+     * @throws NoDbResultException if a database query was required, but no result was returned.
+     */
+    public FloorplanMeta getMeta(String buildingId, int level) throws NoDbResultException {
+        FloorplanMeta tempNode = new FloorplanMeta(buildingId, level);
+        try {
+            if (!contains(tempNode)) {
+                get(tempNode);
+            }
+
+            for (FloorplanMeta cacheNode : cache) {
+                if (cacheNode.equals(cache)) {
+                    return cacheNode;
+                }
+            }
+        } catch (Exception e) {
+            throw new NoDbResultException();
+        }
+
+        // This should not happen
+        return null;
+    }
+
+    /**
+     * Returns a FloorplanMeta object from this cache, given a building and level.
+     * Performs a database query and downloads the image and metadata from the database
+     * if necessary.
+     *
+     * @param building A provided building.
+     * @param level The floor of the building to return an image for.
+     * @return Returns a FloorplanMeta object corresponding to the given building and leve.
+     * @throws NoDbResultException if a database query was required, but no result was returned.
+     */
+    public FloorplanMeta getMeta(Building building, int level) throws NoDbResultException{
+        return getMeta(building.getId(), level);
     }
 
     /**
