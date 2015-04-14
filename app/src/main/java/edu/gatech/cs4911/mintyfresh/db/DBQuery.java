@@ -75,7 +75,8 @@ public class DBQuery {
      */
     public static List<Integer> getLevelsInBuilding(DBHandler handler, String buildingId)
             throws SQLException {
-        String query = "SELECT level FROM Building_Floors " + "WHERE id = \"" + buildingId + "\";";
+        String query = "SELECT level FROM Building_Floors " + "WHERE id = \"" + buildingId +
+                "\" ORDER BY level ASC;";
 
         // Query cache
         List<Integer> output = cache.getIntegerList(query);
