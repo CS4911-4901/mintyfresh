@@ -65,12 +65,14 @@ public class HomeScreenActivity extends ActionBarActivity {
         expListView.setVisibility(View.GONE);
 
         bathroom = (ImageButton) findViewById(R.id.bathroomButton);
+        final LinearLayout showing = (LinearLayout) findViewById(R.id.showingLayout);
         bathroom.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (current == elvType.BATHROOMS) {
                     current = elvType.NONE;
                     expListView.setVisibility(View.GONE);
+                    showing.setVisibility(View.GONE);
                 }
                 else {
                     expandMenu(elvType.BATHROOMS);
@@ -87,6 +89,7 @@ public class HomeScreenActivity extends ActionBarActivity {
                 if (current == elvType.VENDING) {
                     current = elvType.NONE;
                     expListView.setVisibility(View.GONE);
+                    showing.setVisibility(View.GONE);
                 }
                 else {
                     expandMenu(elvType.VENDING);
@@ -103,6 +106,7 @@ public class HomeScreenActivity extends ActionBarActivity {
                 if (current == elvType.PRINTERS) {
                     current = elvType.NONE;
                     expListView.setVisibility(View.GONE);
+                    showing.setVisibility(View.GONE);
                 } else {
                     expandMenu(elvType.PRINTERS);
                     bathroom.setImageResource(R.drawable.button_toilet_inactive);
@@ -224,6 +228,7 @@ public class HomeScreenActivity extends ActionBarActivity {
                 current = elvType.NONE;
 
                 Log.v("SHOWEFLA", "none?");
+                showing.setVisibility(View.INVISIBLE);
                 showing.setVisibility(View.GONE);
                 expListView.setVisibility(View.GONE);
             }
