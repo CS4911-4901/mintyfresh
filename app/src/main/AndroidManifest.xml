@@ -49,7 +49,11 @@
         </activity>
         <activity
             android:name=".ViewFloorplanActivity"
-            android:label="ViewFloorplanActivity">
+            android:label="ViewFloorplanActivity" >
+        </activity>
+        <activity
+            android:name=".test.RoutingTestActivity"
+            android:label="@string/title_activity_routing_test" >
         </activity>
     </application>
 
