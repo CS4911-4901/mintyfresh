@@ -78,15 +78,21 @@ public class RoutingTestActivity extends FragmentActivity {
                         // Set a pin
                         mMap.addMarker(new MarkerOptions().position(
                                 myLocation).title("You are here!"));
-                        // And do it!
-                        mMap.animateCamera(zoomCamera);
 
                         // Test route
                         try {
                             List<LatLng> result = new NetIoTask().execute("STU", "CUL").get();
+                            for (int i = 0; i < result.size(); i++) {
+                                // Add a pin
+                                mMap.addMarker(new MarkerOptions().position(
+                                        result.get(i)).title("Step " + i));
+                            }
                         } catch (Exception e) {
                             return;
                         }
+
+                        // And do it!
+                        mMap.animateCamera(zoomCamera);
                     }
                 });
             }
