@@ -19,5 +19,6 @@
     <string name="leftArrow"> left </string>
     <string name="cancel">Cancel</string>
     <string name="routeMe">Route Me</string>
+    <string name="title_activity_routing_test">Routing Test</string>
 
 </resources>
