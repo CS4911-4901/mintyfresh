@@ -168,6 +168,12 @@ public class ImageCache {
      */
     private void update(FloorplanMeta meta) throws SQLException, IOException {
         ImageDownloader.downloadToImageFile(handler, meta, context);
+        try {
+            meta = getMeta(meta.getId(), meta.getLevel());
+        } catch (NoDbResultException e) {
+            throw new SQLException();
+        }
+
         insert(meta);
         updateHashFile();
     }
