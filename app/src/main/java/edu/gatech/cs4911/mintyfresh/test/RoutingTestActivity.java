@@ -26,6 +26,7 @@ import static edu.gatech.cs4911.mintyfresh.db.DatabaseConfig.STEAKSCORP_READ_ONL
 public class RoutingTestActivity extends FragmentActivity {
 
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
+    private boolean gotLocation = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,7 +82,7 @@ public class RoutingTestActivity extends FragmentActivity {
 
                         // Test route
                         try {
-                            List<LatLng> result = new NetIoTask().execute("STU", "CUL").get();
+                            List<LatLng> result = new NetIoTask().execute(myLocation).get();
                             for (int i = 0; i < result.size(); i++) {
                                 // Add a pin
                                 mMap.addMarker(new MarkerOptions().position(
@@ -91,22 +92,24 @@ public class RoutingTestActivity extends FragmentActivity {
                             return;
                         }
 
-                        // And do it!
-                        mMap.animateCamera(zoomCamera);
+                        if (!gotLocation) {
+                            // And do it!
+                            mMap.animateCamera(zoomCamera);
+                            gotLocation = true;
+                        }
                     }
                 });
             }
         }
     }
 
-    private class NetIoTask extends AsyncTask<String, Void, List<LatLng>> {
-        protected List<LatLng> doInBackground(String... buildingIds) {
+    private class NetIoTask extends AsyncTask<LatLng, Void, List<LatLng>> {
+        protected List<LatLng> doInBackground(LatLng... currentLocation) {
             try {
                 AmenityFinder finder = new AmenityFinder(new DBHandler(STEAKSCORP_READ_ONLY));
-                Building fromBuilding = finder.getBuildingById(buildingIds[0]);
-                Building toBuilding = finder.getBuildingById(buildingIds[1]);
+                Building toBuilding = finder.getBuildingById("CUL");
                 List<LatLng> result = Router.getDirectionsTo(
-                        fromBuilding.getLatitude(), fromBuilding.getLongitude(),
+                        currentLocation[0].latitude, currentLocation[0].longitude,
                         toBuilding.getLatitude(), toBuilding.getLongitude());
                 return result;
             } catch (Exception e) {
