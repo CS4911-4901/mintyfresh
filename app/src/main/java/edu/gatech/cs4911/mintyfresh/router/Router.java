@@ -134,11 +134,11 @@ public class Router {
     private static LatLng[] constructLatLngFromJson(JSONObject latlng) throws JSONException {
         LatLng[] result = new LatLng[2];
         result[0] = new LatLng(
-                latlng.getJSONObject("start_location").getLong("lat"),
-                latlng.getJSONObject("start_location").getLong("lng"));
+                latlng.getJSONObject("start_location").getDouble("lat"),
+                latlng.getJSONObject("start_location").getDouble("lng"));
         result[1] = new LatLng(
-                latlng.getJSONObject("start_location").getLong("lat"),
-                latlng.getJSONObject("start_location").getLong("lng"));
+                latlng.getJSONObject("start_location").getDouble("lat"),
+                latlng.getJSONObject("start_location").getDouble("lng"));
 
         return result;
     }
