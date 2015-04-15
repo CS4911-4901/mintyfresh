@@ -40,7 +40,7 @@ public class ImageCacheViewTestActivity extends ActionBarActivity {
             // Moment of truth!
             handler = new NetIoTask().execute("").get();
             cache = new ImageCache(handler, getApplicationContext());
-            new CacheUpdaterTask().execute(cache);
+            FloorplanMeta testMeta = new CacheUpdaterTask().execute(cache).get();
 
             SVG result = new ImageUpdaterTask().execute("CUL_1.svg").get();
             imageView.setSVG(result);
@@ -86,13 +86,13 @@ public class ImageCacheViewTestActivity extends ActionBarActivity {
         }
     }
 
-    private class CacheUpdaterTask extends AsyncTask<ImageCache, Void, String> {
-        protected String doInBackground(ImageCache... cache) {
+    private class CacheUpdaterTask extends AsyncTask<ImageCache, Void, FloorplanMeta> {
+        protected FloorplanMeta doInBackground(ImageCache... cache) {
             try {
-
+                return cache[0].getMeta("COC", 1);
             } catch (Exception e) {
-                return e.toString();
-            } return "SUCCESS";
+                return null;
+            }
         }
     }
 
