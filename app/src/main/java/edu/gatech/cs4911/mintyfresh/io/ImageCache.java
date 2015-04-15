@@ -133,7 +133,7 @@ public class ImageCache {
             }
 
             for (FloorplanMeta cacheNode : cache) {
-                if (cacheNode.equals(cache)) {
+                if (cacheNode.equals(tempNode)) {
                     return cacheNode;
                 }
             }
