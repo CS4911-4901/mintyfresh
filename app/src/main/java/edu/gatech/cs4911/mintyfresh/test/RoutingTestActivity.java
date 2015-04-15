@@ -80,6 +80,13 @@ public class RoutingTestActivity extends FragmentActivity {
                                 myLocation).title("You are here!"));
                         // And do it!
                         mMap.animateCamera(zoomCamera);
+
+                        // Test route
+                        try {
+                            List<LatLng> result = new NetIoTask().execute("STU", "CUL").get();
+                        } catch (Exception e) {
+                            return;
+                        }
                     }
                 });
             }
