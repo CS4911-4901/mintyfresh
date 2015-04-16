@@ -107,4 +107,10 @@ public class ImageCacheTest extends AndroidTestCase {
         assertNotNull(resultSvg);
         assertNotNull(cacheMeta);
     }
+
+    public void testGetMetaNonZeroNatives() throws Exception {
+        FloorplanMeta meta = cache.getMeta("STU", 1);
+        assertFalse(meta.getNativeWidth() == 0);
+        assertFalse(meta.getNativeHeight() == 0);
+    }
 }
