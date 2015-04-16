@@ -71,8 +71,11 @@ public class ImageCacheTest extends AndroidTestCase {
 
     public void testGetMeta1() throws Exception {
         cache = new ImageCache(handler, context);
+        FloorplanMeta meta = cache.getMeta("STU", 1);
 
-        assertNotNull(cache.getMeta("STU", 1));
+        assertNotNull(meta);
+        assertTrue(meta.getNativeWidth() != 0);
+        assertTrue(meta.getNativeHeight() != 0);
     }
 
     public void testGetMeta2() throws Exception {
@@ -109,8 +112,10 @@ public class ImageCacheTest extends AndroidTestCase {
     }
 
     public void testGetMetaNonZeroNatives() throws Exception {
+        cache = new ImageCache(handler, context);
+
         FloorplanMeta meta = cache.getMeta("STU", 1);
-        assertFalse(meta.getNativeWidth() == 0);
-        assertFalse(meta.getNativeHeight() == 0);
+        assertTrue(meta.getNativeWidth() != 0);
+        assertTrue(meta.getNativeHeight() != 0);
     }
 }
