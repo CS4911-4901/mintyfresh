@@ -52,6 +52,10 @@ public class Router {
 
         try {
             result = parseJsonToLatLng(getHttpDoc(uri));
+            result = postProcessRoute(
+                    result,
+                    new LatLng(startLatitude, startLongitude),
+                    new LatLng(destLatitude, destLongitude));
         } catch (JSONException e) {
             // No points in result, so we assume no routable path
             return null;
@@ -141,6 +145,33 @@ public class Router {
                 latlng.getJSONObject("start_location").getDouble("lng"));
 
         return result;
+    }
+
+    /**
+     * Given a raw route as a list of LatLng objects, prunes duplicate points
+     * and adds the absolute start and absolute end location to the start and end
+     * of the route.
+     *
+     * @param rawRoute A raw LatLng route returned by the Google Maps API.
+     * @param startLocation The absolute start location.
+     * @param endLocation The absolute end location.
+     * @return A final route from start to destination of distinct points.
+     */
+    private static List<LatLng> postProcessRoute(List<LatLng> rawRoute,
+              LatLng startLocation, LatLng endLocation) {
+        // Add start and end location to result
+        rawRoute.add(0, startLocation);
+        rawRoute.add(rawRoute.size() - 1, endLocation);
+
+        // Prune duplicate points
+        // (If there are duplicates, they should be right next to each other!)
+        for (int i = 0; i < rawRoute.size() - 1; i++) {
+            if (rawRoute.get(i).equals(rawRoute.get(i + 1))) {
+                rawRoute.remove(i + 1);
+            }
+        }
+
+        return rawRoute;
     }
 
     /**
