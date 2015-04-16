@@ -128,21 +128,16 @@ public class ImageCache {
     public FloorplanMeta getMeta(String buildingId, int level) throws NoDbResultException {
         FloorplanMeta tempNode = new FloorplanMeta(buildingId, level);
         try {
-            if (!contains(tempNode)) {
-                get(tempNode);
+            int index = cache.indexOf(tempNode);
+            if (index == -1 || isShallowNode(cache.get(index))) {
+                // We need to redownload from database
+                get(buildingId, level);
             }
 
-            for (FloorplanMeta cacheNode : cache) {
-                if (cacheNode.equals(tempNode)) {
-                    return cacheNode;
-                }
-            }
+            return cache.get(cache.indexOf(tempNode));
         } catch (Exception e) {
             throw new NoDbResultException();
         }
-
-        // This should not happen
-        return null;
     }
 
     /**
@@ -168,16 +163,24 @@ public class ImageCache {
      */
     private void update(FloorplanMeta meta) throws SQLException, IOException {
         ImageDownloader.downloadToImageFile(handler, meta, context);
-        try {
-            meta = getMeta(meta.getId(), meta.getLevel());
-        } catch (NoDbResultException e) {
-            throw new SQLException();
-        }
+        meta = DBQuery.getFloorplanMetadata(handler, meta.getId(), meta.getLevel());
 
         insert(meta);
         updateHashFile();
     }
 
+
+    /**
+     * Checks if this node is a <i>shallow</i> node - one that only
+     * encodes a building and floor, without pointing to a specific image.
+     *
+     * @param meta A given node to check.
+     * @return true if this node is shallow; false otherwise.
+     */
+    private boolean isShallowNode(FloorplanMeta meta) {
+        return meta.getHash() == null || meta.getHash().equals("")
+                || meta.getHash().equals("null");
+    }
     /**
      * Checks a local metadata object against the upstream database to
      * see if there is a mismatch between local and upstream metadata.
