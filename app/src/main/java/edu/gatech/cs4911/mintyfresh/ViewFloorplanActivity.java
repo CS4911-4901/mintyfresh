@@ -2,7 +2,16 @@ package edu.gatech.cs4911.mintyfresh;
 
 import android.app.Activity;
 
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Matrix;
+import android.graphics.Paint;
+import android.graphics.Picture;
 import android.graphics.Point;
+import android.graphics.PorterDuff;
+import android.graphics.Rect;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.PictureDrawable;
 import android.location.Location;
@@ -14,8 +23,10 @@ import android.util.Log;
 
 import android.view.Display;
 import android.view.MenuItem;
+import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
@@ -35,6 +46,7 @@ import android.widget.TextView;
 import android.widget.ViewSwitcher;
 
 
+import com.caverock.androidsvg.PreserveAspectRatio;
 import com.caverock.androidsvg.SVGImageView;
 import com.caverock.androidsvg.SVG;
 
@@ -44,7 +56,9 @@ import java.util.HashMap;
 
 import edu.gatech.cs4911.mintyfresh.db.DBHandler;
 
+import edu.gatech.cs4911.mintyfresh.db.queryresponse.Amenity;
 import edu.gatech.cs4911.mintyfresh.db.queryresponse.Building;
+import edu.gatech.cs4911.mintyfresh.db.queryresponse.FloorplanMeta;
 import edu.gatech.cs4911.mintyfresh.io.ImageCache;
 import edu.gatech.cs4911.mintyfresh.router.RelativeBuilding;
 
@@ -62,9 +76,12 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
     DBHandler handler;
     ImageCache cache;
     SVG floorplanSVG;
+    FloorplanMeta currMeta;
     LinearLayout layout;
     HashMap<Integer,SVG> floorplanMap;
     List<Integer> floorsInBuilding;
+    List<Amenity> amenitiesInBuilding;
+    HashMap<Integer,FloorplanMeta> metaMap;
 
     TextView bldgAndFloor;
 
@@ -76,9 +93,29 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
     SVGImageView currView;
     String[] floorInfo;
 
-    int defaultSize;
-    FrameLayout.LayoutParams defaultScale;
+    int viewLoc[] = {-1,-1};
+    float scaleFactor, scaleFactorX, scaleFactorY;
+    int imageSize;
+    int viewX, viewY;
+    int iH, iW;
 
+    //Drawing things
+    Canvas imageCanvas;
+    Bitmap imageBitmap;
+
+
+    //For testing.
+    int dotR = 5;
+
+    //This'll need fix when imageButtons are updated.
+    //Hardcoding piece of crap
+    float percentPerButton = 0.15f;
+    int viewHardcodeWidth = 238;
+    int viewHeight = 308;
+    int imageRawWidth, imageRawHeight;
+
+    //Things experimented with for pinch-zoom
+    private ScaleGestureDetector pinchDetector;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,13 +137,15 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
         }
         currentFloor = floorID;
 
-        defaultSize = 512;
+        Log.v("floorcheck", ""+currentFloor);
+        Log.v("spacecheck", "0mask0"+bldID+"0mask0");
 
         floorInfo = new String[2];
         floorInfo[0] = bldID;
         floorInfo[1] = floorName;
 
         floorsInBuilding = new ArrayList<>();
+        amenitiesInBuilding = new ArrayList<>();
         Log.v("hello1", "Doing the thing");
 
         setFloorDisplay(buildingName, currentFloor.toString());
@@ -118,6 +157,8 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
             Log.v("check2", "Cache set up");
             floorplanMap = new ImageUpdaterTask(cache).execute(floorInfo).get();
             Log.v("check3", "SVG begged for");
+            metaMap = new MetaTask(cache).execute(floorInfo).get();
+            Log.v("check4", "Metas popped");
         }
         catch(Exception e){
             return;
@@ -125,64 +166,105 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
 
         //Functional test:
         //Got there.
-
         if(floorsInBuilding!=null) {
             Log.v("HUZZAH", "Floorplan list isn't null!");
         }
+        if(floorplanMap==null){
+            Log.v("WHY", "FloorplanMap is null?");
+        }
+        if(metaMap==null){
+            Log.v("HOW","MetaMap is null.");
+        }
+        currMeta = metaMap.get(currentFloor);
         floorplanSVG = floorplanMap.get(currentFloor);
+        imageRawWidth = currMeta.getNativeWidth();
+        imageRawHeight = currMeta.getNativeHeight();
+
+        Log.v("Dimension check", "Width: " + imageRawWidth + ", Height: " + imageRawHeight);
+
 
         //For real this time.
         //Set up image switcher with view factory, in/out animation, initial image.
         imgSwitcher = (ImageSwitcher) findViewById(R.id.floorplanSwitcher);
         imgSwitcher.setFactory(this);
-
         Animation fadeIn = AnimationUtils.loadAnimation(this,android.R.anim.fade_in);
         Animation fadeOut = AnimationUtils.loadAnimation(this,android.R.anim.fade_out);
-
         imgSwitcher.setInAnimation(fadeIn);
         imgSwitcher.setOutAnimation(fadeOut);
 
+        //Set current View and SVG.
         currView = (SVGImageView) imgSwitcher.getCurrentView();
+        //currView.setBackgroundColor(Color.BLUE);
+        currView.setScaleType(ImageView.ScaleType.MATRIX);
 
+        //Set raw size.
+        floorplanSVG.setDocumentWidth(imageRawWidth);
+        floorplanSVG.setDocumentHeight(imageRawHeight);
 
-        //Shenanigans trying to get the imageview to stick to a uniform size.
-        double percentPerButton = 0.15;
-        double percentImageView = 1.0 - 2*percentPerButton;
-
-        DisplayMetrics metrics = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(metrics);
-
-        int screenHeight = metrics.heightPixels;
-        int screenWidth = metrics.widthPixels;
-
-        Log.v("Width in pixels", "Allegedly " + screenWidth);
-
-        /**
-        Display display = getWindowManager().getDefaultDisplay();
-        Point size = new Point();
-        display.getSize(size);
-        int screenWidth = size.x;
-        Log.v("Screen width: ", "" + screenWidth);
-        int screenHeight = size.y;
-        Log.v("Screen height: ", "" + screenHeight);
-        **/
-
-        int viewWidth = (int) (screenWidth*percentImageView);
-
-        FrameLayout.LayoutParams defaultSize = new FrameLayout.LayoutParams(viewWidth, viewWidth);
-        currView.setLayoutParams(defaultSize);
-
-        //And back to things that are strictly necessary.
-        currView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+        //Set to view.
         currView.setSVG(floorplanSVG);
+
+        //Turn into a bitmap.
+        plotAmenities();
+
+        //Attempt to scale.
+        scaleFloorplan();
 
 
     }
 
+    //Plots all amenities on the current imageview.
+    private void plotAmenities(){
+        int testDotR = 15;
+        imageBitmap = drawableToBitmap(currView.getDrawable());
+        imageCanvas = new Canvas(imageBitmap);
+        Paint paint = new Paint();
+        paint.setColor(Color.RED);
+        imageCanvas.drawBitmap(imageBitmap, 0, 0, null);
+        int amenityX, amenityY;
+        //Loop through.
+        for(Amenity a: amenitiesInBuilding){
+            if(a.getLevel()==currentFloor){
+                amenityX = a.getX();
+                amenityY = a.getY();
+                //Drawable starD = getResources().getDrawable(R.drawable.star);
+                //Bitmap starBit = drawableToBitmap(starD);
+                //imageCanvas.drawBitmap(starBit,amenityX, amenityY, null);
+
+                imageCanvas.drawCircle(amenityX, amenityY, testDotR, paint);
+            }
+        }
+
+        currView.setImageDrawable(new BitmapDrawable(imageBitmap));
+
+    }
+
+    //Utility for scaling.
+    private void scaleFloorplan(){
+        scaleFactor = (float)(viewHardcodeWidth)/(float)(imageRawWidth);
+
+        Matrix m = currView.getImageMatrix();
+        m.setScale(scaleFactor,scaleFactor);
+        currView.setImageMatrix(m);
+    }
+
+    //Utility for drawing things on top of things shenanigans.
+    public static Bitmap drawableToBitmap (Drawable drawable) {
+        if (drawable instanceof BitmapDrawable) {
+            return ((BitmapDrawable)drawable).getBitmap();
+        }
+
+        Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        drawable.draw(canvas);
+
+        return bitmap;
+    }
+
     private void setFloorDisplay (String building, String floor) {
         bldgAndFloor = (TextView)findViewById(R.id.buildingAndFloor);
-        bldgAndFloor.setText(buildingName + " - Floor " + floor);
-
+        bldgAndFloor.setText(building + " - Floor " + floor);
     }
 
     //Called to set up buttons initially.
@@ -214,11 +296,19 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
                         floorInfo[1] = currentFloor.toString();
                         try {
                             floorplanSVG = floorplanMap.get(currentFloor);
+                            currMeta = metaMap.get(currentFloor);
+                            imageRawWidth = currMeta.getNativeWidth();
+                            imageRawHeight = currMeta.getNativeHeight();
+                            floorplanSVG.setDocumentWidth(imageRawWidth);
+                            floorplanSVG.setDocumentHeight(imageRawHeight);
+                            currView.setSVG(floorplanSVG);
                         }
                         catch(Exception e){
                             return;
                         }
-                        currView.setSVG(floorplanSVG);
+                        //Reset floorplan, plot
+                        plotAmenities();
+                        scaleFloorplan();
                         checkButtonAble(flrList, currentFloor);
 
                     }
@@ -237,12 +327,20 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
                         try {
                             Log.v("onClickL", "Hit the left button");
                             floorplanSVG = floorplanMap.get(currentFloor);
+                            currMeta = metaMap.get(currentFloor);
+                            imageRawWidth = currMeta.getNativeWidth();
+                            imageRawHeight = currMeta.getNativeHeight();
+                            floorplanSVG.setDocumentWidth(imageRawWidth);
+                            floorplanSVG.setDocumentHeight(imageRawHeight);
+                            currView.setSVG(floorplanSVG);
                         }
                         catch(Exception e){
                             Log.v("onClickL", "Welp, that didn't work");
                             return;
                         }
-                        currView.setSVG(floorplanSVG);
+                        //Reset floorplan, plot
+                        plotAmenities();
+                        scaleFloorplan();
                         checkButtonAble(flrList, currentFloor);
 
                     }
@@ -258,9 +356,6 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
         });
 
     }
-
-
-
     //Button support.
     private void checkButtonAble(List<Integer> floors, Integer floor){
         //needs to be checked anytime a button is clicked
@@ -301,14 +396,14 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
                 dbh = new DBHandler(STEAKSCORP_READ_ONLY);
                 amenityFinder = new AmenityFinder(dbh);
 
-//                amenityFinder.getAmenitiesInBuilding(params[0]);
+                for (Amenity a : amenityFinder.getAmenitiesInBuilding(params[0])) {
+                    amenitiesInBuilding.add(a);
+                }
+                ;
                 floors = amenityFinder.getFloorsInBuilding(params[0]);
                 for (Integer i : floors) {
                     floorsInBuilding.add(i);
                 }
-
-
-
                 return dbh;
             } catch (Exception e) {
                 e.printStackTrace();
@@ -328,7 +423,7 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
     public View makeView() {
 
         SVGImageView iView = new SVGImageView(getApplicationContext());
-        iView.setScaleType(SVGImageView.ScaleType.FIT_CENTER);
+        iView.setScaleType(SVGImageView.ScaleType.MATRIX);
         iView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
 
         return iView;
@@ -341,7 +436,10 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
         ImageCache cache;
         public ImageUpdaterTask(ImageCache cache) { this.cache = cache;}
         protected HashMap<Integer,SVG> doInBackground(String... params) {
-            if (params.length!=2) return null;
+            if (params.length!=2) {
+                Log.v("You done goofed","Params length is wrong");
+                return null;
+            }
             try {
                 HashMap<Integer,SVG> resultMap = new HashMap<>();
                 for(Integer f : floorsInBuilding){
@@ -350,6 +448,37 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
                 return resultMap;
 
             } catch (Exception e) {
+                Log.v("GOOFED", e.toString());
+                return null;
+            }
+        }
+    }
+
+    //Populate the floorplan metas.
+    private class MetaTask extends AsyncTask<String, Void, HashMap<Integer,FloorplanMeta>> {
+        ImageCache cache;
+        public MetaTask(ImageCache cache) { this.cache = cache;}
+        protected HashMap<Integer,FloorplanMeta> doInBackground(String... params) {
+            if (params.length!=2) {
+                Log.v("You done goofed in meta","Params length is wrong");
+                return null;
+            }
+            try {
+                HashMap<Integer,FloorplanMeta> resultMap = new HashMap<>();
+                FloorplanMeta tempMeta;
+                for(Integer f : floorsInBuilding){
+                    tempMeta = cache.getMeta(params[0], f);
+                    if(tempMeta==null){
+                        Log.v("Dude, why", "getMeta is returning null");
+                    }
+                    else {
+                        resultMap.put(f, tempMeta);
+                    }
+                }
+                return resultMap;
+
+            } catch (Exception e) {
+                Log.v("GOOFED IN META", e.toString());
                 return null;
             }
         }
