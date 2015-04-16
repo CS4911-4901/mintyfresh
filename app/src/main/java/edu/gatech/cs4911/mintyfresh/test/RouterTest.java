@@ -22,7 +22,7 @@ public class RouterTest extends InstrumentationTestCase {
 
     public void testGetDirectionsTo() throws Exception {
         // Student Center -> CULC
-        List<LatLng> output = getDirectionsTo(33.774063f, -84.398836f, 33.774792f, -84.396386f);
+        List<LatLng> output = getDirectionsTo(33.774063, -84.398836, 33.774792, -84.396386);
         assertNotNull(output);
 
         // And check each item in list
