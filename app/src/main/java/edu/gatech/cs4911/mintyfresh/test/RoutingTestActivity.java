@@ -82,7 +82,12 @@ public class RoutingTestActivity extends FragmentActivity {
 
                         // Test route
                         try {
-                            List<LatLng> result = new NetIoTask().execute(myLocation).get();
+                            // The value below should be filled with a destination building
+                            // from a previous screen - this is just a test route!
+                            String destBuildingId = "CUL";
+                            RouteVector vector = new RouteVector(myLocation, destBuildingId);
+
+                            List<LatLng> result = new NetIoTask().execute(vector).get();
                             for (int i = 0; i < result.size(); i++) {
                                 // Add a pin
                                 mMap.addMarker(new MarkerOptions().position(
@@ -103,18 +108,44 @@ public class RoutingTestActivity extends FragmentActivity {
         }
     }
 
-    private class NetIoTask extends AsyncTask<LatLng, Void, List<LatLng>> {
-        protected List<LatLng> doInBackground(LatLng... currentLocation) {
+    private class NetIoTask extends AsyncTask<RouteVector, Void, List<LatLng>> {
+        protected List<LatLng> doInBackground(RouteVector... vector) {
             try {
                 AmenityFinder finder = new AmenityFinder(new DBHandler(STEAKSCORP_READ_ONLY));
-                Building toBuilding = finder.getBuildingById("CUL");
+                Building toBuilding = finder.getBuildingById(vector[0].buildingId);
                 List<LatLng> result = Router.getDirectionsTo(
-                        currentLocation[0].latitude, currentLocation[0].longitude,
+                        vector[0].curLocation.latitude, vector[0].curLocation.longitude,
                         toBuilding.getLatitude(), toBuilding.getLongitude());
                 return result;
             } catch (Exception e) {
                 return null;
             }
+        }
+    }
+
+    /**
+     * A RouteVector stores a current location and a destination building by ID.
+     */
+    private class RouteVector {
+        /**
+         * The current location.
+         */
+        private LatLng curLocation;
+        /**
+         * A destination building, by ID.
+         */
+        private String buildingId;
+
+        /**
+         * Constructs a new RouteVector, storing information about a current LatLng
+         * location as well as a destination building by String ID.
+         *
+         * @param curLocation The current location.
+         * @param buildingId A destination building, by ID.
+         */
+        private RouteVector(LatLng curLocation, String buildingId) {
+            this.curLocation = curLocation;
+            this.buildingId = buildingId;
         }
     }
 }
