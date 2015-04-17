@@ -14,9 +14,11 @@ import android.widget.LinearLayout;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import edu.gatech.cs4911.mintyfresh.db.queryresponse.Amenity;
 import edu.gatech.cs4911.mintyfresh.db.queryresponse.Building;
 import edu.gatech.cs4911.mintyfresh.router.RelativeBuilding;
 
@@ -29,13 +31,16 @@ public class ExpandableFloorListAdapter extends BaseExpandableListAdapter {
     private Activity context;
     private Map<Building, List<Integer>> floors;
     private List<Building> buildings;
+    private ArrayList<Amenity> amenities;
 
     public ExpandableFloorListAdapter(Activity context, List<Building> buildings,
-                                      Map<Building, List<Integer>> floors) {
+                                      Map<Building, List<Integer>> floors, ArrayList<Amenity> amenities) {
         this.context = context;
         this.floors = floors;
         this.buildings = buildings;
+        this.amenities = amenities;
     }
+
     @Override
     public Object getChild(int groupPosition, int childPosition) {
         return floors.get(buildings.get(childPosition));
@@ -76,6 +81,7 @@ public class ExpandableFloorListAdapter extends BaseExpandableListAdapter {
                         intent.putExtra("FLOOR_NAME", ((FloorButton)v).getFloorNumber());
                         intent.putExtra("BUILDING_ID", bldgID);
                         intent.putExtra("FLOOR_ID", i);
+                        intent.putParcelableArrayListExtra("AMENITIES",amenities);
                         context.startActivity(intent);
 
                     }
