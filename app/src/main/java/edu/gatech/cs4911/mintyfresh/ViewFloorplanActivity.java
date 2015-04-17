@@ -83,6 +83,8 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
     List<Amenity> amenitiesInBuilding;
     HashMap<Integer,FloorplanMeta> metaMap;
 
+    String currentType;
+
     TextView bldgAndFloor;
 
     ImageSwitcher imgSwitcher;
@@ -102,6 +104,7 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
     //Drawing things
     Canvas imageCanvas;
     Bitmap imageBitmap;
+    int gtYellow = Color.rgb(235,182,9);
 
 
     //For testing.
@@ -134,6 +137,7 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
             floorID = extras.getInt("FLOOR_NAME");
             bldID = extras.getString("BUILDING_ID");
             floorName = Integer.toString(floorID);
+            currentType = extras.getString("AMENITY_TYPE");
         }
         currentFloor = floorID;
 
@@ -219,19 +223,26 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
         imageBitmap = drawableToBitmap(currView.getDrawable());
         imageCanvas = new Canvas(imageBitmap);
         Paint paint = new Paint();
-        paint.setColor(Color.RED);
+        paint.setAntiAlias(true);
+        float strokeWidth = 4f;
         imageCanvas.drawBitmap(imageBitmap, 0, 0, null);
         int amenityX, amenityY;
         //Loop through.
         for(Amenity a: amenitiesInBuilding){
-            if(a.getLevel()==currentFloor){
+            if(a.getLevel()==currentFloor && a.getType()==currentType){
                 amenityX = a.getX();
                 amenityY = a.getY();
                 //Drawable starD = getResources().getDrawable(R.drawable.star);
                 //Bitmap starBit = drawableToBitmap(starD);
                 //imageCanvas.drawBitmap(starBit,amenityX, amenityY, null);
-
+                paint.setStyle(Paint.Style.FILL);
+                paint.setColor(gtYellow);
                 imageCanvas.drawCircle(amenityX, amenityY, testDotR, paint);
+                paint.setStyle(Paint.Style.STROKE);
+                paint.setStrokeWidth(strokeWidth);
+                paint.setARGB(255, 0, 0, 0);
+                imageCanvas.drawCircle(amenityX, amenityY, testDotR, paint);
+
             }
         }
 
@@ -295,6 +306,7 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
                         currentFloor = floorPlusOne;
                         floorInfo[1] = currentFloor.toString();
                         try {
+                            Log.v("onClickL", "Hit the left button");
                             floorplanSVG = floorplanMap.get(currentFloor);
                             currMeta = metaMap.get(currentFloor);
                             imageRawWidth = currMeta.getNativeWidth();
