@@ -1,6 +1,7 @@
 package edu.gatech.cs4911.mintyfresh;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
 import android.os.AsyncTask;
@@ -33,6 +34,7 @@ import java.util.Map;
 import java.util.PriorityQueue;
 
 import edu.gatech.cs4911.mintyfresh.db.DBHandler;
+import edu.gatech.cs4911.mintyfresh.db.queryresponse.Amenity;
 import edu.gatech.cs4911.mintyfresh.db.queryresponse.Building;
 import edu.gatech.cs4911.mintyfresh.exception.NoDbResultException;
 import edu.gatech.cs4911.mintyfresh.router.RelativeAmenity;
@@ -55,6 +57,7 @@ public class HomeScreenActivity extends ActionBarActivity {
     private boolean expanded;
     private PopupWindow pw;
     private Location cl;
+    private ArrayList<Amenity> nearbyAmenities;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -151,6 +154,7 @@ public class HomeScreenActivity extends ActionBarActivity {
 
     protected void showEFLA(ArrayList<Building> buildings, Map<Building, List<Integer>> map, elvType curType, Map<String, String> spinnerContents, final boolean refreshSpinner) {
         LinearLayout showing = (LinearLayout) findViewById(R.id.showingLayout);
+        //Intent intent = new Intent(getApplicationContext(), ViewFloorplanActivity.class);
 //        if (!refreshSpinner) {
             if ((refreshSpinner) || (current != curType) || (current == elvType.NONE)) {
                 current = curType;
@@ -215,11 +219,13 @@ public class HomeScreenActivity extends ActionBarActivity {
                 showing.setVisibility(View.VISIBLE);
 
                 final ExpandableFloorListAdapter expListAdapter = new ExpandableFloorListAdapter(
-                        this, buildings, map);
+                        this, buildings, map, nearbyAmenities);
                 expListView.setAdapter(expListAdapter);
 
                 expListView.setVisibility(View.VISIBLE);
                 Log.v("SHOWEFLA", "DONE?");
+
+                //intent.putExtra("AMENITY_TYPE",amenityTypeName);
             }
 //        else if ((current == curType) && (refreshSpinner)) {
 //
@@ -352,6 +358,7 @@ public class HomeScreenActivity extends ActionBarActivity {
 
         private Map<Building, List<Integer>> constructMap(PriorityQueue<RelativeAmenity> amenitiesPQ) {
             buildings = new ArrayList<Building>();
+            nearbyAmenities = new ArrayList<Amenity>();
             Map <Building, List<Integer>> floorMap = new HashMap<Building, List<Integer>>();
             List<Integer> floors;
 
@@ -359,6 +366,7 @@ public class HomeScreenActivity extends ActionBarActivity {
             while (!amenitiesPQ.isEmpty()) {
                 Log.v("loop forever", "looploop");
                 RelativeAmenity ra = amenitiesPQ.poll();
+                nearbyAmenities.add(ra.getAmenity());
 
                 String bID = ra.getAmenity().getBuildingId();
 

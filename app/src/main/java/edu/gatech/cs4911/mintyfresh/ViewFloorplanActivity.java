@@ -7,46 +7,25 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
-import android.graphics.Picture;
-import android.graphics.Point;
-import android.graphics.PorterDuff;
-import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.PictureDrawable;
-import android.location.Location;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
 import android.util.Log;
 
-import android.view.Display;
-import android.view.MenuItem;
 import android.view.ScaleGestureDetector;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.FrameLayout;
+
 import android.widget.ImageButton;
 import android.widget.ImageSwitcher;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.ViewSwitcher;
 import android.widget.ViewSwitcher.ViewFactory;
 
-import android.view.View;
-import android.widget.Button;
-import android.widget.ImageSwitcher;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.ViewSwitcher;
-
-
-import com.caverock.androidsvg.PreserveAspectRatio;
 import com.caverock.androidsvg.SVGImageView;
 import com.caverock.androidsvg.SVG;
 
@@ -57,11 +36,8 @@ import java.util.HashMap;
 import edu.gatech.cs4911.mintyfresh.db.DBHandler;
 
 import edu.gatech.cs4911.mintyfresh.db.queryresponse.Amenity;
-import edu.gatech.cs4911.mintyfresh.db.queryresponse.Building;
 import edu.gatech.cs4911.mintyfresh.db.queryresponse.FloorplanMeta;
 import edu.gatech.cs4911.mintyfresh.io.ImageCache;
-import edu.gatech.cs4911.mintyfresh.router.RelativeBuilding;
-
 import static android.widget.FrameLayout.LayoutParams;
 import static edu.gatech.cs4911.mintyfresh.db.DatabaseConfig.STEAKSCORP_READ_ONLY;
 
@@ -80,10 +56,9 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
     LinearLayout layout;
     HashMap<Integer,SVG> floorplanMap;
     List<Integer> floorsInBuilding;
-    List<Amenity> amenitiesInBuilding;
+    List<Amenity> relevantAmenities;
     HashMap<Integer,FloorplanMeta> metaMap;
 
-    String currentType;
 
     TextView bldgAndFloor;
 
@@ -95,11 +70,7 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
     SVGImageView currView;
     String[] floorInfo;
 
-    int viewLoc[] = {-1,-1};
-    float scaleFactor, scaleFactorX, scaleFactorY;
-    int imageSize;
-    int viewX, viewY;
-    int iH, iW;
+    float scaleFactor;
 
     //Drawing things
     Canvas imageCanvas;
@@ -112,9 +83,7 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
 
     //This'll need fix when imageButtons are updated.
     //Hardcoding piece of crap
-    float percentPerButton = 0.15f;
     int viewHardcodeWidth = 238;
-    int viewHeight = 308;
     int imageRawWidth, imageRawHeight;
 
     //Things experimented with for pinch-zoom
@@ -137,19 +106,19 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
             floorID = extras.getInt("FLOOR_NAME");
             bldID = extras.getString("BUILDING_ID");
             floorName = Integer.toString(floorID);
-            currentType = extras.getString("AMENITY_TYPE");
+            relevantAmenities = extras.getParcelableArrayList("AMENITIES");
         }
         currentFloor = floorID;
 
         Log.v("floorcheck", ""+currentFloor);
         Log.v("spacecheck", "0mask0"+bldID+"0mask0");
+        Log.v("amenities null?", ""+relevantAmenities);
 
         floorInfo = new String[2];
         floorInfo[0] = bldID;
         floorInfo[1] = floorName;
 
         floorsInBuilding = new ArrayList<>();
-        amenitiesInBuilding = new ArrayList<>();
         Log.v("hello1", "Doing the thing");
 
         setFloorDisplay(buildingName, currentFloor.toString());
@@ -228,10 +197,11 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
         imageCanvas.drawBitmap(imageBitmap, 0, 0, null);
         int amenityX, amenityY;
         //Loop through.
-        for(Amenity a: amenitiesInBuilding){
-            if(a.getLevel()==currentFloor && a.getType()==currentType){
+        for(Amenity a: relevantAmenities){
+            if(a.getLevel()==currentFloor && a.getBuildingName().equals(buildingName)){
                 amenityX = a.getX();
                 amenityY = a.getY();
+                Log.v("Amenity type", ""+a.getType());
                 //Drawable starD = getResources().getDrawable(R.drawable.star);
                 //Bitmap starBit = drawableToBitmap(starD);
                 //imageCanvas.drawBitmap(starBit,amenityX, amenityY, null);
@@ -407,11 +377,7 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
 
                 dbh = new DBHandler(STEAKSCORP_READ_ONLY);
                 amenityFinder = new AmenityFinder(dbh);
-
-                for (Amenity a : amenityFinder.getAmenitiesInBuilding(params[0])) {
-                    amenitiesInBuilding.add(a);
-                }
-                ;
+              
                 floors = amenityFinder.getFloorsInBuilding(params[0]);
                 for (Integer i : floors) {
                     floorsInBuilding.add(i);
