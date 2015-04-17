@@ -63,7 +63,7 @@ public class ImageCache {
     }
 
     /**
-     * Gets a floorplan image, as an SVG object, given floorplan metadata.
+     * Gets a floorplan image as an SVG object, given floorplan metadata.
      *
      * @param cacheNode The node to access an image.
      * @return A floorplan image, as an SVG.
