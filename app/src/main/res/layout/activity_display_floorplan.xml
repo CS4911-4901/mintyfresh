@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="wrap_content"
+    android:orientation="vertical" android:layout_width="fill_parent"
     android:layout_height="match_parent" android:layout_centerHorizontal="true"
     android:id="@+id/topLevelLayout">
 
@@ -25,7 +25,11 @@
             android:id="@+id/leftButton"
             android:text="@string/leftArrow"
             android:layout_alignParentLeft="true"
-            android:layout_marginLeft="15dp"/>
+            android:layout_marginLeft="15dp"
+            android:src="@drawable/button_arrow_left"
+            android:background="#00000000"
+            android:padding="5dp"
+            android:layout_gravity="center_vertical" />
         <ImageSwitcher
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -37,23 +41,37 @@
             android:id="@+id/rightButton"
             android:text="@string/rightArrow"
             android:layout_alignParentRight="true"
-            android:layout_marginRight="15dp"/>
+            android:layout_marginRight="15dp"
+            android:src="@drawable/button_arrow_right"
+            android:background="#00000000"
+            android:padding="5dp"
+            android:layout_gravity="center_vertical" />
         
         </LinearLayout>
     <LinearLayout
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:layout_height="100dp"
+        android:orientation="horizontal"
+        android:gravity="center_horizontal"
+        android:minHeight="48dp">
         <ImageButton
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:id="@+id/cancelButton"
-            android:text="@string/cancel"/>
+            android:text="@string/cancel"
+            android:src="@drawable/button_cancel"
+            android:background="#00000000"
+            android:adjustViewBounds="false"
+            android:padding="10dp"
+            android:longClickable="false" />
         <ImageButton
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:id="@+id/routeMeButton"
-            android:text="@string/routeMe"/>
+            android:text="@string/routeMe"
+            android:src="@drawable/button_route"
+            android:background="#00000000"
+            android:padding="10dp" />
 
         </LinearLayout>
 

@@ -3,6 +3,7 @@ package edu.gatech.cs4911.mintyfresh;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -81,12 +82,12 @@ public class ExpandableFloorListAdapter extends BaseExpandableListAdapter {
                         intent.putExtra("FLOOR_NAME", ((FloorButton)v).getFloorNumber());
                         intent.putExtra("BUILDING_ID", bldgID);
                         intent.putExtra("FLOOR_ID", i);
-                        intent.putParcelableArrayListExtra("AMENITIES",amenities);
+                        intent.putParcelableArrayListExtra("AMENITIES", amenities);
                         context.startActivity(intent);
 
                     }
                 });
-                LayoutParams lp = new LayoutParams(75, LayoutParams.WRAP_CONTENT);
+                LayoutParams lp = new LayoutParams(96, LayoutParams.WRAP_CONTENT);
                 floorsLayout.addView(floorButton, lp);
                 Log.v("sigh", "yes yes");
             }
@@ -160,6 +161,10 @@ public class ExpandableFloorListAdapter extends BaseExpandableListAdapter {
 
             int resId = context.getResources().getIdentifier(("button_" + floorNumber), "drawable", context.getPackageName());
             setImageResource(resId);
+            setBackgroundColor(Color.TRANSPARENT);
+            setPadding(5,5,5,5);
+            setMinimumHeight(48);
+            setMinimumWidth(48);
         }
 
         public int getFloorNumber() {
