@@ -1,7 +1,6 @@
 package edu.gatech.cs4911.mintyfresh;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -86,16 +85,10 @@ public class DropDownListAdapter extends BaseAdapter {
             }
         });
 
-        boolean[] abc = HomeScreenActivity.checkSelected;
-
-        if(HomeScreenActivity.checkSelected[position]) {
-            Log.v("getView", "CHECKED");
+        if(HomeScreenActivity.checkSelected[position])
             holder.chkbox.setChecked(true);
-        }
-        else {
-            Log.v("getView", "NOT CHECKED");
+        else
             holder.chkbox.setChecked(false);
-        }
         return convertView;
     }
 

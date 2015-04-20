@@ -3,6 +3,7 @@ package edu.gatech.cs4911.mintyfresh;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,11 +16,12 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.TextView;
 
 import java.util.Iterator;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import edu.gatech.cs4911.mintyfresh.db.queryresponse.Amenity;
 import edu.gatech.cs4911.mintyfresh.db.queryresponse.Building;
-import edu.gatech.cs4911.mintyfresh.router.RelativeBuilding;
 
 
 /**
@@ -30,13 +32,16 @@ public class ExpandableFloorListAdapter extends BaseExpandableListAdapter {
     private Activity context;
     private Map<Building, List<Integer>> floors;
     private List<Building> buildings;
+    private ArrayList<Amenity> amenities;
 
     public ExpandableFloorListAdapter(Activity context, List<Building> buildings,
-                                      Map<Building, List<Integer>> floors) {
+                                      Map<Building, List<Integer>> floors, ArrayList<Amenity> amenities) {
         this.context = context;
         this.floors = floors;
         this.buildings = buildings;
+        this.amenities = amenities;
     }
+
     @Override
     public Object getChild(int groupPosition, int childPosition) {
         return floors.get(buildings.get(childPosition));
@@ -91,11 +96,12 @@ public class ExpandableFloorListAdapter extends BaseExpandableListAdapter {
                         intent.putExtra("FLOOR_NAME", ((FloorButton)v).getFloorNumber());
                         intent.putExtra("BUILDING_ID", bldgID);
                         intent.putExtra("FLOOR_ID", i);
+                        intent.putParcelableArrayListExtra("AMENITIES", amenities);
                         context.startActivity(intent);
 
                     }
                 });
-                LayoutParams lp = new LayoutParams(75, LayoutParams.WRAP_CONTENT);
+                LayoutParams lp = new LayoutParams(96, LayoutParams.WRAP_CONTENT);
                 floorsLayout.addView(floorButton, lp);
                 Log.v("sigh", "yes yes");
             }
@@ -169,6 +175,10 @@ public class ExpandableFloorListAdapter extends BaseExpandableListAdapter {
 
             int resId = context.getResources().getIdentifier(("button_" + floorNumber), "drawable", context.getPackageName());
             setImageResource(resId);
+            setBackgroundColor(Color.TRANSPARENT);
+            setPadding(5,5,5,5);
+            setMinimumHeight(48);
+            setMinimumWidth(48);
         }
 
         public int getFloorNumber() {

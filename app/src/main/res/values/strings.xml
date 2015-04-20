@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">MintyFresh</string>
+    <string name="app_name">Amenity GT</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_maps">Map</string>
@@ -11,7 +11,7 @@
     <string name="printers">Printers</string>
     <string name="vending">Vending</string>
     <string name="needToFind">Find me a </string>
-    <string name="floorSelect">Select a floor: </string>
+    <string name="floorSelect">Select a Floor </string>
     <string name="showing">Showing:</string>
     <string name="title_activity_image_cache_view_test">ImageCacheViewTestActivity</string>
     <string name="imageCacheViewTestImage">Test image CUL_1.svg</string>
@@ -19,5 +19,6 @@
     <string name="leftArrow"> left </string>
     <string name="cancel">Cancel</string>
     <string name="routeMe">Route Me</string>
+    <string name="title_activity_routing_test">Routing Test</string>
 
 </resources>

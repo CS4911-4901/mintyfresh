@@ -52,6 +52,10 @@ public class Router {
 
         try {
             result = parseJsonToLatLng(getHttpDoc(uri));
+            result = postProcessRoute(
+                    result,
+                    new LatLng(startLatitude, startLongitude),
+                    new LatLng(destLatitude, destLongitude));
         } catch (JSONException e) {
             // No points in result, so we assume no routable path
             return null;
@@ -134,13 +138,40 @@ public class Router {
     private static LatLng[] constructLatLngFromJson(JSONObject latlng) throws JSONException {
         LatLng[] result = new LatLng[2];
         result[0] = new LatLng(
-                latlng.getJSONObject("start_location").getLong("lat"),
-                latlng.getJSONObject("start_location").getLong("lng"));
+                latlng.getJSONObject("start_location").getDouble("lat"),
+                latlng.getJSONObject("start_location").getDouble("lng"));
         result[1] = new LatLng(
-                latlng.getJSONObject("start_location").getLong("lat"),
-                latlng.getJSONObject("start_location").getLong("lng"));
+                latlng.getJSONObject("start_location").getDouble("lat"),
+                latlng.getJSONObject("start_location").getDouble("lng"));
 
         return result;
+    }
+
+    /**
+     * Given a raw route as a list of LatLng objects, prunes duplicate points
+     * and adds the absolute start and absolute end location to the start and end
+     * of the route.
+     *
+     * @param rawRoute A raw LatLng route returned by the Google Maps API.
+     * @param startLocation The absolute start location.
+     * @param endLocation The absolute end location.
+     * @return A final route from start to destination of distinct points.
+     */
+    private static List<LatLng> postProcessRoute(List<LatLng> rawRoute,
+              LatLng startLocation, LatLng endLocation) {
+        // Add start and end location to result
+        rawRoute.add(0, startLocation);
+        rawRoute.add(rawRoute.size() - 1, endLocation);
+
+        // Prune duplicate points
+        // (If there are duplicates, they should be right next to each other!)
+        for (int i = 0; i < rawRoute.size() - 1; i++) {
+            if (rawRoute.get(i).equals(rawRoute.get(i + 1))) {
+                rawRoute.remove(i + 1);
+            }
+        }
+
+        return rawRoute;
     }
 
     /**
@@ -155,7 +186,6 @@ public class Router {
      */
     public static double calcRelativeDistance(double startLatitude, double startLongitude,
                                              double destLatitude, double destLongitude) {
-
         return Math.sqrt(Math.pow((destLatitude - startLatitude), 2)
                 + Math.pow((destLongitude - startLongitude), 2));
 

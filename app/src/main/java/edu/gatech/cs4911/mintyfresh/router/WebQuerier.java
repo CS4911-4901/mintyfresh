@@ -1,16 +1,10 @@
 package edu.gatech.cs4911.mintyfresh.router;
 
-import org.w3c.dom.Document;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
 /**
  * A WebQuerier object manages the RESTful calls to a remote HTTP server.
  */

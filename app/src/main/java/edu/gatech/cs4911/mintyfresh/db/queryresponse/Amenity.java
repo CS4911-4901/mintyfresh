@@ -1,5 +1,8 @@
 package edu.gatech.cs4911.mintyfresh.db.queryresponse;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,7 +10,7 @@ import java.util.List;
  * An Amenity holds information about an amenity's building, type, level, id,
  * latitude, longitude, attributes, and (x, y) floor plan location.
  */
-public class Amenity extends DBResponseObject {
+public class Amenity extends DBResponseObject implements Parcelable {
     /**
      * The Building parent that contains this Amenity.
      */
@@ -98,6 +101,23 @@ public class Amenity extends DBResponseObject {
     public Amenity(Building building, String type, int level, String id,
                    int x, int y) {
         this(building, type, level, id, new ArrayList<String>(), x, y);
+    }
+
+    /**
+     * Constructs a new Amenity object from a Parcel.
+     * Will only be used in plotting.
+     * @param parcel The Parcel being unpacked.
+     */
+    protected Amenity(Parcel parcel){
+        attributes = new ArrayList<>();
+
+        building = (Building) parcel.readValue(Building.class.getClassLoader());
+        type = parcel.readString();
+        level = parcel.readInt();
+        parcel.readStringList(attributes);
+        x = parcel.readInt();
+        y = parcel.readInt();
+
     }
 
     /**
@@ -228,4 +248,43 @@ public class Amenity extends DBResponseObject {
 
         return false;
     }
+
+    //Overrides for parcelable so that I can pass them between activities.
+    //The sacrifices we make.
+
+    /**
+     * Overrides for Parcelable, to let us shuffle a list of Amenities between activities.
+     * Make sure that any Parceled calls include a list of Attributes, even if the size is 0 or 1.
+     */
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        //Building building, String type, int level, String id, List<String> attributes, int x, int y
+        //Consistent order is consistent
+        dest.writeValue(building);
+        dest.writeString(type);
+        dest.writeInt(level);
+        dest.writeStringList(attributes);
+        dest.writeInt(x);
+        dest.writeInt(y);
+    }
+
+    @SuppressWarnings("unused")
+    public static final Parcelable.Creator<Amenity> CREATOR = new Parcelable.Creator<Amenity>() {
+
+        @Override
+        public Amenity createFromParcel(Parcel in) {
+            return new Amenity(in);
+        }
+
+        @Override
+        public Amenity[] newArray(int size) {
+            return new Amenity[size];
+        }
+    };
 }

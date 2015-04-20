@@ -1,6 +1,7 @@
 package edu.gatech.cs4911.mintyfresh;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
 import android.os.AsyncTask;
@@ -33,6 +34,7 @@ import java.util.Map;
 import java.util.PriorityQueue;
 
 import edu.gatech.cs4911.mintyfresh.db.DBHandler;
+import edu.gatech.cs4911.mintyfresh.db.queryresponse.Amenity;
 import edu.gatech.cs4911.mintyfresh.db.queryresponse.Building;
 import edu.gatech.cs4911.mintyfresh.exception.NoDbResultException;
 import edu.gatech.cs4911.mintyfresh.router.RelativeAmenity;
@@ -56,6 +58,7 @@ public class HomeScreenActivity extends ActionBarActivity {
     private Location cl;
     protected Map<Building, List<Integer>> initialBathroom, initialVending, initialPrinter;
     protected ArrayList<Building> initialBuildings;
+    private ArrayList<Amenity> nearbyAmenities;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -219,13 +222,16 @@ public class HomeScreenActivity extends ActionBarActivity {
             Log.v("showefla", "hopefully set the array adapter?");
             showing.setVisibility(View.VISIBLE);
 
-            final ExpandableFloorListAdapter expListAdapter = new ExpandableFloorListAdapter(
-                    this, buildings, map);
-            expListView.setAdapter(expListAdapter);
+//            final ExpandableFloorListAdapter expListAdapter = new ExpandableFloorListAdapter(
+//                    this, buildings, map);
+//            expListView.setAdapter(expListAdapter);
+                final ExpandableFloorListAdapter expListAdapter = new ExpandableFloorListAdapter(
+                        this, buildings, map, nearbyAmenities);
+                expListView.setAdapter(expListAdapter);
 
-            expListView.setVisibility(View.VISIBLE);
-            Log.v("SHOWEFLA", "DONE?");
-        }
+                expListView.setVisibility(View.VISIBLE);
+                Log.v("SHOWEFLA", "DONE?");
+            }
         else {
             current = elvType.NONE;
 
@@ -247,10 +253,9 @@ public class HomeScreenActivity extends ActionBarActivity {
         for (int i = 0; i<checkSelected.length; i++) {
             if (checkSelected[i]) {
                 Log.v("refresh list", items.get(i));
-                attributes += items.get(i) + " ";
+                attributes += " " + items.get(i);
             }
         }
-        boolean [] abc = checkSelected;
         return attributes;
     }
 
@@ -290,7 +295,6 @@ public class HomeScreenActivity extends ActionBarActivity {
                 }
                 else {
                     Log.v("ontouch", "sigh more");
-                    Log.v("ontouch", ""+v.getId());
                 }
                 return false;
             }
@@ -351,6 +355,7 @@ public class HomeScreenActivity extends ActionBarActivity {
 
         private Map<Building, List<Integer>> constructMap(PriorityQueue<RelativeAmenity> amenitiesPQ) {
             buildings = new ArrayList<Building>();
+            nearbyAmenities = new ArrayList<Amenity>();
             Map <Building, List<Integer>> floorMap = new HashMap<Building, List<Integer>>();
             List<Integer> floors;
 
@@ -358,6 +363,7 @@ public class HomeScreenActivity extends ActionBarActivity {
             while (!amenitiesPQ.isEmpty()) {
                 Log.v("loop forever", "looploop");
                 RelativeAmenity ra = amenitiesPQ.poll();
+                nearbyAmenities.add(ra.getAmenity());
 
                 String bID = ra.getAmenity().getBuildingId();
 
@@ -402,6 +408,10 @@ public class HomeScreenActivity extends ActionBarActivity {
             }
             return null;
         }
+
+//        protected Void refreshVisibleList(Location l) {
+//          todo i need to set this up so it basically calls the showEFLA on a modified list but doesn't hide shit.
+//        }
 
         @Override
         protected Void doInBackground(Object... params) {

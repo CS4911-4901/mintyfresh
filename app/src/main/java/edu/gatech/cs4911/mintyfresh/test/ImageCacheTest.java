@@ -3,7 +3,10 @@ package edu.gatech.cs4911.mintyfresh.test;
 import android.content.Context;
 import android.test.AndroidTestCase;
 
+import com.caverock.androidsvg.SVG;
+
 import edu.gatech.cs4911.mintyfresh.db.DBHandler;
+import edu.gatech.cs4911.mintyfresh.db.DBQuery;
 import edu.gatech.cs4911.mintyfresh.db.queryresponse.Building;
 import edu.gatech.cs4911.mintyfresh.db.queryresponse.FloorplanMeta;
 import edu.gatech.cs4911.mintyfresh.io.CacheLoader;
@@ -68,8 +71,11 @@ public class ImageCacheTest extends AndroidTestCase {
 
     public void testGetMeta1() throws Exception {
         cache = new ImageCache(handler, context);
+        FloorplanMeta meta = cache.getMeta("STU", 1);
 
-        assertNotNull(cache.getMeta("STU", 1));
+        assertNotNull(meta);
+        assertTrue(meta.getNativeWidth() != 0);
+        assertTrue(meta.getNativeHeight() != 0);
     }
 
     public void testGetMeta2() throws Exception {
@@ -77,5 +83,39 @@ public class ImageCacheTest extends AndroidTestCase {
 
         assertNotNull(cache.getMeta(
                 new Building("CUL", "Clough Undergraduate Learning Commons", 0.0, 0.0), 1));
+    }
+
+    public void testAddMetaCorrectly() throws Exception {
+        cache = new ImageCache(handler, context);
+        FloorplanMeta testMeta = new FloorplanMeta("CUL", 1);
+        FloorplanMeta actualMeta = DBQuery.getFloorplanMetadata(handler, "CUL", 1);
+        cache.get(testMeta);
+
+        assertTrue(testMeta.equals(actualMeta));
+        assertTrue(cache.contains(testMeta));
+        assertTrue(cache.contains(actualMeta));
+    }
+
+    public void testGetMetaFullLogic() throws Exception {
+        cache = new ImageCache(handler, context);
+
+        Building testBuilding = new Building("CUL", "Clough Undergraduate Learning Commons",
+                0.0, 0.0);
+        FloorplanMeta testMeta = DBQuery.getFloorplanMetadata(handler, testBuilding.getId(), 1);
+        SVG resultSvg = cache.get(testMeta);
+        FloorplanMeta cacheMeta = cache.getMeta(testBuilding, 1);
+
+        assertNotNull(testBuilding);
+        assertNotNull(testMeta);
+        assertNotNull(resultSvg);
+        assertNotNull(cacheMeta);
+    }
+
+    public void testGetMetaNonZeroNatives() throws Exception {
+        cache = new ImageCache(handler, context);
+
+        FloorplanMeta meta = cache.getMeta("STU", 1);
+        assertTrue(meta.getNativeWidth() != 0);
+        assertTrue(meta.getNativeHeight() != 0);
     }
 }
