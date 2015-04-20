@@ -57,8 +57,8 @@ public class HomeScreenActivity extends ActionBarActivity {
     private PopupWindow pw;
     private Location cl;
     protected Map<Building, List<Integer>> initialBathroom, initialVending, initialPrinter;
-    protected ArrayList<Building> initialBuildings;
-    private ArrayList<Amenity> nearbyAmenities, initialNearbyAmenities;
+    protected ArrayList<Building> initialBuildingsB, initialBuildingsP, initialBuildingsV, initialBuildings;
+    private ArrayList<Amenity> nearbyAmenities, initialNearbyAmenitiesB, initialNearbyAmenitiesP, initialNearbyAmenitiesV;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,8 +69,12 @@ public class HomeScreenActivity extends ActionBarActivity {
         initialBathroom = (Map<Building, List<Integer>>)extras.get("bathroomMap");
         initialVending = (Map<Building, List<Integer>>)extras.get("vendingMap");
         initialPrinter = (Map<Building, List<Integer>>)extras.get("printerMap");
-        initialBuildings = (ArrayList<Building>)extras.get("buildings");
-        initialNearbyAmenities = (ArrayList<Amenity>)extras.get("nearbyAmenities");
+        initialBuildingsB = (ArrayList<Building>)extras.get("buildingsB");
+        initialBuildingsV = (ArrayList<Building>)extras.get("buildingsV");
+        initialBuildingsP = (ArrayList<Building>)extras.get("buildingsP");
+        initialNearbyAmenitiesB = (ArrayList<Amenity>)extras.get("nearbyAmenitiesB");
+        initialNearbyAmenitiesP = (ArrayList<Amenity>)extras.get("nearbyAmenitiesP");
+        initialNearbyAmenitiesV = (ArrayList<Amenity>)extras.get("nearbyAmenitiesV");
 
         expListView = (ExpandableListView) findViewById(R.id.buildingList);
         expListView.setVisibility(View.GONE);
@@ -161,6 +165,7 @@ public class HomeScreenActivity extends ActionBarActivity {
     }
 
     protected void showEFLA(ArrayList<Building> buildings, Map<Building, List<Integer>> map, elvType curType, Map<String, String> spinnerContents, final boolean refreshSpinner) {
+        Log.v("curtype", curType.name());
         LinearLayout showing = (LinearLayout) findViewById(R.id.showingLayout);
         if ((refreshSpinner) || (current != curType) || (current == elvType.NONE)) {
             current = curType;
@@ -202,8 +207,19 @@ public class HomeScreenActivity extends ActionBarActivity {
             }
             else {
                 Log.v("nearbyamenities", "null");
-                final ExpandableFloorListAdapter expListAdapter1 = new ExpandableFloorListAdapter(
-                        this, buildings, map, initialNearbyAmenities);
+                ExpandableFloorListAdapter expListAdapter1;
+                if (curType == elvType.BATHROOMS) {
+                    expListAdapter1 = new ExpandableFloorListAdapter(
+                    this, buildings, map, initialNearbyAmenitiesB);
+                }
+                else if (curType == elvType.VENDING) {
+                    expListAdapter1 = new ExpandableFloorListAdapter(
+                            this, buildings, map, initialNearbyAmenitiesV);
+                }
+                else {
+                    expListAdapter1 = new ExpandableFloorListAdapter(
+                            this, buildings, map, initialNearbyAmenitiesP);
+                }
                 expListView.setAdapter(expListAdapter1);
             }
 
@@ -390,13 +406,16 @@ public class HomeScreenActivity extends ActionBarActivity {
                 }
                 else if (curElvType == elvType.BATHROOMS) {
                     buildingToFloorMap = initialBathroom;
+                    initialBuildings = initialBuildingsB;
 //                    Log.v("new stuff", "bathroom");
                 }
                 else if (curElvType == elvType.VENDING) {
                     buildingToFloorMap = initialVending;
+                    initialBuildings = initialBuildingsV;
                 }
                 else {
                     buildingToFloorMap = initialPrinter;
+                    initialBuildings = initialBuildingsP;
                 }
 
                 if (curElvType == elvType.BATHROOMS) {

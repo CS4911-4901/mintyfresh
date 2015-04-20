@@ -31,7 +31,7 @@ public class MainActivity extends ActionBarActivity {
 
     private static int SPLASH_TIME_OUT = 3000;
     private Location cl;
-    private ArrayList<Amenity> nearbyAmenities;
+    private ArrayList<Amenity> nearbyAmenities, nearbyAmenitiesB, nearbyAmenitiesP, nearbyAmenitiesV;
 
 
     @Override
@@ -82,7 +82,7 @@ public class MainActivity extends ActionBarActivity {
 
     private class ConnectToDB extends AsyncTask<Object, Void, Void> {
 
-        private ArrayList<Building> buildings;
+        private ArrayList<Building> buildings, buildingsB, buildingsV, buildingsP;
         private Map<Building, List<Integer>> buildingToFloorMapBathroom, buildingToFloorMapVending, buildingToFloorMapPrinter;
 //        private Map<String, String> spinnerContents;
         AmenityFinder amenityFinder;
@@ -100,6 +100,7 @@ public class MainActivity extends ActionBarActivity {
 
         private Map<Building, List<Integer>> constructMap(PriorityQueue<RelativeAmenity> amenitiesPQ) {
             buildings = new ArrayList<Building>();
+            //todo buildings each time
             nearbyAmenities = new ArrayList<Amenity>();
             Map <Building, List<Integer>> floorMap = new HashMap<Building, List<Integer>>();
             List<Integer> floors;
@@ -158,8 +159,14 @@ public class MainActivity extends ActionBarActivity {
                 amenitiesPQVending = amenityFinder.getNearbyAmenitiesByType((Location)params[0], "Vending");
                 amenitiesPQPrinter = amenityFinder.getNearbyAmenitiesByType((Location)params[0], "Printer");
                 buildingToFloorMapBathroom = constructMap(amenitiesPQBathroom);
+                nearbyAmenitiesB = nearbyAmenities;
+                buildingsB = buildings;
                 buildingToFloorMapVending = constructMap(amenitiesPQVending);
+                nearbyAmenitiesV = nearbyAmenities;
+                buildingsV = buildings;
                 buildingToFloorMapPrinter = constructMap(amenitiesPQPrinter);
+                nearbyAmenitiesP = nearbyAmenities;
+                buildingsP = buildings;
 
 
             } catch (Exception e) {
@@ -180,8 +187,12 @@ public class MainActivity extends ActionBarActivity {
             i.putExtra("bathroomMap", (Serializable)buildingToFloorMapBathroom);
             i.putExtra("vendingMap", (Serializable)buildingToFloorMapVending);
             i.putExtra("printerMap", (Serializable)buildingToFloorMapPrinter);
-            i.putExtra("buildings", buildings);
-            i.putExtra("nearbyAmenities", (Serializable)nearbyAmenities);
+            i.putExtra("buildingsB", buildingsB);
+            i.putExtra("buildingsP", buildingsP);
+            i.putExtra("buildingsV", buildingsV);
+            i.putExtra("nearbyAmenitiesB", (Serializable)nearbyAmenitiesB);
+            i.putExtra("nearbyAmenitiesP", (Serializable)nearbyAmenitiesP);
+            i.putExtra("nearbyAmenitiesV", (Serializable)nearbyAmenitiesV);
             startActivity(i);
 
         }
