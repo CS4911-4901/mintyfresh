@@ -11,7 +11,7 @@
     <string name="printers">Printers</string>
     <string name="vending">Vending</string>
     <string name="needToFind">Find me a </string>
-    <string name="floorSelect">Select a Floor </string>
+    <string name="floorSelect">    Floor </string>
     <string name="showing">Showing:</string>
     <string name="title_activity_image_cache_view_test">ImageCacheViewTestActivity</string>
     <string name="imageCacheViewTestImage">Test image CUL_1.svg</string>

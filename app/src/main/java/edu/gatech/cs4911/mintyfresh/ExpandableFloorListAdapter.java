@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.TextView;
@@ -101,7 +102,7 @@ public class ExpandableFloorListAdapter extends BaseExpandableListAdapter {
 
                     }
                 });
-                LayoutParams lp = new LayoutParams(96, LayoutParams.WRAP_CONTENT);
+                LayoutParams lp = new LayoutParams(LayoutParams.WRAP_CONTENT, 144);
                 floorsLayout.addView(floorButton, lp);
 //                Log.v("sigh", "yes yes");
             }
@@ -176,9 +177,10 @@ public class ExpandableFloorListAdapter extends BaseExpandableListAdapter {
             int resId = context.getResources().getIdentifier(("button_" + floorNumber), "drawable", context.getPackageName());
             setImageResource(resId);
             setBackgroundColor(Color.TRANSPARENT);
-            setPadding(5,5,5,5);
+            setPadding(40,5,10,5);
+            setMinimumHeight(LayoutParams.MATCH_PARENT);
             setMinimumHeight(48);
-            setMinimumWidth(48);
+            setScaleType(ScaleType.FIT_CENTER);
         }
 
         public int getFloorNumber() {

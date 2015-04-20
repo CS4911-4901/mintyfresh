@@ -1,13 +1,13 @@
 package edu.gatech.cs4911.mintyfresh;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
 import android.os.AsyncTask;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -15,14 +15,12 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ExpandableListView;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import com.google.android.gms.maps.GoogleMap;
 
@@ -188,7 +186,7 @@ public class HomeScreenActivity extends ActionBarActivity {
             }
 
             //onClickListener to initiate the dropDown list
-            Button createButton = (Button) findViewById(R.id.dropDownList_create);
+            ImageButton createButton = (ImageButton) findViewById(R.id.dropDownList_create);
             createButton.setOnClickListener(new OnClickListener() {
 
                 public void onClick(View v) {
