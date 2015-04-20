@@ -17,7 +17,7 @@ public class DropDownListAdapter extends BaseAdapter {
 
     private ArrayList<String> mListItems;
     private LayoutInflater mInflater;
-    private TextView mSelectedItems;
+//    private TextView mSelectedItems;
     private static int selectedCount = 0;
     private static String firstSelected = "";
     private ViewHolder holder;
@@ -31,12 +31,11 @@ public class DropDownListAdapter extends BaseAdapter {
         DropDownListAdapter.selected = selected;
     }
 
-    public DropDownListAdapter(Context context, ArrayList<String> items, ArrayList<String> itemIDs,
-                               TextView tv) {
+    public DropDownListAdapter(Context context, ArrayList<String> items, ArrayList<String> itemIDs) {
         mListItems = new ArrayList<String>();
         mListItems.addAll(items);
         mInflater = LayoutInflater.from(context);
-        mSelectedItems = tv;
+//        mSelectedItems = tv;
     }
 
     @Override
@@ -106,7 +105,7 @@ public class DropDownListAdapter extends BaseAdapter {
         }
 
         if (selectedCount == 0) {
-            mSelectedItems.setText("All");
+//            mSelectedItems.setText("All");
         } else if (selectedCount == 1) {
             for (int i = 0; i < HomeScreenActivity.checkSelected.length; i++) {
                 if (HomeScreenActivity.checkSelected[i] == true) {
@@ -114,7 +113,7 @@ public class DropDownListAdapter extends BaseAdapter {
                     break;
                 }
             }
-            mSelectedItems.setText(firstSelected);
+//            mSelectedItems.setText(firstSelected);
             setSelected(firstSelected);
         } else if (selectedCount > 1) {
             for (int i = 0; i < HomeScreenActivity.checkSelected.length; i++) {
@@ -123,7 +122,7 @@ public class DropDownListAdapter extends BaseAdapter {
                     break;
                 }
             }
-            mSelectedItems.setText(firstSelected + " & "+ (selectedCount - 1) + " more");
+//            mSelectedItems.setText(firstSelected + " & "+ (selectedCount - 1) + " more");
             setSelected(firstSelected + " & "+ (selectedCount - 1) + " more");
         }
     }

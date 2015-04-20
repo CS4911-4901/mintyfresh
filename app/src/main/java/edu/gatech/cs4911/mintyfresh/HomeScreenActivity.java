@@ -58,7 +58,7 @@ public class HomeScreenActivity extends ActionBarActivity {
     private Location cl;
     protected Map<Building, List<Integer>> initialBathroom, initialVending, initialPrinter;
     protected ArrayList<Building> initialBuildings;
-    private ArrayList<Amenity> nearbyAmenities;
+    private ArrayList<Amenity> nearbyAmenities, initialNearbyAmenities;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +70,7 @@ public class HomeScreenActivity extends ActionBarActivity {
         initialVending = (Map<Building, List<Integer>>)extras.get("vendingMap");
         initialPrinter = (Map<Building, List<Integer>>)extras.get("printerMap");
         initialBuildings = (ArrayList<Building>)extras.get("buildings");
+        initialNearbyAmenities = (ArrayList<Amenity>)extras.get("nearbyAmenities");
 
         expListView = (ExpandableListView) findViewById(R.id.buildingList);
         expListView.setVisibility(View.GONE);
@@ -181,61 +182,38 @@ public class HomeScreenActivity extends ActionBarActivity {
                 checkSelected[i] = false;
             }
 
-            final TextView tv = (TextView) findViewById(R.id.dropDownList_SelectBox);
-            OnClickListener ocl = new OnClickListener() {
-
-                @Override
-                public void onClick(View v) {
-                    if (!expanded) {
-                        //display all selected values
-                        String selected = "";
-                        int flag = 0;
-                        for (int i = 0; i < finalList.size(); i++) {
-                            if (checkSelected[i] == true) {
-                                selected += finalList.get(i);
-                                selected += ", ";
-                                flag = 1;
-                            }
-                        }
-                        if (flag == 1)
-                            tv.setText(selected);
-                        expanded = true;
-                    } else {
-                        //display shortened representation of selected values
-                        tv.setText(DropDownListAdapter.getSelected());
-                        expanded = false;
-                    }
-                }
-            };
-
-            tv.setOnClickListener(ocl);
-
             //onClickListener to initiate the dropDown list
             Button createButton = (Button) findViewById(R.id.dropDownList_create);
             createButton.setOnClickListener(new OnClickListener() {
 
                 public void onClick(View v) {
-                    initiatePopUp((ArrayList) finalList, (ArrayList) finalIDList, tv);
+                    initiatePopUp((ArrayList) finalList, (ArrayList) finalIDList);
                 }
             });
 
             Log.v("showefla", "hopefully set the array adapter?");
             showing.setVisibility(View.VISIBLE);
 
-//            final ExpandableFloorListAdapter expListAdapter = new ExpandableFloorListAdapter(
-//                    this, buildings, map);
-//            expListView.setAdapter(expListAdapter);
+            if (nearbyAmenities != null) {
+                Log.v("nearbyamenities", "not null");
                 final ExpandableFloorListAdapter expListAdapter = new ExpandableFloorListAdapter(
                         this, buildings, map, nearbyAmenities);
                 expListView.setAdapter(expListAdapter);
-
-                expListView.setVisibility(View.VISIBLE);
-                Log.v("SHOWEFLA", "DONE?");
             }
+            else {
+                Log.v("nearbyamenities", "null");
+                final ExpandableFloorListAdapter expListAdapter1 = new ExpandableFloorListAdapter(
+                        this, buildings, map, initialNearbyAmenities);
+                expListView.setAdapter(expListAdapter1);
+            }
+
+            expListView.setVisibility(View.VISIBLE);
+            Log.v("SHOWEFLA", "DONE?");
+        }
         else {
             current = elvType.NONE;
 
-            Log.v("SHOWEFLA", "none?");
+//            Log.v("SHOWEFLA", "none?");
             showing.setVisibility(View.INVISIBLE);
             showing.setVisibility(View.GONE);
             expListView.setVisibility(View.GONE);
@@ -243,16 +221,12 @@ public class HomeScreenActivity extends ActionBarActivity {
     }
 
     private String refreshList(ArrayList<String> items) {
-        //todo what i need to do is make this return a list of the attributes
-        //and make efla whatever take in that list
-        //and when the list is null or empty, do what it does now
-        //but if it isn't, it needs to consider the attribute list
         String attributes = "";
-        Log.v("refresh list", ""+ checkSelected);
-        Log.v("refresh list", "" + checkSelected.length);
+//        Log.v("refresh list", ""+ checkSelected);
+//        Log.v("refresh list", "" + checkSelected.length);
         for (int i = 0; i<checkSelected.length; i++) {
             if (checkSelected[i]) {
-                Log.v("refresh list", items.get(i));
+//                Log.v("refresh list", items.get(i));
                 attributes += " " + items.get(i);
             }
         }
@@ -262,7 +236,7 @@ public class HomeScreenActivity extends ActionBarActivity {
     /*
     * Function to set up the pop-up window which acts as drop-down list
     * */
-    private void initiatePopUp(ArrayList<String> items, ArrayList<String> itemIDs, TextView tv){
+    private void initiatePopUp(ArrayList<String> items, ArrayList<String> itemIDs) {
         final ArrayList<String> finalItemIDs = itemIDs;
         LayoutInflater inflater = (LayoutInflater)HomeScreenActivity.this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
@@ -285,16 +259,13 @@ public class HomeScreenActivity extends ActionBarActivity {
         pw.setTouchInterceptor(new View.OnTouchListener() {
 
             public boolean onTouch(View v, MotionEvent event) {
-                Log.v("ontouch","i guess i clicked something");
+//                Log.v("ontouch","i guess i clicked something");
                 if (event.getAction() == MotionEvent.ACTION_OUTSIDE) {
-                    Log.v("onTouch", "should be dismissed");
-
-
                     pw.dismiss();
                     return true;
                 }
                 else {
-                    Log.v("ontouch", "sigh more");
+//                    Log.v("ontouch", "sigh more");
                 }
                 return false;
             }
@@ -304,9 +275,8 @@ public class HomeScreenActivity extends ActionBarActivity {
 
             @Override
             public void onDismiss() {
-                Log.v("ondismiss", "dismissing");
+//                Log.v("ondismiss", "dismissing");
                 String atts = refreshList(finalItemIDs);
-//                    showEFLA(buildings, map, curType, spinnerContents, refreshSpinner);
 
                 new ConnectToDB(current).execute(cl, atts);
             }
@@ -320,14 +290,13 @@ public class HomeScreenActivity extends ActionBarActivity {
 
         //populate the drop-down list
         final ListView list = (ListView) layout.findViewById(R.id.dropDownList_dropDownList);
-        DropDownListAdapter adapter = new DropDownListAdapter(this, items, itemIDs, tv);
+        DropDownListAdapter adapter = new DropDownListAdapter(this, items, itemIDs);
         list.setAdapter(adapter);
     }
 
     private class ConnectToDB extends AsyncTask <Object, elvType, Void> {
 
         private elvType curElvType;
-//        private int type;
         private String name;
         private ArrayList<Building> buildings;
         private Map<Building, List<Integer>> buildingToFloorMap;
@@ -361,7 +330,7 @@ public class HomeScreenActivity extends ActionBarActivity {
 
             Log.v("constructMap", ""+amenitiesPQ.size());
             while (!amenitiesPQ.isEmpty()) {
-                Log.v("loop forever", "looploop");
+//                Log.v("loop forever", "looploop");
                 RelativeAmenity ra = amenitiesPQ.poll();
                 nearbyAmenities.add(ra.getAmenity());
 
@@ -370,20 +339,15 @@ public class HomeScreenActivity extends ActionBarActivity {
                 try {
                     Building curBldg = amenityFinder.getBuildingById(bID);
                     int floor = ra.getAmenity().getLevel();
-//                    Log.v("construct1", buildings.toString());
-//                    Log.v("construct2", curBldg.toString());
                     Building bldg = doesContain(buildings, curBldg);
                     if (bldg == null) {
-                        Log.v("constructMap", "adding to buildings");
+//                        Log.v("constructMap", "adding to buildings");
                         buildings.add(curBldg);
                         floors = new ArrayList<Integer>();
                         floors.add(floor);
                         floorMap.put(curBldg, floors);
                     } else {
                         floors = floorMap.get(bldg);
-//                        Log.v("floor", ((Integer)floor).toString());
-//                        Log.v("floors", floors.toString());
-
                         if (!floors.contains(floor)) {
                             floors.add(floor);
                         }
@@ -391,12 +355,12 @@ public class HomeScreenActivity extends ActionBarActivity {
                     }
                 }
                 catch (NoDbResultException ndbre) {
-                    Log.v("ndbre", "BOOM");
+//                    Log.v("ndbre", "BOOM");
                     ndbre.printStackTrace();
                     return null;
                 }
             }
-            Log.v("constructMap", "" + floorMap.size());
+//            Log.v("constructMap", "" + floorMap.size());
             return floorMap;
         }
 
@@ -409,10 +373,6 @@ public class HomeScreenActivity extends ActionBarActivity {
             return null;
         }
 
-//        protected Void refreshVisibleList(Location l) {
-//          todo i need to set this up so it basically calls the showEFLA on a modified list but doesn't hide shit.
-//        }
-
         @Override
         protected Void doInBackground(Object... params) {
             DBHandler dbh;
@@ -422,29 +382,15 @@ public class HomeScreenActivity extends ActionBarActivity {
                 dbh = new DBHandler(STEAKSCORP_READ_ONLY);
                 amenityFinder = new AmenityFinder(dbh);
                 PriorityQueue<RelativeAmenity> amenitiesPQ;
-                Log.v("dib", (String)params[1]);
-//                if ((atts == null)||(atts == "")) {
-////                    amenitiesPQ = amenityFinder.getNearbyAmenitiesByType((Location)params[0], name);
-//                    if (curElvType == elvType.BATHROOMS) {
-////                        initialBathroom = (Map<Building, List<Integer>>)extras.get("bathroomMap");
-//                        amenitiesPQ = initialBathroom;
-//                    }
-//                    else if (curElvType == elvType.VENDING) {
-//
-//                    }
-//                    else {
-//
-//                    }
-//                    Log.v("dib", "nullnull");
-//                }
+//                Log.v("dib", (String)params[1]);
                 if ((atts != null) && (atts != "")) {
                     amenitiesPQ = amenityFinder.getNearbyAmenitiesByTypeAndAttribute((Location) params[0], name, (String) atts);
-                    Log.v("dib", ""+amenitiesPQ.size());
+//                    Log.v("dib", ""+amenitiesPQ.size());
                     buildingToFloorMap = constructMap(amenitiesPQ);
                 }
                 else if (curElvType == elvType.BATHROOMS) {
                     buildingToFloorMap = initialBathroom;
-                    Log.v("new stuff", "bathroom");
+//                    Log.v("new stuff", "bathroom");
                 }
                 else if (curElvType == elvType.VENDING) {
                     buildingToFloorMap = initialVending;
@@ -466,7 +412,7 @@ public class HomeScreenActivity extends ActionBarActivity {
 //                Log.v("button", type + "clicked");
 
             } catch (Exception e) {
-                Log.e("doInBackground", "FUCK");
+//                Log.e("doInBackground", "FUCK");
                 e.printStackTrace();
             }
             return null;

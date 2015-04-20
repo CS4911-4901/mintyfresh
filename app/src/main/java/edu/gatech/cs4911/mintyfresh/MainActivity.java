@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.PriorityQueue;
 
 import edu.gatech.cs4911.mintyfresh.db.DBHandler;
+import edu.gatech.cs4911.mintyfresh.db.queryresponse.Amenity;
 import edu.gatech.cs4911.mintyfresh.db.queryresponse.Building;
 import edu.gatech.cs4911.mintyfresh.exception.NoDbResultException;
 import edu.gatech.cs4911.mintyfresh.router.RelativeAmenity;
@@ -30,6 +31,8 @@ public class MainActivity extends ActionBarActivity {
 
     private static int SPLASH_TIME_OUT = 3000;
     private Location cl;
+    private ArrayList<Amenity> nearbyAmenities;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,13 +100,15 @@ public class MainActivity extends ActionBarActivity {
 
         private Map<Building, List<Integer>> constructMap(PriorityQueue<RelativeAmenity> amenitiesPQ) {
             buildings = new ArrayList<Building>();
+            nearbyAmenities = new ArrayList<Amenity>();
             Map <Building, List<Integer>> floorMap = new HashMap<Building, List<Integer>>();
             List<Integer> floors;
 
-            Log.v("constructMap", ""+amenitiesPQ.size());
+//            Log.v("constructMap", ""+amenitiesPQ.size());
             while (!amenitiesPQ.isEmpty()) {
-                Log.v("loop forever", "looploop");
+//                Log.v("loop forever", "looploop");
                 RelativeAmenity ra = amenitiesPQ.poll();
+                nearbyAmenities.add(ra.getAmenity());
 
                 String bID = ra.getAmenity().getBuildingId();
 
@@ -149,18 +154,16 @@ public class MainActivity extends ActionBarActivity {
                 dbh = new DBHandler(STEAKSCORP_READ_ONLY);
                 amenityFinder = new AmenityFinder(dbh);
                 PriorityQueue<RelativeAmenity> amenitiesPQBathroom, amenitiesPQVending, amenitiesPQPrinter;
-//                Log.v("dib", (String)params[1]);
                 amenitiesPQBathroom = amenityFinder.getNearbyAmenitiesByType((Location)params[0], "Bathroom");
                 amenitiesPQVending = amenityFinder.getNearbyAmenitiesByType((Location)params[0], "Vending");
                 amenitiesPQPrinter = amenityFinder.getNearbyAmenitiesByType((Location)params[0], "Printer");
-                Log.v("dib", "nullnull");
                 buildingToFloorMapBathroom = constructMap(amenitiesPQBathroom);
                 buildingToFloorMapVending = constructMap(amenitiesPQVending);
                 buildingToFloorMapPrinter = constructMap(amenitiesPQPrinter);
 
 
             } catch (Exception e) {
-                Log.e("doInBackground", "FUCK");
+//                Log.e("doInBackground", "FUCK");
                 e.printStackTrace();
             }
             return null;
@@ -178,6 +181,7 @@ public class MainActivity extends ActionBarActivity {
             i.putExtra("vendingMap", (Serializable)buildingToFloorMapVending);
             i.putExtra("printerMap", (Serializable)buildingToFloorMapPrinter);
             i.putExtra("buildings", buildings);
+            i.putExtra("nearbyAmenities", (Serializable)nearbyAmenities);
             startActivity(i);
 
         }

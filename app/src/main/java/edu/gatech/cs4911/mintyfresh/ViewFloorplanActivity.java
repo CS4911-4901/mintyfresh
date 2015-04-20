@@ -196,12 +196,11 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
         float strokeWidth = 4f;
         imageCanvas.drawBitmap(imageBitmap, 0, 0, null);
         int amenityX, amenityY;
-        //Loop through.
         for(Amenity a: relevantAmenities){
             if(a.getLevel()==currentFloor && a.getBuildingName().equals(buildingName)){
                 amenityX = a.getX();
                 amenityY = a.getY();
-                Log.v("Amenity type", ""+a.getType());
+//                Log.v("Amenity type", ""+a.getType());
                 //Drawable starD = getResources().getDrawable(R.drawable.star);
                 //Bitmap starBit = drawableToBitmap(starD);
                 //imageCanvas.drawBitmap(starBit,amenityX, amenityY, null);

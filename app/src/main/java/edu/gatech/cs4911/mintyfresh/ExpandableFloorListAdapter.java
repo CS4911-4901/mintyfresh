@@ -103,7 +103,7 @@ public class ExpandableFloorListAdapter extends BaseExpandableListAdapter {
                 });
                 LayoutParams lp = new LayoutParams(96, LayoutParams.WRAP_CONTENT);
                 floorsLayout.addView(floorButton, lp);
-                Log.v("sigh", "yes yes");
+//                Log.v("sigh", "yes yes");
             }
             floorsLayout.setId(groupPosition);
             return floorsLayout;
