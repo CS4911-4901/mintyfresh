@@ -169,7 +169,7 @@ public class HomeScreenActivity extends ActionBarActivity {
         LinearLayout showing = (LinearLayout) findViewById(R.id.showingLayout);
         if ((refreshSpinner) || (current != curType) || (current == elvType.NONE)) {
             current = curType;
-            Collection<String> idColl = spinnerContents.keySet(); //todo WHY ARE YOU BROKEN
+            Collection<String> idColl = spinnerContents.keySet();
             Collection<String> coll = spinnerContents.values();
             List list;
             List idList;
@@ -243,9 +243,10 @@ public class HomeScreenActivity extends ActionBarActivity {
         for (int i = 0; i<checkSelected.length; i++) {
             if (checkSelected[i]) {
 //                Log.v("refresh list", items.get(i));
-                attributes += " " + items.get(i);
+                attributes += items.get(i) + " ";
             }
         }
+        attributes = attributes.trim();
         return attributes;
     }
 
@@ -275,7 +276,6 @@ public class HomeScreenActivity extends ActionBarActivity {
         pw.setTouchInterceptor(new View.OnTouchListener() {
 
             public boolean onTouch(View v, MotionEvent event) {
-//                Log.v("ontouch","i guess i clicked something");
                 if (event.getAction() == MotionEvent.ACTION_OUTSIDE) {
                     pw.dismiss();
                     return true;
@@ -291,7 +291,6 @@ public class HomeScreenActivity extends ActionBarActivity {
 
             @Override
             public void onDismiss() {
-//                Log.v("ondismiss", "dismissing");
                 String atts = refreshList(finalItemIDs);
 
                 new ConnectToDB(current).execute(cl, atts);
@@ -357,7 +356,7 @@ public class HomeScreenActivity extends ActionBarActivity {
                     int floor = ra.getAmenity().getLevel();
                     Building bldg = doesContain(buildings, curBldg);
                     if (bldg == null) {
-//                        Log.v("constructMap", "adding to buildings");
+                        Log.v("constructMap", "Adding");
                         buildings.add(curBldg);
                         floors = new ArrayList<Integer>();
                         floors.add(floor);
@@ -403,11 +402,11 @@ public class HomeScreenActivity extends ActionBarActivity {
                     amenitiesPQ = amenityFinder.getNearbyAmenitiesByTypeAndAttribute((Location) params[0], name, (String) atts);
 //                    Log.v("dib", ""+amenitiesPQ.size());
                     buildingToFloorMap = constructMap(amenitiesPQ);
+//                    initialBuildings = buildings;
                 }
                 else if (curElvType == elvType.BATHROOMS) {
                     buildingToFloorMap = initialBathroom;
                     initialBuildings = initialBuildingsB;
-//                    Log.v("new stuff", "bathroom");
                 }
                 else if (curElvType == elvType.VENDING) {
                     buildingToFloorMap = initialVending;
@@ -427,15 +426,10 @@ public class HomeScreenActivity extends ActionBarActivity {
                 else {
                     spinnerContents = amenityFinder.getDistinctAttributesByType("printer");
                 }
-
-//                Log.v("button", type + "clicked");
-
             } catch (Exception e) {
-//                Log.e("doInBackground", "FUCK");
                 e.printStackTrace();
             }
             return null;
-
         }
 
         @Override
@@ -444,16 +438,18 @@ public class HomeScreenActivity extends ActionBarActivity {
             if (atts == "") {
                 //buildings is null.
                 if (buildings == null) {
+                    Log.v("ope", "A");
                     showEFLA(initialBuildings, buildingToFloorMap, curElvType, spinnerContents, true);
                 }
                 else {
+                    Log.v("ope", "B");
                     showEFLA(buildings, buildingToFloorMap, curElvType, spinnerContents, true);
                 }
             }
             else {
+                Log.v("ope", "C");
                 showEFLA(buildings, buildingToFloorMap, curElvType, spinnerContents, true);
             }
         }
     }
-
 }
