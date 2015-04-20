@@ -14,6 +14,7 @@ import android.widget.LinearLayout;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.TextView;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -61,9 +62,23 @@ public class ExpandableFloorListAdapter extends BaseExpandableListAdapter {
 
             LinearLayout floorsLayout = (LinearLayout) convertView;
 
+            Building b = buildings.get(groupPosition);
 
-            for (int i = 0; i<floors.get(buildings.get(groupPosition)).size(); i++) {
-                Integer floorID = floors.get(buildings.get(groupPosition)).get(i);
+            Building x = b;
+            boolean complete = false;
+
+            Iterator<Building> it = floors.keySet().iterator();
+
+            while (!complete && it.hasNext()) {
+                Building j = it.next();
+                if (j.getId().equals(b.getId())) {
+                    x = j;
+                    complete = true;
+                }
+            }
+
+            for (int i = 0; i<floors.get(x).size(); i++) {
+                Integer floorID = floors.get(x).get(i);
                 FloorButton floorButton = new FloorButton(convertView.getContext(), floorID);
                 floorButton.setOnClickListener(new OnClickListener() {
                     @Override

@@ -1,9 +1,11 @@
 package edu.gatech.cs4911.mintyfresh.db.queryresponse;
 
+import java.io.Serializable;
+
 /**
  * A Building holds information about a nearby building's id, name, latitude, and longitude.
  */
-public class Building extends DBResponseObject {
+public class Building extends DBResponseObject implements Serializable {
     /**
      * A three-character ID assigned to this Building.
      */

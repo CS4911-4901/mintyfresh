@@ -36,7 +36,6 @@ import edu.gatech.cs4911.mintyfresh.db.DBHandler;
 import edu.gatech.cs4911.mintyfresh.db.queryresponse.Building;
 import edu.gatech.cs4911.mintyfresh.exception.NoDbResultException;
 import edu.gatech.cs4911.mintyfresh.router.RelativeAmenity;
-import edu.gatech.cs4911.mintyfresh.router.RelativeBuilding;
 
 import static edu.gatech.cs4911.mintyfresh.db.DatabaseConfig.STEAKSCORP_READ_ONLY;
 
@@ -55,11 +54,19 @@ public class HomeScreenActivity extends ActionBarActivity {
     private boolean expanded;
     private PopupWindow pw;
     private Location cl;
+    protected Map<Building, List<Integer>> initialBathroom, initialVending, initialPrinter;
+    protected ArrayList<Building> initialBuildings;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_screen);
+
+        Bundle extras = getIntent().getExtras();
+        initialBathroom = (Map<Building, List<Integer>>)extras.get("bathroomMap");
+        initialVending = (Map<Building, List<Integer>>)extras.get("vendingMap");
+        initialPrinter = (Map<Building, List<Integer>>)extras.get("printerMap");
+        initialBuildings = (ArrayList<Building>)extras.get("buildings");
 
         expListView = (ExpandableListView) findViewById(R.id.buildingList);
         expListView.setVisibility(View.GONE);
@@ -151,92 +158,82 @@ public class HomeScreenActivity extends ActionBarActivity {
 
     protected void showEFLA(ArrayList<Building> buildings, Map<Building, List<Integer>> map, elvType curType, Map<String, String> spinnerContents, final boolean refreshSpinner) {
         LinearLayout showing = (LinearLayout) findViewById(R.id.showingLayout);
-//        if (!refreshSpinner) {
-            if ((refreshSpinner) || (current != curType) || (current == elvType.NONE)) {
-                current = curType;
-                Collection<String> idColl = spinnerContents.keySet();
-                Collection<String> coll = spinnerContents.values();
-                List list;
-                List idList;
-                if (coll instanceof List) {
-                    list = (List) coll;
-                    idList = (List) idColl;
-                } else {
-                    list = new ArrayList(coll);
-                    idList = new ArrayList(idColl);
-                }
-                final List finalList = list;
-                final List finalIDList = idList;
-                checkSelected = new boolean[list.size()];
-                for (int i = 0; i < checkSelected.length; i++) {
-                    checkSelected[i] = false;
-                }
+        if ((refreshSpinner) || (current != curType) || (current == elvType.NONE)) {
+            current = curType;
+            Collection<String> idColl = spinnerContents.keySet(); //todo WHY ARE YOU BROKEN
+            Collection<String> coll = spinnerContents.values();
+            List list;
+            List idList;
+            if (coll instanceof List) {
+                list = (List) coll;
+                idList = (List) idColl;
+            } else {
+                list = new ArrayList(coll);
+                idList = new ArrayList(idColl);
+            }
+            final List finalList = list;
+            final List finalIDList = idList;
+            checkSelected = new boolean[list.size()];
+            for (int i = 0; i < checkSelected.length; i++) {
+                checkSelected[i] = false;
+            }
 
-                final TextView tv = (TextView) findViewById(R.id.dropDownList_SelectBox);
-                OnClickListener ocl = new OnClickListener() {
+            final TextView tv = (TextView) findViewById(R.id.dropDownList_SelectBox);
+            OnClickListener ocl = new OnClickListener() {
 
-                    @Override
-                    public void onClick(View v) {
-//                    if (refreshSpinner || !expanded) {
-                        if (!expanded) {
-                            //display all selected values
-                            String selected = "";
-                            int flag = 0;
-                            for (int i = 0; i < finalList.size(); i++) {
-                                if (checkSelected[i] == true) {
-                                    selected += finalList.get(i);
-                                    selected += ", ";
-                                    flag = 1;
-                                }
+                @Override
+                public void onClick(View v) {
+                    if (!expanded) {
+                        //display all selected values
+                        String selected = "";
+                        int flag = 0;
+                        for (int i = 0; i < finalList.size(); i++) {
+                            if (checkSelected[i] == true) {
+                                selected += finalList.get(i);
+                                selected += ", ";
+                                flag = 1;
                             }
-                            if (flag == 1)
-                                tv.setText(selected);
-                            expanded = true;
-                        } else {
-                            //display shortened representation of selected values
-                            tv.setText(DropDownListAdapter.getSelected());
-                            expanded = false;
                         }
+                        if (flag == 1)
+                            tv.setText(selected);
+                        expanded = true;
+                    } else {
+                        //display shortened representation of selected values
+                        tv.setText(DropDownListAdapter.getSelected());
+                        expanded = false;
                     }
-                };
+                }
+            };
 
-                tv.setOnClickListener(ocl);
+            tv.setOnClickListener(ocl);
 
-                //onClickListener to initiate the dropDown list
-                Button createButton = (Button) findViewById(R.id.dropDownList_create);
-                createButton.setOnClickListener(new OnClickListener() {
+            //onClickListener to initiate the dropDown list
+            Button createButton = (Button) findViewById(R.id.dropDownList_create);
+            createButton.setOnClickListener(new OnClickListener() {
 
-                    public void onClick(View v) {
-                        initiatePopUp((ArrayList) finalList, (ArrayList) finalIDList, tv);
-                    }
-                });
+                public void onClick(View v) {
+                    initiatePopUp((ArrayList) finalList, (ArrayList) finalIDList, tv);
+                }
+            });
 
-                Log.v("showefla", "hopefully set the array adapter?");
-                showing.setVisibility(View.VISIBLE);
+            Log.v("showefla", "hopefully set the array adapter?");
+            showing.setVisibility(View.VISIBLE);
 
-                final ExpandableFloorListAdapter expListAdapter = new ExpandableFloorListAdapter(
-                        this, buildings, map);
-                expListView.setAdapter(expListAdapter);
+            final ExpandableFloorListAdapter expListAdapter = new ExpandableFloorListAdapter(
+                    this, buildings, map);
+            expListView.setAdapter(expListAdapter);
 
-                expListView.setVisibility(View.VISIBLE);
-                Log.v("SHOWEFLA", "DONE?");
-            }
-//        else if ((current == curType) && (refreshSpinner)) {
-//
-//        }
-            else {
-                current = elvType.NONE;
+            expListView.setVisibility(View.VISIBLE);
+            Log.v("SHOWEFLA", "DONE?");
+        }
+        else {
+            current = elvType.NONE;
 
-                Log.v("SHOWEFLA", "none?");
-                showing.setVisibility(View.INVISIBLE);
-                showing.setVisibility(View.GONE);
-                expListView.setVisibility(View.GONE);
-            }
-//        }
-//        else {
-//            Log.v("showefla", "blah blah blah");
-//        }
-
+            Log.v("SHOWEFLA", "none?");
+            showing.setVisibility(View.INVISIBLE);
+            showing.setVisibility(View.GONE);
+            expListView.setVisibility(View.GONE);
+        }
     }
 
     private String refreshList(ArrayList<String> items) {
@@ -371,6 +368,7 @@ public class HomeScreenActivity extends ActionBarActivity {
 //                    Log.v("construct2", curBldg.toString());
                     Building bldg = doesContain(buildings, curBldg);
                     if (bldg == null) {
+                        Log.v("constructMap", "adding to buildings");
                         buildings.add(curBldg);
                         floors = new ArrayList<Integer>();
                         floors.add(floor);
@@ -387,6 +385,7 @@ public class HomeScreenActivity extends ActionBarActivity {
                     }
                 }
                 catch (NoDbResultException ndbre) {
+                    Log.v("ndbre", "BOOM");
                     ndbre.printStackTrace();
                     return null;
                 }
@@ -414,15 +413,35 @@ public class HomeScreenActivity extends ActionBarActivity {
                 amenityFinder = new AmenityFinder(dbh);
                 PriorityQueue<RelativeAmenity> amenitiesPQ;
                 Log.v("dib", (String)params[1]);
-                if ((atts == null)||(atts == "")) {
-                    amenitiesPQ = amenityFinder.getNearbyAmenitiesByType((Location)params[0], name);
-                    Log.v("dib", "nullnull");
-                }
-                else {
+//                if ((atts == null)||(atts == "")) {
+////                    amenitiesPQ = amenityFinder.getNearbyAmenitiesByType((Location)params[0], name);
+//                    if (curElvType == elvType.BATHROOMS) {
+////                        initialBathroom = (Map<Building, List<Integer>>)extras.get("bathroomMap");
+//                        amenitiesPQ = initialBathroom;
+//                    }
+//                    else if (curElvType == elvType.VENDING) {
+//
+//                    }
+//                    else {
+//
+//                    }
+//                    Log.v("dib", "nullnull");
+//                }
+                if ((atts != null) && (atts != "")) {
                     amenitiesPQ = amenityFinder.getNearbyAmenitiesByTypeAndAttribute((Location) params[0], name, (String) atts);
                     Log.v("dib", ""+amenitiesPQ.size());
+                    buildingToFloorMap = constructMap(amenitiesPQ);
                 }
-                buildingToFloorMap = constructMap(amenitiesPQ);
+                else if (curElvType == elvType.BATHROOMS) {
+                    buildingToFloorMap = initialBathroom;
+                    Log.v("new stuff", "bathroom");
+                }
+                else if (curElvType == elvType.VENDING) {
+                    buildingToFloorMap = initialVending;
+                }
+                else {
+                    buildingToFloorMap = initialPrinter;
+                }
 
                 if (curElvType == elvType.BATHROOMS) {
                     spinnerContents  = amenityFinder.getDistinctAttributesByType("bathroom");
@@ -448,7 +467,13 @@ public class HomeScreenActivity extends ActionBarActivity {
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
             if (atts == "") {
-                showEFLA(buildings, buildingToFloorMap, curElvType, spinnerContents, true);
+                //buildings is null.
+                if (buildings == null) {
+                    showEFLA(initialBuildings, buildingToFloorMap, curElvType, spinnerContents, true);
+                }
+                else {
+                    showEFLA(buildings, buildingToFloorMap, curElvType, spinnerContents, true);
+                }
             }
             else {
                 showEFLA(buildings, buildingToFloorMap, curElvType, spinnerContents, true);
