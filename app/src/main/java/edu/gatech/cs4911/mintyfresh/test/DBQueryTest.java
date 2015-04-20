@@ -185,7 +185,7 @@ public class DBQueryTest extends InstrumentationTestCase {
     }
 
     public void testGetAmenityTypesInBuilding() throws Exception {
-        List<String> result = getAmenityTypesInBuilding(handler, "TST");
+        List<String> result = getAmenityTypesInBuilding(handler, "CUL");
         assertNotNull(result);
 
         // And check each item in result
