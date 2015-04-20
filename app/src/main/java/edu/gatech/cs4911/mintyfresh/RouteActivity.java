@@ -1,10 +1,11 @@
-package edu.gatech.cs4911.mintyfresh.test;
+package edu.gatech.cs4911.mintyfresh;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.AsyncTask;
-import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -16,24 +17,25 @@ import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.util.List;
 
-import edu.gatech.cs4911.mintyfresh.AmenityFinder;
-import edu.gatech.cs4911.mintyfresh.R;
 import edu.gatech.cs4911.mintyfresh.db.DBHandler;
 import edu.gatech.cs4911.mintyfresh.db.queryresponse.Building;
-import edu.gatech.cs4911.mintyfresh.exception.RouteException;
 import edu.gatech.cs4911.mintyfresh.router.Router;
 
 import static edu.gatech.cs4911.mintyfresh.db.DatabaseConfig.STEAKSCORP_READ_ONLY;
 
-public class RoutingTestActivity extends FragmentActivity {
+public class RouteActivity extends FragmentActivity {
 
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     private boolean gotLocation = false;
+    private Intent intent;
+    private String destBuilding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+        intent = getIntent();
+        destBuilding = intent.getStringExtra("building_id");
         setUpMapIfNeeded();
     }
 
@@ -48,14 +50,14 @@ public class RoutingTestActivity extends FragmentActivity {
      * installed) and the map has not already been instantiated. Zooms into the phone's current
      * detected location.
      * <p/>
-     * If it isn't installed {@link SupportMapFragment} (and
+     * If it isn't installed {@link com.google.android.gms.maps.SupportMapFragment} (and
      * {@link com.google.android.gms.maps.MapView MapView}) will show a prompt for the user to
      * install/update the Google Play services APK on their device.
      * <p/>
      * A user can return to this FragmentActivity after following the prompt and correctly
      * installing/updating/enabling the Google Play services. Since the FragmentActivity may not
      * have been completely destroyed during this process (it is likely that it would only be
-     * stopped or paused), {@link #onCreate(Bundle)} may not be called again so we should call this
+     * stopped or paused), {@link #onCreate(android.os.Bundle)} may not be called again so we should call this
      * method in {@link #onResume()} to guarantee that it will be called.
      */
     private void setUpMapIfNeeded() {
@@ -78,23 +80,12 @@ public class RoutingTestActivity extends FragmentActivity {
                                 location.getLongitude());
                         // Create an animation to zoom in on location
                         CameraUpdate zoomCamera = CameraUpdateFactory.newLatLngZoom(myLocation, 20);
-                        // Set a pin
-                        mMap.addMarker(new MarkerOptions().position(
-                                myLocation).title("You are here!"));
 
-                        // Test route
                         try {
-                            // The value below should be filled with a destination building
-                            // from a previous screen - this is just a test route!
-                            String destBuildingId = "CUL";
-                            RouteVector vector = new RouteVector(myLocation, destBuildingId);
+                            RouteVector vector = new RouteVector(myLocation, destBuilding);
 
                             List<LatLng> result = new NetIoTask().execute(vector).get();
                             for (int i = 0; i < result.size(); i++) {
-                                // Add a pin
-                                mMap.addMarker(new MarkerOptions().position(
-                                        result.get(i)).title("Step " + i));
-
                                 // Plot polyline
                                 if (i < result.size() - 2) {
                                     mMap.addPolyline(new PolylineOptions()
@@ -103,7 +94,14 @@ public class RoutingTestActivity extends FragmentActivity {
                                                     .color(Color.BLUE).geodesic(true)
                                     );
                                 }
+
+                                if (i == result.size() - 1) {
+                                    mMap.addMarker(new MarkerOptions().position(
+                                            result.get(i)).title("Your destination!"));
+                                }
                             }
+
+
                         } catch (Exception e) {
                             return;
                         }
