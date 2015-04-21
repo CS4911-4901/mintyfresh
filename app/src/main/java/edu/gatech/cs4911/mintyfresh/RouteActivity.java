@@ -32,6 +32,7 @@ public class RouteActivity extends FragmentActivity {
     private boolean gotLocation = false;
     private Intent intent;
     private String destBuilding;
+    private LatLng curLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +40,7 @@ public class RouteActivity extends FragmentActivity {
         setContentView(R.layout.activity_maps);
         intent = getIntent();
         destBuilding = intent.getStringExtra("building_id");
+        curLocation = (LatLng) intent.getExtras().get("current_location");
         setUpMapIfNeeded();
 
         ImageButton cancelButton = (ImageButton)findViewById(R.id.cancelButton);
@@ -98,42 +100,33 @@ public class RouteActivity extends FragmentActivity {
             if (mMap != null) {
                 //setUpMap();
 
-                mMap.setOnMyLocationChangeListener(new GoogleMap.OnMyLocationChangeListener() {
+                // Create an animation to zoom in on location
+                CameraUpdate zoomCamera = CameraUpdateFactory.newLatLngZoom(curLocation, 18);
 
-                    @Override
-                    public void onMyLocationChange(Location location) {
-                        // Get current location
-                        LatLng myLocation = new LatLng(location.getLatitude(),
-                                location.getLongitude());
-                        // Create an animation to zoom in on location
-                        CameraUpdate zoomCamera = CameraUpdateFactory.newLatLngZoom(myLocation, 18);
+                try {
+                    RouteVector vector = new RouteVector(curLocation, destBuilding);
 
-                        try {
-                            RouteVector vector = new RouteVector(myLocation, destBuilding);
-
-                            List<LatLng> result = new NetIoTask().execute(vector).get();
-                            for (int i = 0; i < result.size(); i++) {
-                                // Plot polyline
-                                if (i < result.size() - 2) {
-                                    mMap.addPolyline(new PolylineOptions()
-                                                    .add(result.get(i), result.get(i+1))
-                                                    .width(5)
-                                                    .color(Color.BLUE).geodesic(true)
-                                    );
-                                }
-                            }
-
-                        } catch (Exception e) {
-                            return;
-                        }
-
-                        if (!gotLocation) {
-                            // And do it!
-                            mMap.animateCamera(zoomCamera);
-                            gotLocation = true;
+                    List<LatLng> result = new NetIoTask().execute(vector).get();
+                    for (int i = 0; i < result.size(); i++) {
+                        // Plot polyline
+                        if (i < result.size() - 2) {
+                            mMap.addPolyline(new PolylineOptions()
+                                            .add(result.get(i), result.get(i+1))
+                                            .width(5)
+                                            .color(Color.BLUE).geodesic(true)
+                            );
                         }
                     }
-                });
+
+                } catch (Exception e) {
+                    return;
+                }
+
+                if (!gotLocation) {
+                    // And do it!
+                    mMap.animateCamera(zoomCamera);
+                    gotLocation = true;
+                }
             }
         }
     }

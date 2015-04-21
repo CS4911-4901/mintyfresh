@@ -30,6 +30,7 @@ import android.widget.ViewSwitcher.ViewFactory;
 
 import com.caverock.androidsvg.SVGImageView;
 import com.caverock.androidsvg.SVG;
+import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -90,6 +91,11 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
     //Things experimented with for pinch-zoom
     private ScaleGestureDetector pinchDetector;
 
+    /**
+     * Current location.
+     */
+    private LatLng curLocation;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -108,6 +114,7 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
             bldgID = extras.getString("BUILDING_ID");
             floorName = Integer.toString(floorID);
             relevantAmenities = extras.getParcelableArrayList("AMENITIES");
+            curLocation = (LatLng) extras.get("current_location");
         }
         currentFloor = floorID;
 
@@ -371,6 +378,7 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
     private void startRouting() {
         Intent intent = new Intent(this, RouteActivity.class);
         intent.putExtra("building_id", bldgID);
+        intent.putExtra("current_location", curLocation);
         this.startActivity(intent);
     }
 

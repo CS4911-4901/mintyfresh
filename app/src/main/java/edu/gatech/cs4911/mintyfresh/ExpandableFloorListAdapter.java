@@ -16,6 +16,8 @@ import android.widget.LinearLayout;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.TextView;
 
+import com.google.android.gms.maps.model.LatLng;
+
 import java.util.Iterator;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,13 +36,16 @@ public class ExpandableFloorListAdapter extends BaseExpandableListAdapter {
     private Map<Building, List<Integer>> floors;
     private List<Building> buildings;
     private ArrayList<Amenity> amenities;
+    private LatLng curLocation;
 
     public ExpandableFloorListAdapter(Activity context, List<Building> buildings,
-                                      Map<Building, List<Integer>> floors, ArrayList<Amenity> amenities) {
+                                      Map<Building, List<Integer>> floors,
+                                      ArrayList<Amenity> amenities, LatLng curLocation) {
         this.context = context;
         this.floors = floors;
         this.buildings = buildings;
         this.amenities = amenities;
+        this.curLocation = curLocation;
     }
 
     @Override
@@ -98,6 +103,7 @@ public class ExpandableFloorListAdapter extends BaseExpandableListAdapter {
                         intent.putExtra("BUILDING_ID", bldgID);
                         intent.putExtra("FLOOR_ID", i);
                         intent.putParcelableArrayListExtra("AMENITIES", amenities);
+                        intent.putExtra("current_location", curLocation);
                         context.startActivity(intent);
 
                     }

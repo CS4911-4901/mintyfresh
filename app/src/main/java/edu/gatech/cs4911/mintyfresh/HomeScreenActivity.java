@@ -63,6 +63,7 @@ public class HomeScreenActivity extends ActionBarActivity {
     protected Map<Building, List<Integer>> initialBathroom, initialVending, initialPrinter;
     protected ArrayList<Building> initialBuildingsB, initialBuildingsP, initialBuildingsV, initialBuildings;
     private ArrayList<Amenity> nearbyAmenities, initialNearbyAmenitiesB, initialNearbyAmenitiesP, initialNearbyAmenitiesV;
+    private LatLng curLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -146,11 +147,11 @@ public class HomeScreenActivity extends ActionBarActivity {
             @Override
             public void onMyLocationChange(Location location) {
                 // Get current location
-                LatLng myLocation = new LatLng(location.getLatitude(),
+                curLocation = new LatLng(location.getLatitude(),
                         location.getLongitude());
                 if (!gotLocation) {
                     // Create an animation to zoom in on location
-                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 18));
+                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(curLocation, 18));
                     gotLocation = true;
                 }
             }
@@ -227,7 +228,7 @@ public class HomeScreenActivity extends ActionBarActivity {
             if (nearbyAmenities != null) {
                 Log.v("nearbyamenities", "not null");
                 final ExpandableFloorListAdapter expListAdapter = new ExpandableFloorListAdapter(
-                        this, buildings, map, nearbyAmenities);
+                        this, buildings, map, nearbyAmenities, curLocation);
                 expListView.setAdapter(expListAdapter);
             }
             else {
@@ -235,15 +236,15 @@ public class HomeScreenActivity extends ActionBarActivity {
                 ExpandableFloorListAdapter expListAdapter1;
                 if (curType == elvType.BATHROOMS) {
                     expListAdapter1 = new ExpandableFloorListAdapter(
-                    this, buildings, map, initialNearbyAmenitiesB);
+                    this, buildings, map, initialNearbyAmenitiesB, curLocation);
                 }
                 else if (curType == elvType.VENDING) {
                     expListAdapter1 = new ExpandableFloorListAdapter(
-                            this, buildings, map, initialNearbyAmenitiesV);
+                            this, buildings, map, initialNearbyAmenitiesV, curLocation);
                 }
                 else {
                     expListAdapter1 = new ExpandableFloorListAdapter(
-                            this, buildings, map, initialNearbyAmenitiesP);
+                            this, buildings, map, initialNearbyAmenitiesP, curLocation);
                 }
                 expListView.setAdapter(expListAdapter1);
             }
