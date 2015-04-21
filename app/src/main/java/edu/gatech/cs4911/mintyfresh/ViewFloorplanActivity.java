@@ -12,6 +12,7 @@ import android.graphics.drawable.Drawable;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.util.Log;
 
 import android.view.ScaleGestureDetector;
@@ -81,9 +82,8 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
     //For testing.
     int dotR = 5;
 
-    //This'll need fix when imageButtons are updated.
-    //Hardcoding piece of crap
-    int viewHardcodeWidth = 238;
+    //Used to ensure proper plotting
+    int viewHardcodeWidth;
     int imageRawWidth, imageRawHeight;
 
     //Things experimented with for pinch-zoom
@@ -110,9 +110,9 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
         }
         currentFloor = floorID;
 
-        Log.v("floorcheck", ""+currentFloor);
-        Log.v("spacecheck", "0mask0"+bldID+"0mask0");
-        Log.v("amenities null?", ""+relevantAmenities);
+        //Log.v("floorcheck", ""+currentFloor);
+        //Log.v("spacecheck", "0mask0"+bldID+"0mask0");
+        //Log.v("amenities null?", ""+relevantAmenities);
 
         floorInfo = new String[2];
         floorInfo[0] = bldID;
@@ -140,7 +140,7 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
         //Functional test:
         //Got there.
         if(floorsInBuilding!=null) {
-            Log.v("HUZZAH", "Floorplan list isn't null!");
+            //Log.v("HUZZAH", "Floorplan list isn't null!");
         }
         if(floorplanMap==null){
             Log.v("WHY", "FloorplanMap is null?");
@@ -153,7 +153,15 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
         imageRawWidth = currMeta.getNativeWidth();
         imageRawHeight = currMeta.getNativeHeight();
 
-        Log.v("Dimension check", "Width: " + imageRawWidth + ", Height: " + imageRawHeight);
+       // Log.v("Image dim check", "Width: " + imageRawWidth + ", Height: " + imageRawHeight);
+
+
+
+        viewHardcodeWidth = 275*2;
+        //Log.v("View check", ""+viewHardcodeWidth);
+        //screen size*0.65 or so
+
+
 
 
         //For real this time.
@@ -200,7 +208,7 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
             if(a.getLevel()==currentFloor && a.getBuildingName().equals(buildingName)){
                 amenityX = a.getX();
                 amenityY = a.getY();
-//                Log.v("Amenity type", ""+a.getType());
+                //Log.v("Amenity type", ""+a.getType());
                 //Drawable starD = getResources().getDrawable(R.drawable.star);
                 //Bitmap starBit = drawableToBitmap(starD);
                 //imageCanvas.drawBitmap(starBit,amenityX, amenityY, null);
@@ -221,11 +229,23 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
 
     //Utility for scaling.
     private void scaleFloorplan(){
+        /**
         scaleFactor = (float)(viewHardcodeWidth)/(float)(imageRawWidth);
+        double scaleFactorSqr = Math.sqrt(((float)(viewHardcodeWidth)/(float)(imageRawWidth)));
+        float scaleFactorF = (float)scaleFactorSqr;
+         */
+        //Time to kludge it up
+
+        float scaleFactorF = 2.0f;
+
+
+        currView.setScaleType(ImageView.ScaleType.MATRIX);
 
         Matrix m = currView.getImageMatrix();
-        m.setScale(scaleFactor,scaleFactor);
+        m.setScale(scaleFactorF, scaleFactorF);
         currView.setImageMatrix(m);
+
+        currView.setScaleType(ImageView.ScaleType.FIT_CENTER);
     }
 
     //Utility for drawing things on top of things shenanigans.
@@ -275,7 +295,7 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
                         currentFloor = floorPlusOne;
                         floorInfo[1] = currentFloor.toString();
                         try {
-                            Log.v("onClickL", "Hit the left button");
+                            Log.v("onClickR", "Hit the right button");
                             floorplanSVG = floorplanMap.get(currentFloor);
                             currMeta = metaMap.get(currentFloor);
                             imageRawWidth = currMeta.getNativeWidth();
@@ -346,6 +366,7 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
                 leftButton.setEnabled(false);
             }
             else{leftButton.setEnabled(true);}
+
             if (curIndex >= floors.size() - 1) {
                 rightButton.setEnabled(false);
             }
@@ -402,6 +423,7 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
         SVGImageView iView = new SVGImageView(getApplicationContext());
         iView.setScaleType(SVGImageView.ScaleType.MATRIX);
         iView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+        iView.setAdjustViewBounds(true);
 
         return iView;
     }
