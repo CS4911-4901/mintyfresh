@@ -29,8 +29,6 @@ import static edu.gatech.cs4911.mintyfresh.db.DatabaseConfig.STEAKSCORP_READ_ONL
 
 
 public class MainActivity extends ActionBarActivity {
-
-    private static int SPLASH_TIME_OUT = 3000;
     private Location cl;
     private ArrayList<Amenity> nearbyAmenities, nearbyAmenitiesB, nearbyAmenitiesP, nearbyAmenitiesV;
 
@@ -40,7 +38,7 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        new Handler().postDelayed(new Runnable() {
+        new Handler().post(new Runnable() {
             @Override
             public void run() {
                 // This method will be executed once the timer is over
@@ -55,7 +53,7 @@ public class MainActivity extends ActionBarActivity {
                 cl.setLongitude(-84.39687341);
                 new ConnectToDB().execute(cl);
             } //todo i need to make it turn this off at a time so yeah
-        }, SPLASH_TIME_OUT);
+        });
     }
 
 
