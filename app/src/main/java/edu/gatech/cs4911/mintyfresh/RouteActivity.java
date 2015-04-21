@@ -121,12 +121,10 @@ public class RouteActivity extends FragmentActivity {
                                                     .color(Color.BLUE).geodesic(true)
                                     );
                                 }
-
-                                if (i == result.size() - 1) {
-                                    mMap.addMarker(new MarkerOptions().position(
-                                            result.get(i)).title("Your destination!"));
-                                }
                             }
+
+                            mMap.addMarker(new MarkerOptions().position(
+                                    result.get(result.size() - 1)).title("Your destination!"));
 
 
                         } catch (Exception e) {
