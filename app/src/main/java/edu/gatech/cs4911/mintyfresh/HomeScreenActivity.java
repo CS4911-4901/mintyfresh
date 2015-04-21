@@ -150,7 +150,7 @@ public class HomeScreenActivity extends ActionBarActivity {
                         location.getLongitude());
                 if (!gotLocation) {
                     // Create an animation to zoom in on location
-                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 20));
+                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 18));
                     gotLocation = true;
                 }
             }

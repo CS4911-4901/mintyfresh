@@ -106,7 +106,7 @@ public class RouteActivity extends FragmentActivity {
                         LatLng myLocation = new LatLng(location.getLatitude(),
                                 location.getLongitude());
                         // Create an animation to zoom in on location
-                        CameraUpdate zoomCamera = CameraUpdateFactory.newLatLngZoom(myLocation, 20);
+                        CameraUpdate zoomCamera = CameraUpdateFactory.newLatLngZoom(myLocation, 18);
 
                         try {
                             RouteVector vector = new RouteVector(myLocation, destBuilding);
@@ -122,10 +122,6 @@ public class RouteActivity extends FragmentActivity {
                                     );
                                 }
                             }
-
-                            mMap.addMarker(new MarkerOptions().position(
-                                    result.get(result.size() - 1)).title("Your destination!"));
-
 
                         } catch (Exception e) {
                             return;
