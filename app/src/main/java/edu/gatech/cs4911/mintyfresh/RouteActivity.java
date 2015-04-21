@@ -6,6 +6,9 @@ import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
+import android.view.View;
+import android.widget.ImageButton;
 
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -37,6 +40,25 @@ public class RouteActivity extends FragmentActivity {
         intent = getIntent();
         destBuilding = intent.getStringExtra("building_id");
         setUpMapIfNeeded();
+
+        ImageButton cancelButton = (ImageButton)findViewById(R.id.cancelButton);
+        ImageButton routeButton = (ImageButton)findViewById(R.id.routeMeButton);
+
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+
+        routeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.v("routing button", "CLICK");
+            }
+        });
+
+
     }
 
     @Override
@@ -64,7 +86,7 @@ public class RouteActivity extends FragmentActivity {
         // Do a null check to confirm that we have not already instantiated the map.
         if (mMap == null) {
             // Try to obtain the map from the SupportMapFragment.
-            mMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map))
+            mMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.maplap))
                     .getMap();
             mMap.setMyLocationEnabled(true);
             // Check if we were successful in obtaining the map.

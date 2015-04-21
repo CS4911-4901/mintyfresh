@@ -2,6 +2,7 @@ package edu.gatech.cs4911.mintyfresh;
 
 import android.app.Activity;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -66,7 +67,7 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
     ImageSwitcher imgSwitcher;
 
     private ImageButton leftButton, rightButton, cancelButton, routeButton;
-    private String buildingName;
+    private String buildingName, bldgID;
     Integer currentFloor;
     SVGImageView currView;
     String[] floorInfo;
@@ -98,13 +99,13 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
         Bundle extras = getIntent().getExtras();
         buildingName = "Building in the Sky";
         String floorName = "infinity";
-        String bldID = "123";
+        bldgID = "123";
         Integer floorID = -5;
 
         if (extras != null) {
             buildingName = extras.getString("BUILDING_NAME");
             floorID = extras.getInt("FLOOR_NAME");
-            bldID = extras.getString("BUILDING_ID");
+            bldgID = extras.getString("BUILDING_ID");
             floorName = Integer.toString(floorID);
             relevantAmenities = extras.getParcelableArrayList("AMENITIES");
         }
@@ -115,7 +116,7 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
         //Log.v("amenities null?", ""+relevantAmenities);
 
         floorInfo = new String[2];
-        floorInfo[0] = bldID;
+        floorInfo[0] = bldgID;
         floorInfo[1] = floorName;
 
         floorsInBuilding = new ArrayList<>();
@@ -124,7 +125,7 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
         setFloorDisplay(buildingName, currentFloor.toString());
 
         try {
-            handler = new ConnectToDB(floorName).execute(bldID).get();
+            handler = new ConnectToDB(floorName).execute(bldgID).get();
             Log.v("check1", "Handler set up");
             cache = new ImageCache(handler, getApplicationContext());
             Log.v("check2", "Cache set up");
@@ -277,6 +278,7 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
         rightButton = (ImageButton)findViewById(R.id.rightButton);
 
         cancelButton = (ImageButton)findViewById(R.id.cancelButton);
+        routeButton = (ImageButton)findViewById(R.id.routeMeButton);
 
         if (floors.contains(flr)) {
 
@@ -356,7 +358,22 @@ public class ViewFloorplanActivity extends Activity implements ViewFactory{
             }
         });
 
+        routeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.v("routing button", "CLICK");
+                startRouting();
+            }
+        });
+
     }
+
+    private void startRouting() {
+        Intent intent = new Intent(this, RouteActivity.class);
+        intent.putExtra("building_id", bldgID);
+        this.startActivity(intent);
+    }
+
     //Button support.
     private void checkButtonAble(List<Integer> floors, Integer floor){
         //needs to be checked anytime a button is clicked
