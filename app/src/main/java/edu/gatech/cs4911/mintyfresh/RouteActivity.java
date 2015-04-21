@@ -42,23 +42,28 @@ public class RouteActivity extends FragmentActivity {
         setUpMapIfNeeded();
 
         ImageButton cancelButton = (ImageButton)findViewById(R.id.cancelButton);
-        ImageButton routeButton = (ImageButton)findViewById(R.id.routeMeButton);
+        ImageButton backButton = (ImageButton)findViewById(R.id.backButton);
 
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finish();
+//                finish(); todo
+                restartApp();
             }
         });
 
-        routeButton.setOnClickListener(new View.OnClickListener() {
+        backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.v("routing button", "CLICK");
+                finish();
+                Log.v("back button", "CLICK");
             }
         });
+    }
 
-
+    private void restartApp() {
+        Intent intent = new Intent(this, HomeScreenActivity.class);
+        this.startActivity(intent);
     }
 
     @Override

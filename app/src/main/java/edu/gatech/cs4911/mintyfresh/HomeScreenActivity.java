@@ -26,6 +26,7 @@ import com.google.android.gms.maps.GoogleMap;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -64,15 +65,17 @@ public class HomeScreenActivity extends ActionBarActivity {
         setContentView(R.layout.activity_home_screen);
 
         Bundle extras = getIntent().getExtras();
-        initialBathroom = (Map<Building, List<Integer>>)extras.get("bathroomMap");
-        initialVending = (Map<Building, List<Integer>>)extras.get("vendingMap");
-        initialPrinter = (Map<Building, List<Integer>>)extras.get("printerMap");
-        initialBuildingsB = (ArrayList<Building>)extras.get("buildingsB");
-        initialBuildingsV = (ArrayList<Building>)extras.get("buildingsV");
-        initialBuildingsP = (ArrayList<Building>)extras.get("buildingsP");
-        initialNearbyAmenitiesB = (ArrayList<Amenity>)extras.get("nearbyAmenitiesB");
-        initialNearbyAmenitiesP = (ArrayList<Amenity>)extras.get("nearbyAmenitiesP");
-        initialNearbyAmenitiesV = (ArrayList<Amenity>)extras.get("nearbyAmenitiesV");
+        if (getIntent().hasExtra("bathroomMap")) {
+            initialBathroom = (Map<Building, List<Integer>>) extras.get("bathroomMap");
+            initialVending = (Map<Building, List<Integer>>) extras.get("vendingMap");
+            initialPrinter = (Map<Building, List<Integer>>) extras.get("printerMap");
+            initialBuildingsB = (ArrayList<Building>) extras.get("buildingsB");
+            initialBuildingsV = (ArrayList<Building>) extras.get("buildingsV");
+            initialBuildingsP = (ArrayList<Building>) extras.get("buildingsP");
+            initialNearbyAmenitiesB = (ArrayList<Amenity>) extras.get("nearbyAmenitiesB");
+            initialNearbyAmenitiesP = (ArrayList<Amenity>) extras.get("nearbyAmenitiesP");
+            initialNearbyAmenitiesV = (ArrayList<Amenity>) extras.get("nearbyAmenitiesV");
+        }
 
         expListView = (ExpandableListView) findViewById(R.id.buildingList);
         expListView.setVisibility(View.GONE);
@@ -358,12 +361,15 @@ public class HomeScreenActivity extends ActionBarActivity {
                         buildings.add(curBldg);
                         floors = new ArrayList<Integer>();
                         floors.add(floor);
+                        Collections.sort(floors);
+//                        floors
                         floorMap.put(curBldg, floors);
                     } else {
                         floors = floorMap.get(bldg);
                         if (!floors.contains(floor)) {
                             floors.add(floor);
                         }
+                        Collections.sort(floors);
                         floorMap.put(curBldg, floors);
                     }
                 }
@@ -398,7 +404,7 @@ public class HomeScreenActivity extends ActionBarActivity {
 //                Log.v("dib", (String)params[1]);
                 if ((atts != null) && (atts != "")) {
                     amenitiesPQ = amenityFinder.getNearbyAmenitiesByTypeAndAttribute((Location) params[0], name, (String) atts);
-//                    Log.v("dib", ""+amenitiesPQ.size());
+                    Log.v("dib", ""+amenitiesPQ.size());
                     buildingToFloorMap = constructMap(amenitiesPQ);
 //                    initialBuildings = buildings;
                 }
@@ -437,7 +443,12 @@ public class HomeScreenActivity extends ActionBarActivity {
                 //buildings is null.
                 if (buildings == null) {
                     Log.v("ope", "A");
-                    showEFLA(initialBuildings, buildingToFloorMap, curElvType, spinnerContents, true);
+                    if (initialBuildings != null) {
+                        showEFLA(initialBuildings, buildingToFloorMap, curElvType, spinnerContents, true);
+                    }
+                    else {
+
+                    }
                 }
                 else {
                     Log.v("ope", "B");

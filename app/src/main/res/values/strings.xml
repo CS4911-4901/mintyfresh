@@ -20,5 +20,5 @@
     <string name="cancel">Cancel</string>
     <string name="routeMe">Route Me</string>
     <string name="title_activity_routing_test">Routing Test</string>
-
+    <string name="back">Back</string>
 </resources>

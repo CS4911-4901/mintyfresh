@@ -13,6 +13,7 @@ import android.view.MenuItem;
 import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -121,12 +122,15 @@ public class MainActivity extends ActionBarActivity {
                         buildings.add(curBldg);
                         floors = new ArrayList<Integer>();
                         floors.add(floor);
+                        Collections.sort(floors);
+
                         floorMap.put(curBldg, floors);
                     } else {
                         floors = floorMap.get(bldg);
                         if (!floors.contains(floor)) {
                             floors.add(floor);
                         }
+                        Collections.sort(floors);
                         floorMap.put(curBldg, floors);
                     }
                 }
