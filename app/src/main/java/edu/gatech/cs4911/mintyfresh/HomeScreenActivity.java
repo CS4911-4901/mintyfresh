@@ -22,7 +22,11 @@ import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -46,6 +50,7 @@ public class HomeScreenActivity extends ActionBarActivity {
 
 //    http://theopentutorials.com/tutorials/android/listview/android-expandable-list-view-example/
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
+    private boolean gotLocation = false;
     private ExpandableListView expListView;
     protected AmenityFinder amenityFinder;
     private enum elvType {NONE, VENDING, BATHROOMS, PRINTERS};
@@ -128,6 +133,25 @@ public class HomeScreenActivity extends ActionBarActivity {
                     bathroom.setImageResource(R.drawable.button_toilet_inactive);
                     vending.setImageResource(R.drawable.button_vending_inactive);
                     printing.setImageResource(R.drawable.button_printer_active);
+                }
+            }
+        });
+
+        // Set up map and zoom to current location
+        mMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.maplap))
+                .getMap();
+        mMap.setMyLocationEnabled(true);
+        mMap.setOnMyLocationChangeListener(new GoogleMap.OnMyLocationChangeListener() {
+
+            @Override
+            public void onMyLocationChange(Location location) {
+                // Get current location
+                LatLng myLocation = new LatLng(location.getLatitude(),
+                        location.getLongitude());
+                if (!gotLocation) {
+                    // Create an animation to zoom in on location
+                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 20));
+                    gotLocation = true;
                 }
             }
         });
