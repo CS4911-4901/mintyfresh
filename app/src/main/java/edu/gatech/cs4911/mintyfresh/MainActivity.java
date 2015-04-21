@@ -10,6 +10,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.google.android.gms.maps.model.LatLng;
+
 import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -31,7 +33,6 @@ import static edu.gatech.cs4911.mintyfresh.db.DatabaseConfig.STEAKSCORP_READ_ONL
 public class MainActivity extends ActionBarActivity {
     private Location cl;
     private ArrayList<Amenity> nearbyAmenities, nearbyAmenitiesB, nearbyAmenitiesP, nearbyAmenitiesV;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

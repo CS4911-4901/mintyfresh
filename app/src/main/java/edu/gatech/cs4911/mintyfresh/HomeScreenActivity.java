@@ -70,6 +70,25 @@ public class HomeScreenActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_screen);
 
+        // Set up map and zoom to current location
+        mMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.maplap))
+                .getMap();
+        mMap.setOnMyLocationChangeListener(new GoogleMap.OnMyLocationChangeListener() {
+            @Override
+            public void onMyLocationChange(Location location) {
+                // Get current location
+                curLocation = new LatLng(location.getLatitude(),
+                        location.getLongitude());
+                if (!gotLocation) {
+                    // Create an animation to zoom in on location
+                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(curLocation, 18));
+                    gotLocation = true;
+                }
+            }
+        });
+
+        mMap.setMyLocationEnabled(true);
+
         Bundle extras = getIntent().getExtras();
         if (getIntent().hasExtra("bathroomMap")) {
             initialBathroom = (Map<Building, List<Integer>>) extras.get("bathroomMap");
@@ -134,25 +153,6 @@ public class HomeScreenActivity extends ActionBarActivity {
                     bathroom.setImageResource(R.drawable.button_toilet_inactive);
                     vending.setImageResource(R.drawable.button_vending_inactive);
                     printing.setImageResource(R.drawable.button_printer_active);
-                }
-            }
-        });
-
-        // Set up map and zoom to current location
-        mMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.maplap))
-                .getMap();
-        mMap.setMyLocationEnabled(true);
-        mMap.setOnMyLocationChangeListener(new GoogleMap.OnMyLocationChangeListener() {
-
-            @Override
-            public void onMyLocationChange(Location location) {
-                // Get current location
-                curLocation = new LatLng(location.getLatitude(),
-                        location.getLongitude());
-                if (!gotLocation) {
-                    // Create an animation to zoom in on location
-                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(curLocation, 18));
-                    gotLocation = true;
                 }
             }
         });
