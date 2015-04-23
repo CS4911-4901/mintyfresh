@@ -6,4 +6,4 @@ Mintyfresh is built in Android Studio - simply clone the repository and open the
 
 ## Database
 Mintyfresh requires the use of an external MySQL database as its data source. The database schema is as follows: <br><br>
-<img src="" />
+<img src="https://raw.githubusercontent.com/CS4911-4901/mintyfresh/master/schema.png" />
